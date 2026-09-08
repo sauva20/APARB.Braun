@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id" class="overflow-hidden">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - Sistem Monitoring APAR</title>
+
+    <!-- Tailwind CSS (via Vite) -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        <script src="https://cdn.tailwindcss.com"></script>
+    @endif
+
+    <style>
+        @font-face {
+            font-family: 'Rotis Sans Serif';
+            src: local('Rotis Sans Serif'), local('Arial');
+        }
+        
+        body {
+            font-family: 'Rotis Sans Serif', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #F0F0F0;
+            color: #1A1A1A;
+        }
+    </style>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-[#F0F0F0] text-[#1A1A1A] relative overflow-hidden w-full h-screen grid place-items-center p-4">
+    <!-- Global Toast Notification -->
+    @if(session('success') || session('error'))
+        <div x-data="{ show: false, type: '{{ session('success') ? 'success' : 'error' }}', message: '{{ addslashes(session('success') ?? session('error')) }}' }" 
+             x-init="setTimeout(() => show = true, 100); setTimeout(() => show = false, 4000)"
+             x-show="show"
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+             x-transition:enter-end="opacity-100 translate-x-0 scale-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="opacity-100 translate-x-0 scale-100"
+             x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+             class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border min-w-[300px] max-w-sm backdrop-blur-md"
+             :class="type === 'success' ? 'bg-white/95 border-teal-100' : 'bg-white/95 border-red-100'">
+             
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                 :class="type === 'success' ? 'bg-teal-50 text-[#009B77]' : 'bg-red-50 text-red-500'">
+                <i class="ph-fill text-xl" :class="type === 'success' ? 'ph-check-circle' : 'ph-warning-circle'"></i>
+            </div>
+            
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-slate-800" x-text="type === 'success' ? 'Berhasil!' : 'Oops, Terjadi Kesalahan!'"></span>
+                <span class="text-xs font-medium text-slate-500 mt-0.5" x-text="message"></span>
+            </div>
+            
+            <button @click="show = false" class="ml-auto w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+        </div>
+    @endif
+
+    <!-- Decorative Background Elements (Modern Mesh Blur) -->
+    <div class="absolute top-[-15%] left-[-10%] w-[50%] h-[50%] bg-[#009B77] rounded-full mix-blend-multiply filter blur-[120px] opacity-20 pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-[#8A4B9F] rounded-full mix-blend-multiply filter blur-[120px] opacity-20 pointer-events-none"></div>
+
+    <div class="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[28px] shadow-[0_20px_60px_-15px_rgba(0,155,119,0.2)] overflow-hidden relative z-10 border border-white/50">
+        <!-- Top Gradient Bar -->
+        <div class="h-1.5 w-full bg-gradient-to-r from-[#009B77] via-[#8A4B9F] to-[#009B77]"></div>
+
+        <div class="p-8 sm:p-10">
+            <!-- Logo area -->
+            <div class="flex justify-center mb-8">
+                <div class="flex items-center justify-center bg-gradient-to-br from-[#009B77]/10 to-[#009B77]/5 w-20 h-20 rounded-2xl border border-[#009B77]/20 shadow-inner">
+                    <i class="ph-duotone ph-fire-extinguisher text-5xl text-[#009B77]"></i>
+                </div>
+            </div>
+
+            <!-- Titles -->
+            <div class="text-center mb-10">
+                <h1 class="text-xl sm:text-xl font-extrabold text-[#1A1A1A] tracking-tight mb-1.5">SISTEM MONITORING APAR</h1>
+                <p class="text-sm text-[#009B77] font-bold">
+                    PT B | BRAUN PHARMACEUTICAL INDONESIA
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form action="/login" method="POST" class="space-y-5">
+                @csrf
+                
+                @if ($errors->any())
+                <div class="text-red-500 text-sm font-bold flex items-center justify-center gap-1.5 pb-2">
+                    <i class="ph-fill ph-warning-circle text-base"></i>
+                    <p>{{ $errors->first() }}</p>
+                </div>
+                @endif
+                
+                @if (session('auth_error'))
+                <div class="text-amber-500 text-[13px] font-bold flex items-center justify-center gap-1.5 pb-2 text-center">
+                    <i class="ph-fill ph-lock-key text-base shrink-0"></i>
+                    <p class="leading-tight">{{ session('auth_error') }}</p>
+                </div>
+                @endif
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Email</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
+                            <i class="ph-fill ph-envelope text-lg"></i>
+                        </div>
+                        <input type="email" id="email" name="email" placeholder="Masukkan email Anda" value="{{ old('email') }}"
+                            class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm font-medium placeholder:font-normal" required>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Password</label>
+                        <a href="#" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">Lupa Password?</a>
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
+                            <i class="ph-fill ph-lock-key text-lg"></i>
+                        </div>
+                        <input type="password" id="password" name="password" placeholder="••••••••" 
+                            class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm tracking-widest font-mono placeholder:font-sans placeholder:tracking-normal" required>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
+                        <span>Masuk</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Footer -->
+            <div class="mt-10 pt-6 border-t border-gray-100 flex justify-center items-center gap-1.5">
+                <i class="ph-fill ph-shield-check text-[#009B77] text-sm"></i>
+                <p class="text-[11px] text-gray-400 font-medium">APAR Monitoring System v1.0 &copy; 2026 B. Braun   </p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</body>
+</html>
