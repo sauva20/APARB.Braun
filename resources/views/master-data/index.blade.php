@@ -335,8 +335,57 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <div class="px-6 py-4 border-t border-slate-100">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p class="text-sm font-semibold text-slate-500">Menampilkan <span class="font-bold text-slate-800">{{ $apars->firstItem() ?? 0 }}-{{ $apars->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-800">{{ $apars->total() }}</span> data</p>
-                <div class="w-full sm:w-auto">
-                    {{ $apars->links('pagination::tailwind') }}
+                <div class="w-full sm:w-auto flex items-center gap-2">
+                    @if ($apars->onFirstPage())
+                        <span class="w-8 h-8 flex items-center justify-center bg-slate-100 border border-slate-200 text-slate-400 rounded-lg cursor-not-allowed text-sm font-medium"><i class="ph-bold ph-caret-left"></i></span>
+                    @else
+                        <a href="{{ $apars->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#009B77] rounded-lg transition-colors text-sm font-medium shadow-sm"><i class="ph-bold ph-caret-left"></i></a>
+                    @endif
+                    
+                    @php
+                        $current = $apars->currentPage();
+                        $last = $apars->lastPage();
+                        $delta = 1; // Tampilkan 1 di kiri & 1 di kanan (+ halaman pertama & terakhir)
+                        $left = $current - $delta;
+                        $right = $current + $delta;
+                        $range = [];
+                        
+                        for ($i = 1; $i <= $last; $i++) {
+                            if ($i == 1 || $i == $last || ($i >= $left && $i <= $right)) {
+                                $range[] = $i;
+                            }
+                        }
+                        
+                        $rangeWithDots = [];
+                        $l = null;
+                        foreach ($range as $i) {
+                            if ($l) {
+                                if ($i - $l == 2) {
+                                    $rangeWithDots[] = $l + 1; // Jika selisih cuma 1 angka, tampilkan angkanya (jangan titik-titik)
+                                } elseif ($i - $l != 1) {
+                                    $rangeWithDots[] = '...';
+                                }
+                            }
+                            $rangeWithDots[] = $i;
+                            $l = $i;
+                        }
+                    @endphp
+
+                    @foreach ($rangeWithDots as $i)
+                        @if ($i === '...')
+                            <span class="w-8 h-8 flex items-center justify-center text-slate-400 text-sm font-bold">...</span>
+                        @elseif ($i == $apars->currentPage())
+                            <span class="w-8 h-8 flex items-center justify-center bg-[#009B77]/10 border border-[#009B77]/20 text-[#009B77] rounded-lg font-bold text-sm">{{ $i }}</span>
+                        @else
+                            <a href="{{ $apars->url($i) }}" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#009B77] rounded-lg transition-colors text-sm font-medium shadow-sm">{{ $i }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($apars->hasMorePages())
+                        <a href="{{ $apars->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#009B77] rounded-lg transition-colors text-sm font-medium shadow-sm"><i class="ph-bold ph-caret-right"></i></a>
+                    @else
+                        <span class="w-8 h-8 flex items-center justify-center bg-slate-100 border border-slate-200 text-slate-400 rounded-lg cursor-not-allowed text-sm font-medium"><i class="ph-bold ph-caret-right"></i></span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -549,7 +598,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     
                     <form action="/master-data/lokasi" method="POST" @submit="isDuplicate || nama.trim() === '' || gedung_id === '' ? $event.preventDefault() : true" x-data="{ nama: '', gedung_id: '', existing: [ @foreach(\App\Models\Lokasi::all() as $l) { nama: '{{ strtolower(addslashes($l->nama)) }}', gedung_id: '{{ $l->gedung_id }}' }, @endforeach ], get isDuplicate() { return this.nama.trim() !== '' && this.existing.some(e => e.nama === this.nama.toLowerCase().trim() && e.gedung_id == this.gedung_id); } }">
                         <input type="hidden" name="form_type" value="tambah_lokasi">
-<div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+<div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                         @csrf
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
@@ -656,7 +705,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                      class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100" x-cloak>
                     
                     <form action="/master-data/gedung" method="POST" @submit="isDuplicate || nama.trim() === '' ? $event.preventDefault() : true" x-data="{ nama: '', existing: [ @foreach(\App\Models\Gedung::all() as $g) '{{ strtolower(addslashes($g->nama)) }}', @endforeach ], get isDuplicate() { return this.nama.trim() !== '' && this.existing.includes(this.nama.toLowerCase().trim()); } }">
-<input type="hidden" name="form_type" value="tambah_gedung"><div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+<input type="hidden" name="form_type" value="tambah_gedung"><div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                         @csrf
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
@@ -711,7 +760,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     
                     <form action="/master-data/jenis" method="POST" @submit="isDuplicate || nama.trim() === '' ? $event.preventDefault() : true" x-data="{ nama: '', existing: [ @foreach(\App\Models\JenisApar::all() as $j) '{{ strtolower(addslashes($j->nama)) }}', @endforeach ], get isDuplicate() { return this.nama.trim() !== '' && this.existing.includes(this.nama.toLowerCase().trim()); } }">
                         <input type="hidden" name="form_type" value="tambah_jenis">
-<div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+<div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                         @csrf
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
@@ -767,7 +816,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     
                     <form action="/master-data/kapasitas" method="POST" @submit="isDuplicate || ukuran.trim() === '' ? $event.preventDefault() : true" x-data="{ ukuran: '', existing: [ @foreach(\App\Models\KapasitasApar::all() as $k) '{{ strtolower(addslashes($k->ukuran)) }}', @endforeach ], get isDuplicate() { return this.ukuran.trim() !== '' && this.existing.includes(this.ukuran.trim() + ' kg'); } }">
                         <input type="hidden" name="form_type" value="tambah_kapasitas">
-<div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+<div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                         @csrf
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
@@ -829,7 +878,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <input type="hidden" name="form_type" value="tambah_apar">
 
                         @csrf
-                        <div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+                        <div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 text-[#009B77] flex items-center justify-center">
@@ -1113,7 +1162,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     <form :action="`/master-data/apar/${editApar.id}`" method="POST">
                         @csrf
                         @method('PUT')
-                        <div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+                        <div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
@@ -1389,7 +1438,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
                         @csrf
                         @method('PUT')
-                        <div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+                        <div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
@@ -1435,7 +1484,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
                         @csrf
                         @method('PUT')
-                        <div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+                        <div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
@@ -1549,7 +1598,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
                         @csrf
                         @method('PUT')
-                        <div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+                        <div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
@@ -1595,7 +1644,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
                         @csrf
                         @method('PUT')
-                        <div class="bg-white px-6 pb-6 pt-6 sm:p-8">
+                        <div class="bg-white rounded-t-3xl px-6 pb-6 pt-6 sm:p-8">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">

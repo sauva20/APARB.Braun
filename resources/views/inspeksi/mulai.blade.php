@@ -39,7 +39,7 @@
             </div>
             <div class="px-5 py-3 bg-slate-50/80 rounded-xl border border-slate-100 flex flex-col items-center min-w-[100px] hover:bg-white hover:shadow-sm transition-all cursor-default">
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kapasitas</span>
-                <span class="text-sm font-bold text-[#009B77]">{{ $apar->kapasitas->ukuran ?? '-' }} Kg</span>
+                <span class="text-sm font-bold text-[#009B77]">{{ $apar->kapasitas->ukuran ?? '-' }}</span>
             </div>
         </div>
     </div>

@@ -52,7 +52,7 @@ class InspeksiController extends Controller
         $menunggu = $totalApar - $selesai;
         $pertanyaan = $this->getPertanyaan();
 
-        $jadwals = \App\Models\JadwalInspeksi::with(['gedung', 'lokasi'])->orderBy('tanggal_inspeksi', 'desc')->get();
+        $jadwals = \App\Models\JadwalInspeksi::with(['gedung', 'lokasi'])->orderBy('tanggal_inspeksi', 'asc')->get();
 
         return view('inspection-schedule.index', compact('gedungs', 'totalApar', 'selesai', 'menunggu', 'pertanyaan', 'jadwals'));
     }
@@ -116,6 +116,31 @@ class InspeksiController extends Controller
         ]);
 
         return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dibuat!');
+    }
+
+    public function updateJadwal(Request $request, \App\Models\JadwalInspeksi $jadwal)
+    {
+        $request->validate([
+            'jenis_jadwal' => 'required|string',
+            'tanggal' => 'required|date',
+            'tipe_area' => 'required|in:gedung,lokasi',
+            'gedung_id' => 'required_if:tipe_area,gedung',
+            'lokasi_id' => 'required_if:tipe_area,lokasi',
+            'petugas' => 'nullable|string',
+            'catatan_tambahan' => 'nullable|string',
+        ]);
+
+        $jadwal->update([
+            'jenis_jadwal' => $request->jenis_jadwal,
+            'tanggal_inspeksi' => $request->tanggal,
+            'tipe_area' => $request->tipe_area,
+            'gedung_id' => $request->tipe_area === 'gedung' ? $request->gedung_id : null,
+            'lokasi_id' => $request->tipe_area === 'lokasi' ? $request->lokasi_id : null,
+            'petugas' => $request->petugas,
+            'catatan_tambahan' => $request->catatan_tambahan,
+        ]);
+
+        return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil diperbarui!');
     }
 
     public function destroyJadwal(\App\Models\JadwalInspeksi $jadwal)

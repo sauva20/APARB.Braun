@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/inspection-schedule', [\App\Http\Controllers\InspeksiController::class, 'index']);
     Route::post('/inspection-schedule', [\App\Http\Controllers\InspeksiController::class, 'storeJadwal']);
+    Route::put('/inspection-schedule/{jadwal}', [\App\Http\Controllers\InspeksiController::class, 'updateJadwal']);
     Route::delete('/inspection-schedule/{jadwal}', [\App\Http\Controllers\InspeksiController::class, 'destroyJadwal']);
 
     Route::get('/inspeksi/mulai/{apar}', [\App\Http\Controllers\InspeksiController::class, 'create'])->name('inspeksi.mulai');
