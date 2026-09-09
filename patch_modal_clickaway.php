@@ -1,5 +1,6 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 $search1 = '<div x-show="showModalApar" @click.away="showModalApar = false"';
@@ -12,4 +13,4 @@ $content = str_replace($search1, $replace1, $content);
 $content = str_replace($search2, $replace2, $content);
 
 file_put_contents($file, $content);
-echo "Patched.";
+echo 'Patched.';

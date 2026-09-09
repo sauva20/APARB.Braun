@@ -1,5 +1,6 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 // 1. Tambah Gedung
@@ -10,7 +11,7 @@ $content = str_replace(
 );
 $content = preg_replace(
     '/<input type="text" name="nama" value="\{\{ old\(\'form_type\'\) == \'tambah_gedung\' \? old\(\'nama\'\) : \'\' \}\}" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2\.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-\[\#009B77\] focus:ring-4 focus:ring-\[\#009B77\]\/15 transition-all outline-none">(\s*)@if\(old\(\'form_type\'\) == \'tambah_gedung\'\).*?@endif/s',
-    '<input type="text" name="nama" x-model="nama" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">' . "\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Nama gedung ini sudah terdaftar.</p>",
+    '<input type="text" name="nama" x-model="nama" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">'."\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Nama gedung ini sudah terdaftar.</p>",
     $content
 );
 // Button
@@ -28,7 +29,7 @@ $content = str_replace(
 );
 $content = preg_replace(
     '/<input type="text" name="nama" value="\{\{ old\(\'form_type\'\) == \'tambah_lokasi\' \? old\(\'nama\'\) : \'\' \}\}" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2\.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-\[\#009B77\] focus:ring-4 focus:ring-\[\#009B77\]\/15 transition-all outline-none">(\s*)@if\(old\(\'form_type\'\) == \'tambah_lokasi\'\).*?@endif/s',
-    '<input type="text" name="nama" x-model="nama" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">' . "\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Lokasi dengan nama ini sudah ada di gedung yang dipilih.</p>",
+    '<input type="text" name="nama" x-model="nama" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">'."\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Lokasi dengan nama ini sudah ada di gedung yang dipilih.</p>",
     $content
 );
 // Dropdown trigger in Lokasi (we need to bind gedung_id)
@@ -46,7 +47,7 @@ $content = str_replace(
 );
 $content = preg_replace(
     '/<input type="text" name="nama" value="\{\{ old\(\'form_type\'\) == \'tambah_jenis\' \? old\(\'nama\'\) : \'\' \}\}" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2\.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-\[\#009B77\] focus:ring-4 focus:ring-\[\#009B77\]\/15 transition-all outline-none">(\s*)@if\(old\(\'form_type\'\) == \'tambah_jenis\'\).*?@endif/s',
-    '<input type="text" name="nama" x-model="nama" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">' . "\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Jenis APAR ini sudah terdaftar.</p>",
+    '<input type="text" name="nama" x-model="nama" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">'."\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Jenis APAR ini sudah terdaftar.</p>",
     $content
 );
 
@@ -58,10 +59,9 @@ $content = str_replace(
 );
 $content = preg_replace(
     '/<input type="text" name="ukuran" value="\{\{ old\(\'form_type\'\) == \'tambah_kapasitas\' \? old\(\'ukuran\'\) : \'\' \}\}" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2\.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-\[\#009B77\] focus:ring-4 focus:ring-\[\#009B77\]\/15 transition-all outline-none">(\s*)@if\(old\(\'form_type\'\) == \'tambah_kapasitas\'\).*?@endif/s',
-    '<input type="text" name="ukuran" x-model="ukuran" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">' . "\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Kapasitas APAR ini sudah terdaftar.</p>",
+    '<input type="text" name="ukuran" x-model="ukuran" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">'."\n                                    <p x-show=\"isDuplicate\" x-cloak class=\"text-xs text-red-500 font-medium mt-2\"><i class=\"ph-bold ph-warning-circle mr-1\"></i>Kapasitas APAR ini sudah terdaftar.</p>",
     $content
 );
 
-
 file_put_contents($file, $content);
-echo "Live validation patched.";
+echo 'Live validation patched.';

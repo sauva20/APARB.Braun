@@ -405,11 +405,13 @@
                 formTipeArea: 'gedung',
                 formGedungId: '',
                 formLokasiId: '',
+                formUserId: '',
                 get isFormValid() {
                     if (!this.formJenis) return false;
                     if (!this.formTanggal) return false;
                     if (this.formTipeArea === 'gedung' && !this.formGedungId) return false;
                     if (this.formTipeArea === 'lokasi' && !this.formLokasiId) return false;
+                    if (!this.formUserId) return false;
                     return true;
                 }
             }">
@@ -558,15 +560,26 @@
                     </div>
 
                     <!-- Petugas Inspeksi -->
-                    <div>
+                    <!-- Petugas Inspeksi -->
+                    <div x-data="{
+                        optionsUser: [
+                            @foreach($users as $user)
+                            { id: {{ $user->id }}, nama: '{{ addslashes($user->name) }} ({{ addslashes($user->role) }})' },
+                            @endforeach
+                        ],
+                        get selectedUserName() {
+                            let u = this.optionsUser.find(x => x.id === this.formUserId);
+                            return u ? u.nama : '';
+                        }
+                    }">
                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Petugas Inspeksi</label>
-                        <div x-data="{ open: false, search: '', selected: '', options: ['Bebas / Siapa Saja', 'Budi Santoso', 'Dewi Wahyuni'] }" class="relative">
-                            <input type="hidden" name="petugas" :value="selected">
+                        <div x-data="{ open: false, search: '' }" class="relative">
+                            <input type="hidden" name="user_id" :value="formUserId">
                             <i class="ph-bold ph-user-circle absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false; search = ''" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="selected || 'Pilih Petugas'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="selectedUserName || 'Pilih Petugas'" :class="!selectedUserName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <div x-show="open" style="display: none;" class="absolute left-0 z-50 w-full mt-1.5 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 overflow-hidden origin-top max-h-56 flex flex-col">
@@ -577,13 +590,13 @@
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto">
-                                    <template x-for="option in options">
-                                        <button type="button" x-show="option.toLowerCase().includes(search.toLowerCase())" @click="selected = option; open = false; search = ''" class="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between" :class="selected === option ? 'text-[#009B77] bg-[#009B77]/5 font-bold' : 'text-slate-600 font-medium hover:bg-slate-50'">
-                                            <span x-text="option"></span>
-                                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === option"></i>
+                                    <template x-for="option in optionsUser" :key="option.id">
+                                        <button type="button" x-show="option.nama.toLowerCase().includes(search.toLowerCase())" @click="formUserId = option.id; open = false; search = ''" class="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between" :class="formUserId === option.id ? 'text-[#009B77] bg-[#009B77]/5 font-bold' : 'text-slate-600 font-medium hover:bg-slate-50'">
+                                            <span x-text="option.nama"></span>
+                                            <i class="ph-bold ph-check text-[#009B77]" x-show="formUserId === option.id"></i>
                                         </button>
                                     </template>
-                                    <div x-show="options.filter(o => o.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
+                                    <div x-show="optionsUser.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
                                 </div>
                             </div>
                         </div>
@@ -667,8 +680,8 @@
                 set formGedungId(val) { if(editData) editData.gedung_id = val },
                 get formLokasiId() { return editData?.lokasi_id || '' },
                 set formLokasiId(val) { if(editData) editData.lokasi_id = val },
-                get formPetugas() { return editData?.petugas || '' },
-                set formPetugas(val) { if(editData) editData.petugas = val },
+                get formUserId() { return editData?.user_id || '' },
+                set formUserId(val) { if(editData) editData.user_id = val },
                 get formCatatan() { return editData?.catatan_tambahan || '' },
                 set formCatatan(val) { if(editData) editData.catatan_tambahan = val },
                 get isFormValid() {
@@ -676,6 +689,7 @@
                     if (!this.formTanggal) return false;
                     if (this.formTipeArea === 'gedung' && !this.formGedungId) return false;
                     if (this.formTipeArea === 'lokasi' && !this.formLokasiId) return false;
+                    if (!this.formUserId) return false;
                     return true;
                 }
             }">
@@ -825,15 +839,25 @@
                     </div>
 
                     <!-- Petugas Inspeksi -->
-                    <div>
+                    <div x-data="{
+                        optionsUser: [
+                            @foreach($users as $user)
+                            { id: {{ $user->id }}, nama: '{{ addslashes($user->name) }} ({{ addslashes($user->role) }})' },
+                            @endforeach
+                        ],
+                        get selectedUserName() {
+                            let u = this.optionsUser.find(x => x.id === this.formUserId);
+                            return u ? u.nama : '';
+                        }
+                    }">
                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Petugas Inspeksi</label>
-                        <div x-data="{ open: false, search: '', selected: '', options: ['Bebas / Siapa Saja', 'Budi Santoso', 'Dewi Wahyuni'] }" class="relative">
-                            <input type="hidden" name="petugas" :value="selected">
+                        <div x-data="{ open: false, search: '' }" class="relative">
+                            <input type="hidden" name="user_id" :value="formUserId">
                             <i class="ph-bold ph-user-circle absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false; search = ''" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="selected || 'Pilih Petugas'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="selectedUserName || 'Pilih Petugas'" :class="!selectedUserName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <div x-show="open" style="display: none;" class="absolute left-0 z-50 w-full mt-1.5 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 overflow-hidden origin-top max-h-56 flex flex-col">
@@ -844,13 +868,13 @@
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto">
-                                    <template x-for="option in options">
-                                        <button type="button" x-show="option.toLowerCase().includes(search.toLowerCase())" @click="selected = option; open = false; search = ''" class="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between" :class="selected === option ? 'text-[#009B77] bg-[#009B77]/5 font-bold' : 'text-slate-600 font-medium hover:bg-slate-50'">
-                                            <span x-text="option"></span>
-                                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === option"></i>
+                                    <template x-for="option in optionsUser" :key="option.id">
+                                        <button type="button" x-show="option.nama.toLowerCase().includes(search.toLowerCase())" @click="formUserId = option.id; open = false; search = ''" class="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between" :class="formUserId === option.id ? 'text-[#009B77] bg-[#009B77]/5 font-bold' : 'text-slate-600 font-medium hover:bg-slate-50'">
+                                            <span x-text="option.nama"></span>
+                                            <i class="ph-bold ph-check text-[#009B77]" x-show="formUserId === option.id"></i>
                                         </button>
                                     </template>
-                                    <div x-show="options.filter(o => o.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
+                                    <div x-show="optionsUser.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
                                 </div>
                             </div>
                         </div>

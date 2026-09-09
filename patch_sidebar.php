@@ -1,6 +1,6 @@
 <?php
 
-$file = __DIR__ . '/resources/views/layouts/app.blade.php';
+$file = __DIR__.'/resources/views/layouts/app.blade.php';
 $content = file_get_contents($file);
 
 // Add overflow-x-hidden to sidebar container just in case
@@ -11,14 +11,14 @@ $content = str_replace(
 );
 
 // Fix Profile Area
-$profileOld = <<<HTML
+$profileOld = <<<'HTML'
         <div class="p-4 border-b border-slate-50 flex items-center gap-3 transition-all duration-300 overflow-hidden" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
             <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center">
                 <span class="text-sm font-bold text-[#009B77]">SS</span>
             </div>
             <div class="flex-1 whitespace-nowrap opacity-100 transition-opacity duration-300" :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">
 HTML;
-$profileNew = <<<HTML
+$profileNew = <<<'HTML'
         <div class="p-4 border-b border-slate-50 flex items-center transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
             <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center">
                 <span class="text-sm font-bold text-[#009B77]">SS</span>

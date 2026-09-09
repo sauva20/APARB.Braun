@@ -1,6 +1,6 @@
 <?php
 
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 // 1. Update x-data
@@ -11,7 +11,7 @@ $content = str_replace(
 );
 
 // 2. Jenis APAR loop and edit button
-$jenisAparOld = <<<HTML
+$jenisAparOld = <<<'HTML'
                         <div class="bg-white border border-slate-100 p-3.5 rounded-2xl flex items-center justify-between hover:border-amber-200 hover:shadow-sm transition-all group/item">
                             <span class="font-bold text-slate-700 text-sm">ABC Powder</span>
                             <div class="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
@@ -34,13 +34,13 @@ $jenisAparOld = <<<HTML
                             </div>
                         </div>
 HTML;
-$jenisAparNew = <<<HTML
-                        @forelse(\$jenisApars as \$jenis)
+$jenisAparNew = <<<'HTML'
+                        @forelse($jenisApars as $jenis)
                         <div class="bg-white border border-slate-100 p-3.5 rounded-2xl flex items-center justify-between hover:border-amber-200 hover:shadow-sm transition-all group/item">
-                            <span class="font-bold text-slate-700 text-sm">{{ \$jenis->nama }}</span>
+                            <span class="font-bold text-slate-700 text-sm">{{ $jenis->nama }}</span>
                             <div class="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                                <button @click="editJenis = { id: {{ \$jenis->id }}, nama: '{{ addslashes(\$jenis->nama) }}' }; showEditJenis = true" class="w-8 h-8 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple text-base"></i></button>
-                                <form action="/master-data/jenis/{{ \$jenis->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'Yakin hapus jenis APAR ini?');">
+                                <button @click="editJenis = { id: {{ $jenis->id }}, nama: '{{ addslashes($jenis->nama) }}' }; showEditJenis = true" class="w-8 h-8 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                                <form action="/master-data/jenis/{{ $jenis->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'Yakin hapus jenis APAR ini?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="w-8 h-8 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors"><i class="ph-bold ph-trash text-base"></i></button>
                                 </form>
@@ -111,7 +111,7 @@ $content = str_replace(
     '<input type="text" name="nama" placeholder="Contoh: Ruang Server Lt 3"',
     $content
 );
-$lokasiDropdownOld = <<<HTML
+$lokasiDropdownOld = <<<'HTML'
                                 <div x-data="{ openGedung: false, selectedGedung: '', optionsGedung: ['Gedung Utama', 'Gedung Produksi', 'Gudang Logistik'] }" class="relative">
                                     <button type="button" @click="openGedung = !openGedung" @click.away="openGedung = false" 
                                             class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-semibold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
@@ -141,11 +141,11 @@ $lokasiDropdownOld = <<<HTML
                                     </div>
                                 </div>
 HTML;
-$lokasiDropdownNew = <<<HTML
+$lokasiDropdownNew = <<<'HTML'
                                 <select name="gedung_id" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-semibold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none appearance-none cursor-pointer">
                                     <option value="">Pilih Gedung</option>
-                                    @foreach(\$gedungs as \$ged)
-                                        <option value="{{ \$ged->id }}">{{ \$ged->nama }}</option>
+                                    @foreach($gedungs as $ged)
+                                        <option value="{{ $ged->id }}">{{ $ged->nama }}</option>
                                     @endforeach
                                 </select>
 HTML;
@@ -262,9 +262,8 @@ $content = str_replace(
     $content
 );
 
-
 // 9. Append Edit Modals
-$editModals = <<<HTML
+$editModals = <<<'HTML'
 
     <!-- EDIT MODALS -->
     <!-- Modal Edit Lokasi -->
@@ -289,8 +288,8 @@ $editModals = <<<HTML
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 mb-2">Pilih Gedung</label>
                                     <select name="gedung_id" x-model="editLokasi.gedung_id" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-semibold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 outline-none">
-                                        @foreach(\$gedungs as \$ged)
-                                            <option value="{{ \$ged->id }}">{{ \$ged->nama }}</option>
+                                        @foreach($gedungs as $ged)
+                                            <option value="{{ $ged->id }}">{{ $ged->nama }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -372,8 +371,7 @@ $editModals = <<<HTML
 @endsection
 HTML;
 
-$content = str_replace('</div>' . "\n" . '@endsection', $editModals, $content);
-
+$content = str_replace('</div>'."\n".'@endsection', $editModals, $content);
 
 file_put_contents($file, $content);
 echo "Patched index.blade.php successfully.\n";

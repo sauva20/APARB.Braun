@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="space-y-6" x-data="{ activeTab: localStorage.getItem('masterDataTab') || 'data', showModalApar: {{ old('form_type') == 'tambah_apar' && $errors->any() ? 'true' : 'false' }}, 
+showQrModal: false, qrData: { id: '', kode: '', svg: '' },
 showModalEditApar: {{ old('form_type') == 'edit_apar' && $errors->any() ? 'true' : 'false' }}, 
 editApar: { id:'{{ old('form_type') == 'edit_apar' ? old('id') : '' }}', kode:'{{ old('form_type') == 'edit_apar' ? old('kode') : '' }}', lokasi_id:'{{ old('form_type') == 'edit_apar' ? old('lokasi_id') : '' }}', jenis_id:'{{ old('form_type') == 'edit_apar' ? old('jenis_id') : '' }}', kapasitas_id:'{{ old('form_type') == 'edit_apar' ? old('kapasitas_id') : '' }}', vendor:'{{ old('form_type') == 'edit_apar' ? old('vendor') : '' }}', tgl_kedaluwarsa:'{{ old('form_type') == 'edit_apar' ? old('tgl_kedaluwarsa') : '' }}' },  
 showModalLokasi: {{ old('form_type') == 'tambah_lokasi' && $errors->any() ? 'true' : 'false' }}, 
@@ -35,10 +36,10 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Right: Actions -->
             <div class="flex items-center gap-3">
-                <button class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
-                    <i class="ph-bold ph-qr-code text-lg"></i>
+                <a href="/master-data/apar/print-all-qr" target="_blank" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
+                    <i class="ph-bold ph-printer text-lg text-[#009B77]"></i>
                     <span class="hidden sm:inline">Cetak Semua QR</span>
-                </button>
+                </a>
                 <button @click="showModalApar = true" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-plus text-lg"></i>
                     <span>Tambah Data APAR</span>
@@ -316,7 +317,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                         <i class="ph-bold ph-trash text-base"></i>
                                     </button>
                                 </form>
-                                <button class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-[#009B77] hover:bg-[#009B77]/10 transition-colors" title="QR Code">
+                                <button @click="
+                                    fetch('/master-data/apar/{{ $apar->id }}/qr-data')
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            qrData = data;
+                                            showQrModal = true;
+                                        });
+                                " class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-[#009B77] hover:bg-[#009B77]/10 transition-colors" title="QR Code">
                                     <i class="ph-bold ph-qr-code text-base"></i>
                                 </button>
                             </div>
@@ -1678,6 +1686,48 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div x-show="showQrModal" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+        <div x-show="showQrModal"
+             x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" x-cloak></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div x-show="showQrModal" @click.away="showQrModal = false"
+                     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
+                     class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-sm border border-slate-100" x-cloak>
+                    
+                    <div class="bg-gradient-to-br from-[#009B77] to-[#007b5e] p-6 text-center relative overflow-hidden">
+                        <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                        <div class="absolute -left-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                        <h3 class="text-xl font-black text-white mb-1 relative z-10">Scan APAR</h3>
+                        <p class="text-white/80 text-sm font-medium relative z-10" x-text="qrData.kode"></p>
+                    </div>
+                    
+                    <div class="p-8 flex flex-col items-center justify-center bg-white relative">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6" x-html="qrData.svg">
+                            <!-- SVG QR goes here -->
+                        </div>
+                        <p class="text-sm font-semibold text-slate-500 text-center mb-2">Gunakan kamera ponsel Anda untuk menscan QR Code ini.</p>
+                        
+                        <div class="w-full grid grid-cols-3 gap-2 mt-4">
+                            <button @click="showQrModal = false" class="py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors text-xs flex items-center justify-center">Tutup</button>
+                            <a :href="'/master-data/apar/' + qrData.id + '/download-qr'" target="_blank" class="py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-colors text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                                <i class="ph-bold ph-download-simple text-sm text-[#009B77]"></i> Simpan
+                            </a>
+                            <a :href="'/master-data/apar/' + qrData.id + '/print-qr'" target="_blank" class="py-2.5 rounded-xl bg-[#009B77] text-white font-bold hover:bg-[#008264] transition-colors text-xs flex items-center justify-center gap-1.5 shadow-sm shadow-[#009B77]/20">
+                                <i class="ph-bold ph-printer text-sm"></i> Cetak
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
 </div>

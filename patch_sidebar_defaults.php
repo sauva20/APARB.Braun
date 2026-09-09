@@ -1,6 +1,6 @@
 <?php
 
-$file = __DIR__ . '/resources/views/layouts/app.blade.php';
+$file = __DIR__.'/resources/views/layouts/app.blade.php';
 $content = file_get_contents($file);
 
 // 1. Aside
@@ -56,7 +56,6 @@ $content = str_replace(
     'class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden"',
     $content
 );
-
 
 file_put_contents($file, $content);
 echo "Sidebar defaults patched.\n";

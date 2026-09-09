@@ -2,7 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InspectionAssigned;
+use App\Models\Apar;
+use App\Models\Gedung;
+use App\Models\JadwalInspeksi;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class InspeksiController extends Controller
 {
@@ -23,16 +30,16 @@ class InspeksiController extends Controller
             'Apakah petunjuk penggunaan APAR dan tanda peringatan bahaya terkait penggunaan APAR tersedia dan mudah diakses?',
             'Apakah petugas yang bertanggung jawab terhadap APAR terlatih dalam penggunaan dan pemeliharaan APAR?',
             'Apakah daerah sekitar APAR bebas dari bahan yang mudah terbakar atau bahan yang dapat menghambat akses ke APAR?',
-            'Apakah APAR tersebut telah diuji atau dirakit kembali setelah digunakan sebelumnya?'
+            'Apakah APAR tersebut telah diuji atau dirakit kembali setelah digunakan sebelumnya?',
         ];
     }
 
     public function index()
     {
-        $gedungs = \App\Models\Gedung::with(['lokasi.apar.inspeksis' => function ($query) {
+        $gedungs = Gedung::with(['lokasi.apar.inspeksis' => function ($query) {
             $query->whereMonth('created_at', now()->month)
-                  ->whereYear('created_at', now()->year)
-                  ->latest();
+                ->whereYear('created_at', now()->year)
+                ->latest();
         }, 'lokasi.apar.inspeksis.user'])->get();
 
         $totalApar = 0;
@@ -52,19 +59,20 @@ class InspeksiController extends Controller
         $menunggu = $totalApar - $selesai;
         $pertanyaan = $this->getPertanyaan();
 
-        $jadwals = \App\Models\JadwalInspeksi::with(['gedung', 'lokasi'])->orderBy('tanggal_inspeksi', 'asc')->get();
+        $jadwals = JadwalInspeksi::with(['gedung', 'lokasi', 'user'])->orderBy('tanggal_inspeksi', 'asc')->get();
+        $users = User::all();
 
-        return view('inspection-schedule.index', compact('gedungs', 'totalApar', 'selesai', 'menunggu', 'pertanyaan', 'jadwals'));
+        return view('inspection-schedule.index', compact('gedungs', 'totalApar', 'selesai', 'menunggu', 'pertanyaan', 'jadwals', 'users'));
     }
 
-    public function create(\App\Models\Apar $apar)
+    public function create(Apar $apar)
     {
         $pertanyaan = $this->getPertanyaan();
 
         return view('inspeksi.mulai', compact('apar', 'pertanyaan'));
     }
 
-    public function store(Request $request, \App\Models\Apar $apar)
+    public function store(Request $request, Apar $apar)
     {
         $request->validate([
             'checklist' => 'required|array|size:15',
@@ -72,12 +80,12 @@ class InspeksiController extends Controller
             'checklist.*.keterangan' => 'nullable|string',
             'status' => 'required|string',
             'catatan_tambahan' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
-            if ($apar->foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($apar->foto)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($apar->foto);
+            if ($apar->foto && Storage::disk('public')->exists($apar->foto)) {
+                Storage::disk('public')->delete($apar->foto);
             }
             $path = $request->file('foto')->store('foto-apar', 'public');
             $apar->update(['foto' => $path]);
@@ -87,11 +95,12 @@ class InspeksiController extends Controller
             'user_id' => auth()->id(),
             'checklist' => $request->checklist,
             'status' => $request->status,
-            'catatan_tambahan' => $request->catatan_tambahan
+            'catatan_tambahan' => $request->catatan_tambahan,
         ]);
 
         return redirect('/inspection-schedule')->with('success', 'Inspeksi berhasil disimpan!');
     }
+
     public function storeJadwal(Request $request)
     {
         $request->validate([
@@ -100,25 +109,30 @@ class InspeksiController extends Controller
             'tipe_area' => 'required|in:gedung,lokasi',
             'gedung_id' => 'required_if:tipe_area,gedung',
             'lokasi_id' => 'required_if:tipe_area,lokasi',
-            'petugas' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
             'catatan_tambahan' => 'nullable|string',
         ]);
 
-        \App\Models\JadwalInspeksi::create([
+        $jadwal = JadwalInspeksi::create([
             'jenis_jadwal' => $request->jenis_jadwal,
             'tanggal_inspeksi' => $request->tanggal,
             'tipe_area' => $request->tipe_area,
             'gedung_id' => $request->tipe_area === 'gedung' ? $request->gedung_id : null,
             'lokasi_id' => $request->tipe_area === 'lokasi' ? $request->lokasi_id : null,
-            'petugas' => $request->petugas,
+            'user_id' => $request->user_id,
             'catatan_tambahan' => $request->catatan_tambahan,
-            'status' => 'menunggu'
+            'status' => 'menunggu',
         ]);
 
-        return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dibuat!');
+        $user = User::find($request->user_id);
+        if ($user && $user->email) {
+            Mail::to($user->email)->send(new InspectionAssigned($user, $jadwal, $user->pin));
+        }
+
+        return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dibuat dan notifikasi email telah dikirim!');
     }
 
-    public function updateJadwal(Request $request, \App\Models\JadwalInspeksi $jadwal)
+    public function updateJadwal(Request $request, JadwalInspeksi $jadwal)
     {
         $request->validate([
             'jenis_jadwal' => 'required|string',
@@ -126,7 +140,7 @@ class InspeksiController extends Controller
             'tipe_area' => 'required|in:gedung,lokasi',
             'gedung_id' => 'required_if:tipe_area,gedung',
             'lokasi_id' => 'required_if:tipe_area,lokasi',
-            'petugas' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
             'catatan_tambahan' => 'nullable|string',
         ]);
 
@@ -136,16 +150,17 @@ class InspeksiController extends Controller
             'tipe_area' => $request->tipe_area,
             'gedung_id' => $request->tipe_area === 'gedung' ? $request->gedung_id : null,
             'lokasi_id' => $request->tipe_area === 'lokasi' ? $request->lokasi_id : null,
-            'petugas' => $request->petugas,
+            'user_id' => $request->user_id,
             'catatan_tambahan' => $request->catatan_tambahan,
         ]);
 
         return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil diperbarui!');
     }
 
-    public function destroyJadwal(\App\Models\JadwalInspeksi $jadwal)
+    public function destroyJadwal(JadwalInspeksi $jadwal)
     {
         $jadwal->delete();
+
         return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dihapus!');
     }
 }

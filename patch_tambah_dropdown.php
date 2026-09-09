@@ -1,22 +1,22 @@
 <?php
 
-$file = __DIR__ . '/resources/views/master-data/tambah.blade.php';
+$file = __DIR__.'/resources/views/master-data/tambah.blade.php';
 $content = file_get_contents($file);
 
 // Replace form action
 $content = str_replace('<form action="#" method="POST" class="p-8 space-y-8">', '<form action="/master-data/apar" method="POST" class="p-8 space-y-8">', $content);
 // Add csrf
-$content = preg_replace('/(<form[^>]+>)/', '$1' . "\n" . '            @csrf', $content);
+$content = preg_replace('/(<form[^>]+>)/', '$1'."\n".'            @csrf', $content);
 
 // 1. Lokasi Penempatan
-$lokasiDropdown = <<<HTML
+$lokasiDropdown = <<<'HTML'
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan</label>
                     <div x-data="{ 
                             open: false, 
                             selectedId: '{{ old('lokasi_id') }}',
                             options: [
-                                @foreach(\$lokasis as \$lok)
-                                { id: '{{ \$lok->id }}', name: '{{ addslashes(\$lok->nama) }} ({{ addslashes(\$lok->gedung->nama ?? '-') }})' },
+                                @foreach($lokasis as $lok)
+                                { id: '{{ $lok->id }}', name: '{{ addslashes($lok->nama) }} ({{ addslashes($lok->gedung->nama ?? '-') }})' },
                                 @endforeach
                             ],
                             get selectedName() {
@@ -51,17 +51,17 @@ $lokasiDropdown = <<<HTML
                         </div>
                     </div>
 HTML;
-$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan<\/label>.*?<\/div>\s*<\/div>\s*<\/div>/s', $lokasiDropdown . "\n                </div>", $content, 1);
+$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan<\/label>.*?<\/div>\s*<\/div>\s*<\/div>/s', $lokasiDropdown."\n                </div>", $content, 1);
 
 // 2. Jenis APAR
-$jenisDropdown = <<<HTML
+$jenisDropdown = <<<'HTML'
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR</label>
                     <div x-data="{ 
                             open: false, 
                             selectedId: '{{ old('jenis_id') }}',
                             options: [
-                                @foreach(\$jenisApars as \$jenis)
-                                { id: '{{ \$jenis->id }}', name: '{{ addslashes(\$jenis->nama) }}' },
+                                @foreach($jenisApars as $jenis)
+                                { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
                                 @endforeach
                             ],
                             get selectedName() {
@@ -96,17 +96,17 @@ $jenisDropdown = <<<HTML
                         </div>
                     </div>
 HTML;
-$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR<\/label>.*?<\/div>\s*<\/div>\s*<\/div>/s', $jenisDropdown . "\n                </div>", $content, 1);
+$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR<\/label>.*?<\/div>\s*<\/div>\s*<\/div>/s', $jenisDropdown."\n                </div>", $content, 1);
 
 // 3. Kapasitas
-$kapasitasDropdown = <<<HTML
+$kapasitasDropdown = <<<'HTML'
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas</label>
                     <div x-data="{ 
                             open: false, 
                             selectedId: '{{ old('kapasitas_id') }}',
                             options: [
-                                @foreach(\$kapasitasApars as \$kap)
-                                { id: '{{ \$kap->id }}', name: '{{ addslashes(\$kap->ukuran) }}' },
+                                @foreach($kapasitasApars as $kap)
+                                { id: '{{ $kap->id }}', name: '{{ addslashes($kap->ukuran) }}' },
                                 @endforeach
                             ],
                             get selectedName() {
@@ -141,7 +141,7 @@ $kapasitasDropdown = <<<HTML
                         </div>
                     </div>
 HTML;
-$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas<\/label>.*?<\/div>\s*<\/div>\s*<\/div>/s', $kapasitasDropdown . "\n                </div>", $content, 1);
+$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas<\/label>.*?<\/div>\s*<\/div>\s*<\/div>/s', $kapasitasDropdown."\n                </div>", $content, 1);
 
 // Add missing name attributes for text inputs in tambah.blade.php
 $content = str_replace('<input type="text" placeholder="Contoh: APAR-046"', '<input type="text" name="kode" value="{{ old(\'kode\') }}" required placeholder="Contoh: APAR-046"', $content);

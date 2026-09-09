@@ -1,5 +1,6 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 $content = str_replace(
@@ -21,4 +22,4 @@ $content = str_replace(
 );
 
 file_put_contents($file, $content);
-echo "Patched.";
+echo 'Patched.';

@@ -1,29 +1,29 @@
 <?php
 
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 // Replace Tambah Lokasi select
-$oldTambahSelect = <<<HTML
+$oldTambahSelect = <<<'HTML'
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Gedung</label>
                                 <select name="gedung_id" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-semibold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none appearance-none cursor-pointer">
                                     <option value="">Pilih Gedung</option>
-                                    @foreach(\$gedungs as \$ged)
-                                        <option value="{{ \$ged->id }}">{{ \$ged->nama }}</option>
+                                    @foreach($gedungs as $ged)
+                                        <option value="{{ $ged->id }}">{{ $ged->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
 HTML;
 
-$newCustomSelectTambah = <<<HTML
+$newCustomSelectTambah = <<<'HTML'
                             <div x-data="{ 
                                     open: false, 
                                     selectedId: '', 
                                     selectedName: 'Pilih Gedung',
                                     options: [
-                                        @foreach(\$gedungs as \$ged)
-                                        { id: '{{ \$ged->id }}', name: '{{ addslashes(\$ged->nama) }}' },
+                                        @foreach($gedungs as $ged)
+                                        { id: '{{ $ged->id }}', name: '{{ addslashes($ged->nama) }}' },
                                         @endforeach
                                     ] 
                                 }" 
@@ -71,24 +71,24 @@ HTML;
 $content = str_replace($oldTambahSelect, $newCustomSelectTambah, $content);
 
 // Replace Edit Lokasi select
-$oldEditSelect = <<<HTML
+$oldEditSelect = <<<'HTML'
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Gedung</label>
                                 <select name="gedung_id" x-model="editLokasi.gedung_id" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-semibold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none appearance-none cursor-pointer">
                                     <option value="">Pilih Gedung</option>
-                                    @foreach(\$gedungs as \$ged)
-                                        <option value="{{ \$ged->id }}">{{ \$ged->nama }}</option>
+                                    @foreach($gedungs as $ged)
+                                        <option value="{{ $ged->id }}">{{ $ged->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
 HTML;
 
-$newCustomSelectEdit = <<<HTML
+$newCustomSelectEdit = <<<'HTML'
                             <div x-data="{ 
                                     open: false,
                                     options: [
-                                        @foreach(\$gedungs as \$ged)
-                                        { id: '{{ \$ged->id }}', name: '{{ addslashes(\$ged->nama) }}' },
+                                        @foreach($gedungs as $ged)
+                                        { id: '{{ $ged->id }}', name: '{{ addslashes($ged->nama) }}' },
                                         @endforeach
                                     ],
                                     get selectedName() {

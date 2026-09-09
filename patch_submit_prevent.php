@@ -1,5 +1,6 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 // 1. Tambah Gedung
@@ -31,4 +32,4 @@ $content = str_replace(
 );
 
 file_put_contents($file, $content);
-echo "Submit prevent patched.";
+echo 'Submit prevent patched.';

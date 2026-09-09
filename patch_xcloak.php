@@ -1,6 +1,6 @@
 <?php
 
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 // Add x-cloak to any element with x-show that doesn't already have it

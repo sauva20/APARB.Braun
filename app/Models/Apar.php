@@ -2,12 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Apar extends Model
 {
+    use HasFactory, LogsActivity;
+
     protected $table = 'apar';
+
     protected $fillable = ['kode', 'lokasi_id', 'jenis_id', 'kapasitas_id', 'vendor', 'tgl_kedaluwarsa', 'foto'];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn (string $eventName) => "APAR telah di-{$eventName}");
+    }
 
     protected $casts = [
         'tgl_kedaluwarsa' => 'date',

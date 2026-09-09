@@ -1,5 +1,6 @@
 <?php
-$file = __DIR__ . '/app/Http/Controllers/MasterDataController.php';
+
+$file = __DIR__.'/app/Http/Controllers/MasterDataController.php';
 $content = file_get_contents($file);
 
 if (strpos($content, 'use Illuminate\Validation\Rule;') === false) {
@@ -21,19 +22,19 @@ $content = str_replace(
 );
 
 // storeLokasi
-$storeLokasiSearch = <<<PHP
-        \$request->validate([
+$storeLokasiSearch = <<<'PHP'
+        $request->validate([
             'nama' => 'required|string|max:255',
             'gedung_id' => 'required|exists:gedung,id'
         ]);
 PHP;
-$storeLokasiReplace = <<<PHP
-        \$request->validate([
+$storeLokasiReplace = <<<'PHP'
+        $request->validate([
             'nama' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('lokasi')->where(fn (\$query) => \$query->where('gedung_id', \$request->gedung_id))
+                Rule::unique('lokasi')->where(fn ($query) => $query->where('gedung_id', $request->gedung_id))
             ],
             'gedung_id' => 'required|exists:gedung,id'
         ], [
@@ -43,19 +44,19 @@ PHP;
 $content = str_replace($storeLokasiSearch, $storeLokasiReplace, $content);
 
 // updateLokasi
-$updateLokasiSearch = <<<PHP
-        \$request->validate([
+$updateLokasiSearch = <<<'PHP'
+        $request->validate([
             'nama' => 'required|string|max:255',
             'gedung_id' => 'required|exists:gedung,id'
         ]);
 PHP;
-$updateLokasiReplace = <<<PHP
-        \$request->validate([
+$updateLokasiReplace = <<<'PHP'
+        $request->validate([
             'nama' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('lokasi')->ignore(\$lokasi->id)->where(fn (\$query) => \$query->where('gedung_id', \$request->gedung_id))
+                Rule::unique('lokasi')->ignore($lokasi->id)->where(fn ($query) => $query->where('gedung_id', $request->gedung_id))
             ],
             'gedung_id' => 'required|exists:gedung,id'
         ], [
@@ -93,4 +94,4 @@ $content = str_replace(
 );
 
 file_put_contents($file, $content);
-echo "Validation added successfully.";
+echo 'Validation added successfully.';

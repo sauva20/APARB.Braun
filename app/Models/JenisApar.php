@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class JenisApar extends Model
 {
     protected $table = 'jenis_apar';
+
     protected $fillable = ['nama'];
 
     public function apar()

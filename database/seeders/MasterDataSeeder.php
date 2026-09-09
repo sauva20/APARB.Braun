@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\Apar;
 use App\Models\Gedung;
-use App\Models\Lokasi;
 use App\Models\JenisApar;
 use App\Models\KapasitasApar;
-use App\Models\Apar;
+use App\Models\Lokasi;
+use Illuminate\Database\Seeder;
 
 class MasterDataSeeder extends Seeder
 {

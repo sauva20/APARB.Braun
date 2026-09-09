@@ -42,7 +42,7 @@
                     @endif
                 </h3>
                 <p class="text-[13px] font-medium text-slate-500 mt-1 flex items-center gap-1.5">
-                    <i class="ph-bold ph-user-circle text-slate-400"></i> Petugas: {{ $jadwal->petugas ? $jadwal->petugas : 'Bebas / Siapa Saja' }}
+                    <i class="ph-bold ph-user-circle text-slate-400"></i> Petugas: {{ $jadwal->user ? $jadwal->user->name : 'Bebas / Siapa Saja' }}
                 </p>
                 @if($jadwal->catatan_tambahan)
                 <div class="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-start gap-2">
@@ -64,7 +64,7 @@
                     {{ $jadwal->status }}
                 </span>
             @endif
-            <button type="button" @click="editData = { id: {{ $jadwal->id }}, jenis_jadwal: '{{ addslashes($jadwal->jenis_jadwal) }}', tanggal: '{{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->format('Y-m-d') }}', tipe_area: '{{ $jadwal->tipe_area }}', gedung_id: {{ $jadwal->gedung_id ?? 'null' }}, lokasi_id: {{ $jadwal->lokasi_id ?? 'null' }}, petugas: '{{ addslashes($jadwal->petugas) }}', catatan_tambahan: '{{ addslashes(str_replace(PHP_EOL, ' ', $jadwal->catatan_tambahan)) }}' }; showModalEditJadwal = true" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors" title="Edit Jadwal">
+            <button type="button" @click="editData = { id: {{ $jadwal->id }}, jenis_jadwal: '{{ addslashes($jadwal->jenis_jadwal) }}', tanggal: '{{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->format('Y-m-d') }}', tipe_area: '{{ $jadwal->tipe_area }}', gedung_id: {{ $jadwal->gedung_id ?? 'null' }}, lokasi_id: {{ $jadwal->lokasi_id ?? 'null' }}, user_id: {{ $jadwal->user_id ?? 'null' }}, catatan_tambahan: '{{ addslashes(str_replace(PHP_EOL, ' ', $jadwal->catatan_tambahan)) }}' }; showModalEditJadwal = true" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors" title="Edit Jadwal">
                 <i class="ph-bold ph-pencil-simple text-lg"></i>
             </button>
             <form action="/inspection-schedule/{{ $jadwal->id }}" method="POST" class="inline-block"

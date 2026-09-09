@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(function (Request $request) {
             session()->flash('auth_error', 'Anda harus login untuk mengakses sistem ini.');
+
             return route('login');
         });
     })

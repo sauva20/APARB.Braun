@@ -196,6 +196,16 @@
                 <i class="ph-duotone ph-calendar-blank text-xl flex-shrink-0"></i>
                 <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Inspection Schedule</span>
             </a>
+
+            <a href="/users" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('users') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Manajemen User">
+                <i class="ph-duotone ph-users text-xl flex-shrink-0"></i>
+                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Manajemen User</span>
+            </a>
+            
+            <a href="/activity-log" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('activity-log') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Log Aktivitas">
+                <i class="ph-duotone ph-clock-counter-clockwise text-xl flex-shrink-0"></i>
+                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Log Aktivitas</span>
+            </a>
             
             <a href="#" class="justify-center flex items-center p-3 overflow-hidden rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium transition-colors" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Reports">
                 <i class="ph-duotone ph-file-text text-xl flex-shrink-0"></i>

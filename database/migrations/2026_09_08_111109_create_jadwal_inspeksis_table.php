@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('tipe_area'); // 'gedung' atau 'lokasi'
             $table->foreignId('gedung_id')->nullable()->constrained('gedung')->onDelete('cascade');
             $table->foreignId('lokasi_id')->nullable()->constrained('lokasi')->onDelete('cascade');
-            $table->string('petugas')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->text('catatan_tambahan')->nullable();
             $table->string('status')->default('menunggu'); // 'menunggu', 'selesai'
             $table->timestamps();

@@ -1,5 +1,6 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 $old = <<<HTML
@@ -126,4 +127,4 @@ HTML;
 
 $content = str_replace($old, $new, $content);
 file_put_contents($file, $content);
-echo "Dropdown updated.";
+echo 'Dropdown updated.';

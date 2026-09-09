@@ -1,6 +1,6 @@
 <?php
 
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 $modals = <<<HTML
@@ -184,7 +184,6 @@ $modals = <<<HTML
 HTML;
 
 // Append just before @endsection
-$content = str_replace('@endsection', $modals . "\n@endsection", $content);
+$content = str_replace('@endsection', $modals."\n@endsection", $content);
 file_put_contents($file, $content);
 echo "Modals appended.\n";
-

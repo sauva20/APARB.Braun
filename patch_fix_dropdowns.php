@@ -1,5 +1,6 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $lines = explode("\n", file_get_contents($file));
 
 $targetLines = [964, 1036, 1264, 1336, 1520]; // Adjusting for the exact start of the div
@@ -18,11 +19,11 @@ foreach ($targetLines as $l) {
 
     if ($startIdx !== -1) {
         $lines[$startIdx] = '                                    <span x-text="option.name" class="font-bold"></span>';
-        $lines[$startIdx+1] = ''; // option.lokasi
-        $lines[$startIdx+2] = ''; // option.gedung
-        $lines[$startIdx+3] = ''; // </div>
+        $lines[$startIdx + 1] = ''; // option.lokasi
+        $lines[$startIdx + 2] = ''; // option.gedung
+        $lines[$startIdx + 3] = ''; // </div>
     }
 }
 
 file_put_contents($file, implode("\n", $lines));
-echo "Patched.";
+echo 'Patched.';

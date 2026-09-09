@@ -1,8 +1,9 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
-$search1 = <<<HTML
+$search1 = <<<'HTML'
                         <template x-if="selectedName">
                             <div class="flex items-center gap-2 truncate">
                                 <span x-text="selectedName.lokasi" class="font-bold text-slate-700"></span>
@@ -18,7 +19,7 @@ HTML;
 $parts = explode($search1, $content);
 // There should be 5 occurrences: Lokasi(Tambah), Jenis(Tambah), Kapasitas(Tambah), Jenis(Edit), Kapasitas(Edit). Wait, Lokasi(Edit) was also there?
 // Let's check how many times it matches:
-echo "Matched parts: " . count($parts) . "\n";
+echo 'Matched parts: '.count($parts)."\n";
 
 // We know the 1st one is Lokasi Tambah (KEEP IT as Pilih Lokasi, but template stays the same).
 // The 2nd is Jenis Tambah.
@@ -27,7 +28,7 @@ echo "Matched parts: " . count($parts) . "\n";
 // The 5th is Jenis Edit.
 // The 6th is Kapasitas Edit.
 
-$jenisReplace = <<<HTML
+$jenisReplace = <<<'HTML'
                         <template x-if="selectedName">
                             <span x-text="selectedName.name" class="font-bold text-slate-700 truncate block"></span>
                         </template>
@@ -36,7 +37,7 @@ $jenisReplace = <<<HTML
                         </template>
 HTML;
 
-$kapasitasReplace = <<<HTML
+$kapasitasReplace = <<<'HTML'
                         <template x-if="selectedName">
                             <span x-text="selectedName.name" class="font-bold text-slate-700 truncate block"></span>
                         </template>
@@ -54,16 +55,16 @@ if (count($parts) === 7) {
     // parts[5] is after 5th, before 6th (Kapasitas Edit)
     // parts[6] is after 6th
 
-    $newContent = $parts[0] . 
-        $search1 . $parts[1] . 
-        $jenisReplace . $parts[2] . 
-        $kapasitasReplace . $parts[3] . 
-        $search1 . $parts[4] . 
-        $jenisReplace . $parts[5] . 
-        $kapasitasReplace . $parts[6];
+    $newContent = $parts[0].
+        $search1.$parts[1].
+        $jenisReplace.$parts[2].
+        $kapasitasReplace.$parts[3].
+        $search1.$parts[4].
+        $jenisReplace.$parts[5].
+        $kapasitasReplace.$parts[6];
 
     file_put_contents($file, $newContent);
     echo "Patched successfully.\n";
 } else {
-    echo "Unexpected number of parts: " . count($parts) . "\n";
+    echo 'Unexpected number of parts: '.count($parts)."\n";
 }

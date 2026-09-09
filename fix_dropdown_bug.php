@@ -1,8 +1,10 @@
 <?php
-$indexFile = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$indexFile = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($indexFile);
 
-function generateDropdown($label, $icon, $name, $selectedIdBind, $optionsLoop, $emptyLabel) {
+function generateDropdown($label, $icon, $name, $selectedIdBind, $optionsLoop, $emptyLabel)
+{
     return <<<HTML
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">$label</label>
@@ -64,28 +66,28 @@ $optionsLoop
 HTML;
 }
 
-$lokasiLoop = <<<HTML
-                            @foreach(\$lokasis as \$lokasi)
-                            { id: '{{ \$lokasi->id }}', name: '{{ addslashes(\$lokasi->nama) }} - {{ addslashes(\$lokasi->gedung->nama) }}' },
+$lokasiLoop = <<<'HTML'
+                            @foreach($lokasis as $lokasi)
+                            { id: '{{ $lokasi->id }}', name: '{{ addslashes($lokasi->nama) }} - {{ addslashes($lokasi->gedung->nama) }}' },
                             @endforeach
 HTML;
 
-$jenisLoop = <<<HTML
-                            @foreach(\$jenisApars as \$jenis)
-                            { id: '{{ \$jenis->id }}', name: '{{ addslashes(\$jenis->nama) }}' },
+$jenisLoop = <<<'HTML'
+                            @foreach($jenisApars as $jenis)
+                            { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
                             @endforeach
 HTML;
 
-$kapasitasLoop = <<<HTML
-                            @foreach(\$kapasitasApars as \$kap)
-                            { id: '{{ \$kap->id }}', name: '{{ addslashes(\$kap->ukuran) }}' },
+$kapasitasLoop = <<<'HTML'
+                            @foreach($kapasitasApars as $kap)
+                            { id: '{{ $kap->id }}', name: '{{ addslashes($kap->ukuran) }}' },
                             @endforeach
 HTML;
 
 // 1. Fix Tambah Form
-$tambahLokasi = "{generateDropdown('Lokasi Penempatan', 'map-pin', 'lokasi_id', \"'{{ old('lokasi_id') }}'\", \n" . $lokasiLoop . "\n, 'Pilih Lokasi')}";
-$tambahJenis = "{generateDropdown('Jenis APAR', 'fire-extinguisher', 'jenis_id', \"'{{ old('jenis_id') }}'\", \n" . $jenisLoop . "\n, 'Pilih Jenis')}";
-$tambahKapasitas = "{generateDropdown('Kapasitas', 'scales', 'kapasitas_id', \"'{{ old('kapasitas_id') }}'\", \n" . $kapasitasLoop . "\n, 'Pilih Kapasitas')}";
+$tambahLokasi = "{generateDropdown('Lokasi Penempatan', 'map-pin', 'lokasi_id', \"'{{ old('lokasi_id') }}'\", \n".$lokasiLoop."\n, 'Pilih Lokasi')}";
+$tambahJenis = "{generateDropdown('Jenis APAR', 'fire-extinguisher', 'jenis_id', \"'{{ old('jenis_id') }}'\", \n".$jenisLoop."\n, 'Pilih Jenis')}";
+$tambahKapasitas = "{generateDropdown('Kapasitas', 'scales', 'kapasitas_id', \"'{{ old('kapasitas_id') }}'\", \n".$kapasitasLoop."\n, 'Pilih Kapasitas')}";
 
 // If the regex above doesn't exactly match whitespace, we can use a simpler regex
 $content = preg_replace('/\{generateDropdown\(\'Lokasi Penempatan\', \'map-pin\', \'lokasi_id\'.*?\'Pilih Lokasi\'\)\}/s', generateDropdown('Lokasi Penempatan', 'map-pin', 'lokasi_id', "'{{ old('lokasi_id') }}'", $lokasiLoop, 'Pilih Lokasi'), $content);
@@ -96,25 +98,25 @@ $content = preg_replace('/\{generateDropdown\(\'Kapasitas\', \'scales\', \'kapas
 
 // 2. We should also check Edit form. From the screenshot, it looks like Tambah Form was broken, but Edit Form might also have these broken strings.
 // Let's replace editApar ones too just in case.
-$editLokasi = generateDropdown('Lokasi Penempatan', 'map-pin', 'lokasi_id', "editApar.lokasi_id", $lokasiLoop, 'Pilih Lokasi');
-$editJenis = generateDropdown('Jenis APAR', 'fire-extinguisher', 'jenis_id', "editApar.jenis_id", $jenisLoop, 'Pilih Jenis');
-$editKapasitas = generateDropdown('Kapasitas', 'scales', 'kapasitas_id', "editApar.kapasitas_id", $kapasitasLoop, 'Pilih Kapasitas');
+$editLokasi = generateDropdown('Lokasi Penempatan', 'map-pin', 'lokasi_id', 'editApar.lokasi_id', $lokasiLoop, 'Pilih Lokasi');
+$editJenis = generateDropdown('Jenis APAR', 'fire-extinguisher', 'jenis_id', 'editApar.jenis_id', $jenisLoop, 'Pilih Jenis');
+$editKapasitas = generateDropdown('Kapasitas', 'scales', 'kapasitas_id', 'editApar.kapasitas_id', $kapasitasLoop, 'Pilih Kapasitas');
 
 // Re-apply amber focus styling for Edit Form dropdowns
 $editLokasi = str_replace('focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15', 'focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15', $editLokasi);
 $editLokasi = str_replace("open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'", "open ? 'text-amber-500' : 'peer-focus:text-amber-500'", $editLokasi);
-$editLokasi = str_replace("bg-white border-[#009B77] ring-4 ring-[#009B77]/15", "bg-white border-amber-500 ring-4 ring-amber-500/15", $editLokasi);
-$editLokasi = str_replace("text-[#009B77] bg-[#009B77]/5", "text-amber-500 bg-amber-50", $editLokasi);
+$editLokasi = str_replace('bg-white border-[#009B77] ring-4 ring-[#009B77]/15', 'bg-white border-amber-500 ring-4 ring-amber-500/15', $editLokasi);
+$editLokasi = str_replace('text-[#009B77] bg-[#009B77]/5', 'text-amber-500 bg-amber-50', $editLokasi);
 
 $editJenis = str_replace('focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15', 'focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15', $editJenis);
 $editJenis = str_replace("open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'", "open ? 'text-amber-500' : 'peer-focus:text-amber-500'", $editJenis);
-$editJenis = str_replace("bg-white border-[#009B77] ring-4 ring-[#009B77]/15", "bg-white border-amber-500 ring-4 ring-amber-500/15", $editJenis);
-$editJenis = str_replace("text-[#009B77] bg-[#009B77]/5", "text-amber-500 bg-amber-50", $editJenis);
+$editJenis = str_replace('bg-white border-[#009B77] ring-4 ring-[#009B77]/15', 'bg-white border-amber-500 ring-4 ring-amber-500/15', $editJenis);
+$editJenis = str_replace('text-[#009B77] bg-[#009B77]/5', 'text-amber-500 bg-amber-50', $editJenis);
 
 $editKapasitas = str_replace('focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15', 'focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15', $editKapasitas);
 $editKapasitas = str_replace("open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'", "open ? 'text-amber-500' : 'peer-focus:text-amber-500'", $editKapasitas);
-$editKapasitas = str_replace("bg-white border-[#009B77] ring-4 ring-[#009B77]/15", "bg-white border-amber-500 ring-4 ring-amber-500/15", $editKapasitas);
-$editKapasitas = str_replace("text-[#009B77] bg-[#009B77]/5", "text-amber-500 bg-amber-50", $editKapasitas);
+$editKapasitas = str_replace('bg-white border-[#009B77] ring-4 ring-[#009B77]/15', 'bg-white border-amber-500 ring-4 ring-amber-500/15', $editKapasitas);
+$editKapasitas = str_replace('text-[#009B77] bg-[#009B77]/5', 'text-amber-500 bg-amber-50', $editKapasitas);
 
 $content = preg_replace('/\{generateDropdown\(\'Lokasi Penempatan\', \'map-pin\', \'lokasi_id\', "editApar.*?\'Pilih Lokasi\'\)\}/s', $editLokasi, $content);
 $content = preg_replace('/\{generateDropdown\(\'Jenis APAR\', \'fire-extinguisher\', \'jenis_id\', "editApar.*?\'Pilih Jenis\'\)\}/s', $editJenis, $content);

@@ -1,17 +1,17 @@
 <?php
 
-$file = __DIR__ . '/resources/views/master-data/edit.blade.php';
+$file = __DIR__.'/resources/views/master-data/edit.blade.php';
 $content = file_get_contents($file);
 
 // 1. Lokasi Penempatan
-$lokasiDropdownEdit = <<<HTML
+$lokasiDropdownEdit = <<<'HTML'
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan</label>
                     <div x-data="{ 
                             open: false, 
-                            selectedId: '{{ old('lokasi_id', \$apar->lokasi_id) }}',
+                            selectedId: '{{ old('lokasi_id', $apar->lokasi_id) }}',
                             options: [
-                                @foreach(\$lokasis as \$lok)
-                                { id: '{{ \$lok->id }}', name: '{{ addslashes(\$lok->nama) }} ({{ addslashes(\$lok->gedung->nama ?? '-') }})' },
+                                @foreach($lokasis as $lok)
+                                { id: '{{ $lok->id }}', name: '{{ addslashes($lok->nama) }} ({{ addslashes($lok->gedung->nama ?? '-') }})' },
                                 @endforeach
                             ],
                             get selectedName() {
@@ -46,17 +46,17 @@ $lokasiDropdownEdit = <<<HTML
                         </div>
                     </div>
 HTML;
-$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan<\/label>.*?<\/div>\s*@error\(\'lokasi_id\'\)/s', $lokasiDropdownEdit . "\n                    @error('lokasi_id')", $content, 1);
+$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan<\/label>.*?<\/div>\s*@error\(\'lokasi_id\'\)/s', $lokasiDropdownEdit."\n                    @error('lokasi_id')", $content, 1);
 
 // 2. Jenis APAR
-$jenisDropdownEdit = <<<HTML
+$jenisDropdownEdit = <<<'HTML'
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR</label>
                     <div x-data="{ 
                             open: false, 
-                            selectedId: '{{ old('jenis_id', \$apar->jenis_id) }}',
+                            selectedId: '{{ old('jenis_id', $apar->jenis_id) }}',
                             options: [
-                                @foreach(\$jenisApars as \$jenis)
-                                { id: '{{ \$jenis->id }}', name: '{{ addslashes(\$jenis->nama) }}' },
+                                @foreach($jenisApars as $jenis)
+                                { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
                                 @endforeach
                             ],
                             get selectedName() {
@@ -91,17 +91,17 @@ $jenisDropdownEdit = <<<HTML
                         </div>
                     </div>
 HTML;
-$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR<\/label>.*?<\/div>\s*@error\(\'jenis_id\'\)/s', $jenisDropdownEdit . "\n                    @error('jenis_id')", $content, 1);
+$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR<\/label>.*?<\/div>\s*@error\(\'jenis_id\'\)/s', $jenisDropdownEdit."\n                    @error('jenis_id')", $content, 1);
 
 // 3. Kapasitas
-$kapasitasDropdownEdit = <<<HTML
+$kapasitasDropdownEdit = <<<'HTML'
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas</label>
                     <div x-data="{ 
                             open: false, 
-                            selectedId: '{{ old('kapasitas_id', \$apar->kapasitas_id) }}',
+                            selectedId: '{{ old('kapasitas_id', $apar->kapasitas_id) }}',
                             options: [
-                                @foreach(\$kapasitasApars as \$kap)
-                                { id: '{{ \$kap->id }}', name: '{{ addslashes(\$kap->ukuran) }}' },
+                                @foreach($kapasitasApars as $kap)
+                                { id: '{{ $kap->id }}', name: '{{ addslashes($kap->ukuran) }}' },
                                 @endforeach
                             ],
                             get selectedName() {
@@ -136,7 +136,7 @@ $kapasitasDropdownEdit = <<<HTML
                         </div>
                     </div>
 HTML;
-$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas<\/label>.*?<\/div>\s*@error\(\'kapasitas_id\'\)/s', $kapasitasDropdownEdit . "\n                    @error('kapasitas_id')", $content, 1);
+$content = preg_replace('/<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas<\/label>.*?<\/div>\s*@error\(\'kapasitas_id\'\)/s', $kapasitasDropdownEdit."\n                    @error('kapasitas_id')", $content, 1);
 
 file_put_contents($file, $content);
 echo "Edit patched.\n";

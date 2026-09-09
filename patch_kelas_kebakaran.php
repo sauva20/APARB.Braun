@@ -1,9 +1,10 @@
 <?php
-$file = __DIR__ . '/resources/views/master-data/index.blade.php';
+
+$file = __DIR__.'/resources/views/master-data/index.blade.php';
 $content = file_get_contents($file);
 
 $headerSearch = '<th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Kapasitas</th>';
-$headerReplace = <<<HTML
+$headerReplace = <<<'HTML'
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Kapasitas</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Kelas Kebakaran</th>
 HTML;
@@ -33,4 +34,4 @@ $content = str_replace($headerSearch, $headerReplace, $content);
 $content = str_replace($bodySearch, $bodyReplace, $content);
 
 file_put_contents($file, $content);
-echo "Patched.";
+echo 'Patched.';
