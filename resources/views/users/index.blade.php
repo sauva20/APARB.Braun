@@ -10,8 +10,11 @@
         id:'{{ old('form_type') == 'edit_user' ? old('id') : '' }}', 
         name:'{{ old('form_type') == 'edit_user' ? old('name') : '' }}',
         email:'{{ old('form_type') == 'edit_user' ? old('email') : '' }}',
-        role:'{{ old('form_type') == 'edit_user' ? old('role') : '' }}'
-    }
+        role:'{{ old('form_type') == 'edit_user' ? old('role') : '' }}',
+        jadwal_rutin_tanggal:'{{ old('form_type') == 'edit_user' ? old('jadwal_rutin_tanggal') : '' }}',
+        gedungs: []
+    },
+    formRoleTambah: '{{ old('form_type') == 'tambah_user' ? old('role') : '' }}'
 }">
 
     <!-- Header Area -->
@@ -29,6 +32,23 @@
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-3">
+            <div x-data="{ openExport: false }" class="relative z-50">
+                <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
+                    <i class="ph-bold ph-download-simple text-lg"></i>
+                    <span class="hidden sm:inline">Export Data</span>
+                    <i class="ph-bold ph-caret-down text-slate-400 ml-1 transition-transform" :class="openExport ? 'rotate-180' : ''"></i>
+                </button>
+                <div x-show="openExport" 
+                     x-transition.opacity.duration.200ms
+                     class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-100 py-2" x-cloak style="display: none;">
+                    <a href="{{ route('users.export-pdf', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors">
+                        <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> Export ke PDF
+                    </a>
+                    <a href="{{ route('users.export-excel', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-green-50 hover:text-green-600 flex items-center gap-2 transition-colors">
+                        <i class="ph-bold ph-file-csv text-lg text-green-500"></i> Export ke Excel (CSV)
+                    </a>
+                </div>
+            </div>
             <button @click="showModalUser = true" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                 <i class="ph-bold ph-plus text-lg"></i>
                 <span>Tambah User</span>
@@ -36,60 +56,121 @@
         </div>
     </div>
 
+    <!-- Filters & Search -->
+    <form action="/users" method="GET" class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Search -->
+        <div class="md:col-span-2">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <i class="ph-bold ph-magnifying-glass text-slate-400 text-lg"></i>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email user..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all shadow-sm">
+                @if(request('search'))
+                <a href="/users?role={{ request('role') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                    <i class="ph-bold ph-x-circle text-lg"></i>
+                </a>
+                @endif
+            </div>
+        </div>
+
+        <!-- Filter Role -->
+        <div>
+            <div x-data="{ open: false, selected: '{{ request('role') ? addslashes(request('role')) : 'Semua Role' }}' }" class="relative">
+                <input type="hidden" name="role" value="{{ request('role') }}" x-ref="role_input">
+                <button type="button" @click="open = !open" @click.away="open = false" class="w-full flex items-center justify-between py-2.5 px-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all cursor-pointer hover:border-slate-300 shadow-sm">
+                    <div class="flex items-center gap-2 truncate">
+                        <i class="ph-bold ph-funnel text-slate-400"></i>
+                        <span x-text="selected" class="truncate"></span>
+                    </div>
+                    <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     style="display: none;" 
+                     class="absolute right-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top" x-cloak>
+                     
+                    <button type="button" @click="selected = 'Semua Role'; open = false; $refs.role_input.value = ''; $refs.role_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between" :class="selected === 'Semua Role' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                        <span>Semua Role</span>
+                        <i class="ph-bold ph-check text-[#009B77]" x-show="selected === 'Semua Role'" x-cloak></i>
+                    </button>
+                    
+                    @foreach($roles as $role)
+                    <button type="button" @click="selected = '{{ addslashes($role) }}'; open = false; $refs.role_input.value = '{{ addslashes($role) }}'; $refs.role_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between" :class="selected === '{{ addslashes($role) }}' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                        <span>{{ $role }}</span>
+                        <i class="ph-bold ph-check text-[#009B77]" x-show="selected === '{{ addslashes($role) }}'" x-cloak></i>
+                    </button>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </form>
+
     <!-- Data Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-200/60">
-                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-16">No</th>
-                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama</th>
-                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                    <tr class="bg-[#009B77] text-white divide-x divide-white/20 text-center">
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider w-12">No</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">User ID</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Nama</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Email</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">PIC Gedung</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Role</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200/60">
+                <tbody class="text-sm divide-y divide-slate-100">
                     @forelse($users as $index => $user)
-                    <tr class="hover:bg-slate-50/50 transition-colors">
-                        <td class="px-6 py-4 text-sm font-semibold text-slate-600">
-                            {{ $users->firstItem() + $index }}
+                    <tr class="hover:bg-slate-50 transition-colors divide-x divide-slate-100">
+                        <td class="py-4 px-5 text-center text-slate-500">{{ $users->firstItem() + $index }}</td>
+                        <td class="py-4 px-5 text-slate-800 font-medium">{{ $user->employee_id ?? '-' }}</td>
+                        <td class="py-4 px-5">
+                            <span class="text-slate-800">{{ $user->name }}</span>
                         </td>
-                        <td class="px-6 py-4 text-sm font-bold text-slate-800">
-                            {{ $user->name }}
+                        <td class="py-4 px-5 text-slate-600">{{ $user->email }}</td>
+                        <td class="py-4 px-5 text-slate-600">
+                            @if($user->role === 'Head')
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">Semua Gedung</span>
+                            @elseif($user->gedungs->count() > 0)
+                                <div class="flex flex-wrap gap-1">
+                                @foreach($user->gedungs as $gedung)
+                                    <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold">{{ $gedung->nama }}</span>
+                                @endforeach
+                                </div>
+                                @if($user->jadwal_rutin_tanggal)
+                                    <div class="text-xs text-slate-500 mt-1"><i class="ph-bold ph-calendar-blank"></i> Rutin: Tgl {{ $user->jadwal_rutin_tanggal }}</div>
+                                @endif
+                            @else
+                                <span class="text-slate-400 text-xs italic">Belum ditugaskan</span>
+                            @endif
                         </td>
-                        <td class="px-6 py-4 text-sm text-slate-600 font-medium">
-                            {{ $user->email }}
+                        <td class="py-4 px-5 text-center">
+                            <span class="text-slate-600">{{ $user->role }}</span>
                         </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-teal-50 text-[#009B77] border border-teal-200/60">
-                                {{ $user->role }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right space-x-2">
-                            <button @click="showEditUser = true; editUser = { id: '{{ $user->id }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', role: '{{ addslashes($user->role) }}' }" class="p-2 text-slate-400 hover:text-[#009B77] hover:bg-teal-50 rounded-lg transition-colors">
-                                <i class="ph-bold ph-pencil-simple text-lg"></i>
-                            </button>
-                            <form action="/users/{{ $user->id }}" method="POST" class="inline-block" onsubmit="confirmDelete(event, 'User ini akan dihapus secara permanen!')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                                    <i class="ph-bold ph-trash text-lg"></i>
+                        <td class="py-4 px-5">
+                            <div class="flex items-center justify-center gap-1">
+                                <button @click="showEditUser = true; editUser = { id: '{{ $user->id }}', employee_id: '{{ addslashes($user->employee_id) }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', role: '{{ addslashes($user->role) }}', jadwal_rutin_tanggal: '{{ $user->jadwal_rutin_tanggal }}', gedungs: {{ json_encode($user->gedungs->pluck('id')) }} }" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
+                                    <i class="ph-bold ph-pencil-simple text-base"></i>
                                 </button>
-                            </form>
+                                <form action="/users/{{ $user->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'User ini akan dihapus secara permanen!')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus">
+                                        <i class="ph-bold ph-trash text-base"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center justify-center">
-                                <div class="w-16 h-16 mb-4 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
-                                    <i class="ph-fill ph-users text-3xl"></i>
-                                </div>
-                                <h3 class="text-sm font-bold text-slate-700">Belum ada data User</h3>
-                                <p class="text-xs text-slate-500 mt-1">Silakan tambah data user baru.</p>
-                            </div>
-                        </td>
+                        <td colspan="7" class="py-8 text-center text-slate-500 font-medium">Belum ada data User.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -106,14 +187,14 @@
     <!-- Modal Tambah User -->
     <div x-show="showModalUser" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40 backdrop-blur-sm" @click="showModalUser = false"></div>
+            <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40" @click="showModalUser = false"></div>
 
             <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8">
                 
                 <div class="flex items-center justify-between mb-5">
                     <div>
                         <h3 class="text-lg font-bold text-slate-800">Tambah User Baru</h3>
-                        <p class="text-xs font-semibold text-slate-500 mt-0.5">Masukkan data pengguna baru</p>
+                        <p class="text-xs font-semibold text-slate-500 mt-0.5">Daftarkan akun baru ke sistem</p>
                     </div>
                     <button @click="showModalUser = false" class="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-lg">
                         <i class="ph-bold ph-x text-lg"></i>
@@ -125,28 +206,60 @@
                     <input type="hidden" name="form_type" value="tambah_user">
                     
                     <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID / NIK <span class="text-red-500">*</span></label>
+                        <input type="text" name="employee_id" value="{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}" required placeholder="Contoh: 123456" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        @if(old('form_type') == 'tambah_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
+                    </div>
+                    
+                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" value="{{ old('form_type') == 'tambah_user' ? old('name') : '' }}" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="name" value="{{ old('form_type') == 'tambah_user' ? old('name') : '' }}" required placeholder="Masukkan nama lengkap" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('name') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" value="{{ old('form_type') == 'tambah_user' ? old('email') : '' }}" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="email" name="email" value="{{ old('form_type') == 'tambah_user' ? old('email') : '' }}" required placeholder="contoh@bbraun.com" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
-                        <input type="text" name="role" value="{{ old('form_type') == 'tambah_user' ? old('role') : '' }}" required placeholder="Contoh: EHSS Staff" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <select name="role" x-model="formRoleTambah" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <option value="" disabled selected>Pilih Role</option>
+                            <option value="Head">Head</option>
+                            <option value="Staff">Staff</option>
+                        </select>
                         @if(old('form_type') == 'tambah_user') @error('role') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">PIN Inspeksi <span class="text-red-500">*</span></label>
-                        <input type="text" name="pin" value="{{ old('form_type') == 'tambah_user' ? old('pin') : '' }}" required minlength="4" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="4-6 digit angka" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
-                        <p class="text-xs text-slate-500 mt-1">Digunakan sebagai autentikasi saat melakukan inspeksi APAR.</p>
-                        @if(old('form_type') == 'tambah_user') @error('pin') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
+                    <!-- Pilihan Gedung dan Jadwal Rutin (Khusus Staff) -->
+                    <div x-show="formRoleTambah === 'Staff'" x-cloak class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Jadwal Rutin Inspeksi Bulanan (Opsional)</label>
+                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" value="{{ old('form_type') == 'tambah_user' ? old('jadwal_rutin_tanggal') : '' }}" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <p class="mt-1 text-[11px] text-slate-500">Angka 1-31. Email H-3 akan dikirim otomatis.</p>
+                            @if(old('form_type') == 'tambah_user') @error('jadwal_rutin_tanggal') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Gedung Tanggung Jawab Utama</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach($gedungs as $g)
+                                <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="checkbox" name="gedungs[]" value="{{ $g->id }}" class="w-4 h-4 text-[#009B77] bg-slate-100 border-slate-300 rounded focus:ring-[#009B77] focus:ring-2">
+                                    <span class="text-sm font-medium text-slate-700">{{ $g->nama }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                            @if(old('form_type') == 'tambah_user') @error('gedungs') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 text-blue-800 p-3 rounded-xl border border-blue-100 flex items-start gap-3 mt-4">
+                        <i class="ph-bold ph-info text-xl flex-shrink-0 mt-0.5"></i>
+                        <p class="text-xs leading-relaxed font-medium">
+                            PIN dan instruksi pembuatan kata sandi (password) akan dikirimkan ke email user secara otomatis setelah akun dibuat.
+                        </p>
                     </div>
 
                     <div class="mt-6 flex gap-3 justify-end pt-4 border-t border-slate-100">
@@ -165,7 +278,7 @@
     <!-- Modal Edit User -->
     <div x-show="showEditUser" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40 backdrop-blur-sm" @click="showEditUser = false"></div>
+            <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40" @click="showEditUser = false"></div>
 
             <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8">
                 
@@ -186,6 +299,12 @@
                     <input type="hidden" name="id" x-model="editUser.id">
                     
                     <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID / NIK <span class="text-red-500">*</span></label>
+                        <input type="text" name="employee_id" x-model="editUser.employee_id" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        @if(old('form_type') == 'edit_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
+                    </div>
+                    
+                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
                         <input type="text" name="name" x-model="editUser.name" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('name') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
@@ -199,15 +318,40 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
-                        <input type="text" name="role" x-model="editUser.role" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <select name="role" x-model="editUser.role" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <option value="Head">Head</option>
+                            <option value="Staff">Staff</option>
+                        </select>
                         @if(old('form_type') == 'edit_user') @error('role') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
+                    <!-- Pilihan Gedung dan Jadwal Rutin (Khusus Staff) -->
+                    <div x-show="editUser.role === 'Staff'" x-cloak class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Jadwal Rutin Inspeksi Bulanan (Opsional)</label>
+                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" x-model="editUser.jadwal_rutin_tanggal" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <p class="mt-1 text-[11px] text-slate-500">Angka 1-31. Email H-3 akan dikirim otomatis.</p>
+                            @if(old('form_type') == 'edit_user') @error('jadwal_rutin_tanggal') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Gedung Tanggung Jawab Utama</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach($gedungs as $g)
+                                <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="checkbox" name="gedungs[]" value="{{ $g->id }}" x-model="editUser.gedungs" class="w-4 h-4 text-[#009B77] bg-slate-100 border-slate-300 rounded focus:ring-[#009B77] focus:ring-2">
+                                    <span class="text-sm font-medium text-slate-700">{{ $g->nama }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                            @if(old('form_type') == 'edit_user') @error('gedungs') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
+                        </div>
+                    </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">PIN Inspeksi Baru</label>
-                        <input type="text" name="pin" minlength="4" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="Biarkan kosong jika tidak ingin mengubah PIN" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Ubah PIN Inspeksi</label>
+                        <input type="text" name="pin" minlength="4" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="4 digit angka (Biarkan kosong jika tidak mengubah PIN)" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('pin') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
+
 
                     <div class="mt-6 flex gap-3 justify-end pt-4 border-t border-slate-100">
                         <button type="button" @click="showEditUser = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200/60 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors">

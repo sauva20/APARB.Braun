@@ -9,9 +9,13 @@
     <p>Anda telah ditugaskan untuk melakukan inspeksi APAR pada jadwal berikut:</p>
     
     <ul>
-        <li><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->translatedFormat('d F Y') }}</li>
-        <li><strong>Area:</strong> {{ $jadwal->tipe_area == 'gedung' ? 'Gedung ' . ($jadwal->gedung->nama ?? '-') : 'Lokasi ' . ($jadwal->lokasi->nama ?? '-') }}</li>
-        <li><strong>Jenis Jadwal:</strong> {{ ucfirst($jadwal->jenis_jadwal) }}</li>
+        @foreach($jadwals as $jadwal)
+            <li style="margin-bottom: 10px;">
+                <strong>Area:</strong> {{ $jadwal->tipe_area == 'gedung' ? 'Gedung ' . ($jadwal->gedung->nama ?? '-') : 'Lokasi ' . ($jadwal->lokasi->nama ?? '-') }}<br>
+                <strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->translatedFormat('d F Y') }}<br>
+                <strong>Jenis Jadwal:</strong> {{ ucfirst(str_replace('_', ' ', $jadwal->jenis_jadwal)) }}
+            </li>
+        @endforeach
     </ul>
 
     <p>Untuk memulai inspeksi, silakan datangi lokasi APAR dan scan QR Code yang terdapat pada APAR tersebut.</p>
@@ -23,7 +27,7 @@
     </div>
 
     <p>Jika ada catatan tambahan dari sistem:<br>
-    <em>{{ $jadwal->catatan_tambahan ?: '-' }}</em></p>
+    <em>{{ $jadwals->first()->catatan_tambahan ?: '-' }}</em></p>
 
     <p>Terima kasih,<br>
     <strong>APAR Monitoring System (B. Braun)</strong></p>

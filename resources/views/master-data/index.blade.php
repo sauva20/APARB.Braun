@@ -6,7 +6,7 @@
 <div class="space-y-6" x-data="{ activeTab: localStorage.getItem('masterDataTab') || 'data', showModalApar: {{ old('form_type') == 'tambah_apar' && $errors->any() ? 'true' : 'false' }}, 
 showQrModal: false, qrData: { id: '', kode: '', svg: '' },
 showModalEditApar: {{ old('form_type') == 'edit_apar' && $errors->any() ? 'true' : 'false' }}, 
-editApar: { id:'{{ old('form_type') == 'edit_apar' ? old('id') : '' }}', kode:'{{ old('form_type') == 'edit_apar' ? old('kode') : '' }}', lokasi_id:'{{ old('form_type') == 'edit_apar' ? old('lokasi_id') : '' }}', jenis_id:'{{ old('form_type') == 'edit_apar' ? old('jenis_id') : '' }}', kapasitas_id:'{{ old('form_type') == 'edit_apar' ? old('kapasitas_id') : '' }}', vendor:'{{ old('form_type') == 'edit_apar' ? old('vendor') : '' }}', tgl_kedaluwarsa:'{{ old('form_type') == 'edit_apar' ? old('tgl_kedaluwarsa') : '' }}' },  
+editApar: { id:'{{ old('form_type') == 'edit_apar' ? old('id') : '' }}', kode:'{{ old('form_type') == 'edit_apar' ? old('kode') : '' }}', nomor_apar:'{{ old('form_type') == 'edit_apar' ? old('nomor_apar') : '' }}', gedung_id:'{{ old('form_type') == 'edit_apar' ? old('gedung_id') : '' }}', lokasi:'{{ old('form_type') == 'edit_apar' ? old('lokasi') : '' }}', jenis_id:'{{ old('form_type') == 'edit_apar' ? old('jenis_id') : '' }}', kapasitas_id:'{{ old('form_type') == 'edit_apar' ? old('kapasitas_id') : '' }}', vendor:'{{ old('form_type') == 'edit_apar' ? old('vendor') : '' }}', qty:'{{ old('form_type') == 'edit_apar' ? old('qty') : '' }}', tgl_kedaluwarsa:'{{ old('form_type') == 'edit_apar' ? old('tgl_kedaluwarsa') : '' }}' },  
 showModalLokasi: {{ old('form_type') == 'tambah_lokasi' && $errors->any() ? 'true' : 'false' }}, 
 showModalGedung: {{ old('form_type') == 'tambah_gedung' && $errors->any() ? 'true' : 'false' }}, 
 showModalJenis: {{ old('form_type') == 'tambah_jenis' && $errors->any() ? 'true' : 'false' }}, 
@@ -36,14 +36,35 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Right: Actions -->
             <div class="flex items-center gap-3">
+                <div x-data="{ openExport: false }" class="relative z-50">
+                    <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
+                        <i class="ph-bold ph-download-simple text-lg"></i>
+                        <span class="hidden sm:inline">Export Data</span>
+                        <i class="ph-bold ph-caret-down text-slate-400 ml-1 transition-transform" :class="openExport ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="openExport" 
+                         x-transition.opacity.duration.200ms
+                         class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-100 py-2" x-cloak style="display: none;">
+                        <a href="{{ route('master-data.export-pdf', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors">
+                            <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> Export ke PDF
+                        </a>
+                        <a href="{{ route('master-data.export-excel', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-green-50 hover:text-green-600 flex items-center gap-2 transition-colors">
+                            <i class="ph-bold ph-file-csv text-lg text-green-500"></i> Export ke Excel (CSV)
+                        </a>
+                    </div>
+                </div>
+                @if(auth()->user()->role !== 'Staff')
                 <a href="/master-data/apar/print-all-qr" target="_blank" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-printer text-lg text-[#009B77]"></i>
                     <span class="hidden sm:inline">Cetak Semua QR</span>
                 </a>
+                @endif
+                @if(auth()->user()->role !== 'Staff')
                 <button @click="showModalApar = true" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-plus text-lg"></i>
                     <span>Tambah Data APAR</span>
                 </button>
+                @endif
             </div>
         </div>
 
@@ -80,12 +101,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 <i class="ph-bold ph-table text-lg"></i>
                 Data APAR
             </button>
+            @if(auth()->user()->role !== 'Staff')
             <button x-ref="referensi" @click="activeTab = 'referensi'" 
                     :class="activeTab === 'referensi' ? 'text-[#009B77]' : 'text-slate-500 hover:text-slate-700'" 
                     class="px-5 py-2 rounded-lg font-bold text-sm transition-colors duration-300 flex items-center gap-2">
                 <i class="ph-bold ph-database text-lg"></i>
                 Pengaturan Referensi
             </button>
+            @endif
         </div>
     </div>
 
@@ -258,12 +281,16 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider w-12">No</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">ID APAR</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Lokasi</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Gedung</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Jenis</th>
-                                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Kapasitas</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Kelas Kebakaran</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Vendor Refill</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Tgl Kedaluwarsa</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Kapasitas</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Fire Class</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Expired Date</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">Qty</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">PIC</th>
+                        @if(auth()->user()->role !== 'Staff')
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100">
@@ -273,12 +300,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <td class="py-4 px-5">
                             <span class="font-bold text-slate-800">{{ $apar->kode }}</span>
                         </td>
-                        <td class="py-4 px-5">
-                            <div class="flex flex-col">
-                                <span class="font-semibold text-slate-600 capitalize">{{ $apar->lokasi->nama ?? '-' }}</span>
-                                <span class="text-[10px] text-slate-400 font-semibold">{{ $apar->lokasi->gedung->nama ?? '-' }}</span>
-                            </div>
-                        </td>
+                        <td class="py-4 px-5 font-semibold text-slate-600 capitalize">{{ $apar->lokasi->nama ?? '-' }}</td>
+                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->lokasi->gedung->nama ?? '-' }}</td>
                         <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->jenis->nama ?? '-' }}</td>
                         <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->kapasitas->ukuran ?? '-' }}</td>
                         <td class="py-4 px-5">
@@ -297,7 +320,6 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 <span class="font-semibold text-slate-400">-</span>
                             @endif
                         </td>
-                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->vendor ?: '-' }}</td>
                         <td class="py-4 px-5">
                             @if($apar->tgl_kedaluwarsa && $apar->tgl_kedaluwarsa->isPast())
                                 <span class="font-semibold text-red-500">Expired ({{ $apar->tgl_kedaluwarsa->format('d M Y') }})</span>
@@ -305,10 +327,30 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 <span class="font-semibold text-slate-600">{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-' }}</span>
                             @endif
                         </td>
+                        <td class="py-4 px-5 text-center font-bold text-slate-800">
+                            @if($apar->qty <= 0)
+                                <span class="text-[10px] font-bold tracking-wider py-1 px-2.5 rounded-lg bg-red-50 text-red-600 border border-red-100 whitespace-nowrap">STOK HABIS</span>
+                            @else
+                                {{ $apar->qty }}
+                            @endif
+                        </td>
+                        <td class="py-4 px-5 font-semibold text-slate-600">
+                            @php
+                                $lastInspeksi = $apar->latestInspeksi;
+                            @endphp
+                            @if($lastInspeksi && $lastInspeksi->user)
+                                <span>{{ $lastInspeksi->user->name }}</span>
+                            @elseif($apar->pic)
+                                {{ $apar->pic->name }}
+                            @else
+                                <span class="text-slate-400">-</span>
+                            @endif
+                        </td>
+                        @if(auth()->user()->role !== 'Staff')
                         <td class="py-4 px-5">
                             <div class="flex items-center justify-center gap-1">
-                                <button type="button" @click="editApar = { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}', lokasi_id: '{{ $apar->lokasi_id }}', jenis_id: '{{ $apar->jenis_id }}', kapasitas_id: '{{ $apar->kapasitas_id }}', vendor: '{{ addslashes($apar->vendor) }}', tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}' }; showModalEditApar = true" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
-                                    <i class="ph-bold ph-pencil-simple text-base"></i>
+                                <button type="button" @click="editApar = { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}', nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '', gedung_id: '{{ $apar->lokasi->gedung_id ?? '' }}', lokasi: '{{ addslashes($apar->lokasi->nama ?? '') }}', jenis_id: '{{ $apar->jenis_id }}', kapasitas_id: '{{ $apar->kapasitas_id }}', vendor: '{{ addslashes($apar->vendor) }}', qty: {{ $apar->qty }}, tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}' }; showModalEditApar = true" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
+                                    <i class="ph-bold ph-pencil-simple text-lg"></i>
                                 </button>
                                 <form action="/master-data/apar/{{ $apar->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'Yakin ingin menghapus APAR ini?');">
                                     @csrf
@@ -317,6 +359,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                         <i class="ph-bold ph-trash text-base"></i>
                                     </button>
                                 </form>
+                                <button @click="$dispatch('open-history', { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}' })" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 transition-colors" title="Riwayat Perubahan">
+                                    <i class="ph-bold ph-clock-counter-clockwise text-base"></i>
+                                </button>
                                 <button @click="
                                     fetch('/master-data/apar/{{ $apar->id }}/qr-data')
                                         .then(res => res.json())
@@ -329,6 +374,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 </button>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>
@@ -402,6 +448,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     <!-- End Tab 1 -->
 
     <!-- Tab 2: Pengaturan Referensi -->
+    @if(auth()->user()->role !== 'Staff')
     <div x-show="activeTab === 'referensi'" x-cloak 
          x-transition:enter="transition ease-out duration-400"
          x-transition:enter-start="opacity-0 translate-y-6"
@@ -579,6 +626,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
         </div>
     </div>
+    @endif
     
     <!-- Modal Tambah Lokasi -->
     <div x-show="showModalLokasi" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
@@ -899,56 +947,57 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 </button>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <!-- ID APAR -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" x-data="{
+                                gedungId: '{{ old('gedung_id') }}',
+                                lokasiName: '{{ old('lokasi') }}',
+                                lokasiOptions: [
+                                    @foreach($lokasis as $lok)
+                                    { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
+                                    @endforeach
+                                ],
+                                get filteredLokasi() {
+                                    if (!this.gedungId) return [];
+                                    return this.lokasiOptions.filter(l => l.gedung_id == this.gedungId);
+                                }
+                            }">
+            <!-- Nomor APAR -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ID APAR</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" style="white-space: nowrap;">Nomor APAR <span class="text-[10px] text-slate-400 font-medium normal-case">(Huruf ID Otomatis)</span></label>
                 <div class="relative">
-                    <i class="ph-bold ph-barcode absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                    <input type="text" name="kode" placeholder="ID dibuat otomatis oleh sistem" readonly class="w-full bg-slate-100 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-500 cursor-not-allowed focus:outline-none">
+                    <i class="ph-bold ph-hash absolute left-3.5 top-1/2 -translate-y-1/2 text-[#009B77] text-lg"></i>
+                    <input type="number" name="nomor_apar" placeholder="Masukkan nomor (Misal: 12)" required value="{{ old('nomor_apar') }}" class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all">
                 </div>
-                @error('kode') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                @error('nomor_apar') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Lokasi Penempatan -->
-                        <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan</label>
-                <div x-data="{
-                        open: false,
-                        search: '',
-                        selectedId: '{{ old('lokasi_id') }}',
-                        options: [
-                            @foreach($lokasis as $lokasi)
-                            { id: '{{ $lokasi->id }}', name: '{{ addslashes($lokasi->nama) }} {{ addslashes($lokasi->gedung->nama) }}', lokasi: '{{ addslashes($lokasi->nama) }}', gedung: '{{ addslashes($lokasi->gedung->nama) }}' },
-                            @endforeach
-                        ],
-                        get selectedName() {
-                            let sel = this.options.find(o => o.id == this.selectedId);
-                            return sel ? sel : null;
-                        },
-                        get filteredOptions() {
-                            if (this.search === '') return this.options;
-                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                        }
-                    }" class="relative">
-                    <input type="hidden" name="lokasi_id" :value="selectedId" required>
-                    <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
+            <!-- Gedung -->
+            <div x-data="{
+                open: false,
+                search: '',
+                options: [
+                    @foreach($gedungs as $gedung)
+                    { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
+                    @endforeach
+                ],
+                get selectedName() {
+                    let sel = this.options.find(o => o.id == gedungId);
+                    return sel ? sel.name : 'Pilih Gedung';
+                },
+                get filteredOptions() {
+                    if (this.search === '') return this.options;
+                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                }
+            }">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gedung</label>
+                <div class="relative">
+                    <input type="hidden" name="gedung_id" :value="gedungId" required>
+                    <i class="ph-bold ph-buildings absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
                     <button type="button" @click="open = !open" @click.away="open = false" 
                             class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                             :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                        <template x-if="selectedName">
-                            <div class="flex items-center gap-2 truncate">
-                                <span x-text="selectedName.lokasi" class="font-bold text-slate-700"></span>
-                                <span x-text="selectedName.gedung" class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 py-0.5 px-2 rounded-md"></span>
-                            </div>
-                        </template>
-                        <template x-if="!selectedName">
-                            <span class="text-slate-400 font-medium truncate block">Pilih Lokasi</span>
-                        </template>
+                        <span x-text="selectedName" :class="gedungId ? 'font-bold text-slate-700' : 'text-slate-400 font-medium'" class="truncate block"></span>
                         <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                     </button>
-                    
-                    <!-- Dropdown Menu -->
                     <div x-show="open" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 scale-95"
@@ -965,12 +1014,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                         <div class="py-1">
                             <template x-for="option in filteredOptions" :key="option.id">
-                            <button type="button" @click="selectedId = option.id; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selectedId == option.id ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                                <div class="flex items-center justify-between w-full pr-4">
-                                    <span x-text="option.lokasi" class="font-bold"></span>
-                                    <span x-text="option.gedung" class="text-[10px] font-bold uppercase tracking-wider py-0.5 px-2 rounded-md transition-colors" :class="selectedId == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'bg-slate-100 text-slate-500'"></span>
-                                </div>
-                                <i class="ph-bold ph-check text-[#009B77]" x-show="selectedId == option.id" x-cloak></i>
+                            <button type="button" @click="gedungId = option.id; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="gedungId == option.id ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                                <span x-text="option.name" class="font-bold"></span>
+                                <i class="ph-bold ph-check text-[#009B77]" x-show="gedungId == option.id" x-cloak></i>
                             </button>
                             </template>
                             <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
@@ -979,7 +1025,51 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                     </div>
                 </div>
-                @error('lokasi_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                @error('gedung_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+            </div>
+
+            <!-- Lokasi -->
+            <div x-data="{
+                open: false,
+                search: '',
+                get filtered() {
+                    if (this.search === '') return this.filteredLokasi;
+                    return this.filteredLokasi.filter(l => l.nama.toLowerCase().includes(this.search.toLowerCase()));
+                },
+                init() {
+                    this.search = this.lokasiName;
+                    this.$watch('lokasiName', val => this.search = val);
+                }
+            }">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi <span class="text-[10px] text-slate-400 font-medium normal-case">(Pilih / Ketik Baru)</span></label>
+                <div class="relative">
+                    <input type="hidden" name="lokasi" :value="lokasiName">
+                    <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
+                    <input type="text" x-model="lokasiName" @focus="open = true" @click.away="open = false" placeholder="Contoh: Corridor" required 
+                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none"
+                           :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
+                    <div x-show="open && filteredLokasi.length > 0" x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top">
+                        <div class="py-1">
+                            <template x-for="lok in filtered" :key="lok.id">
+                            <button type="button" @click="lokasiName = lok.nama; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="lokasiName == lok.nama ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                                <span x-text="lok.nama" class="font-bold"></span>
+                                <i class="ph-bold ph-check text-[#009B77]" x-show="lokasiName == lok.nama" x-cloak></i>
+                            </button>
+                            </template>
+                            <div x-show="filtered.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                Ketik untuk menambah lokasi baru
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @error('lokasi') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <!-- Jenis APAR -->
@@ -1110,24 +1200,25 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 @error('kapasitas_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Vendor Refill -->
+            <!-- Qty -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Vendor Refill</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Qty</label>
                 <div class="relative">
-                    <i class="ph-bold ph-storefront absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                    <input type="text" name="vendor" placeholder="Nama perusahaan vendor..." value="{{ old('vendor') }}"
-                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15">
+                    <i class="ph-bold ph-hash absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                    <input type="number" name="qty" min="0" placeholder="Masukkan jumlah" value="{{ old('qty', 1) }}"
+                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                 </div>
-                @error('vendor') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                @error('qty') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <!-- Tanggal Kedaluwarsa -->
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Kedaluwarsa</label>
                 <div class="relative">
-                    <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                    <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                     <input type="text" name="tgl_kedaluwarsa" placeholder="Pilih Tanggal..." value="{{ old('tgl_kedaluwarsa') }}"
-                           class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
+                           class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
+                    <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                 </div>
                 @error('tgl_kedaluwarsa') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
@@ -1183,56 +1274,55 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 </button>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <!-- ID APAR -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" x-data="{
+                                lokasiOptions: [
+                                    @foreach($lokasis as $lok)
+                                    { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
+                                    @endforeach
+                                ],
+                                get filteredLokasi() {
+                                    if (!editApar.gedung_id) return [];
+                                    return this.lokasiOptions.filter(l => l.gedung_id == editApar.gedung_id);
+                                }
+                            }">
+            <!-- Nomor APAR -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ID APAR</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" style="white-space: nowrap;">Nomor APAR <span class="text-[10px] text-slate-400 font-medium normal-case">(Huruf ID Otomatis)</span></label>
                 <div class="relative">
-                    <i class="ph-bold ph-barcode absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                    <input type="text" name="kode" readonly x-model="editApar.kode" class="w-full bg-slate-100 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-500 cursor-not-allowed focus:outline-none">
+                    <i class="ph-bold ph-hash absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-500 text-lg"></i>
+                    <input type="number" name="nomor_apar" placeholder="Masukkan nomor urut..." required x-model="editApar.nomor_apar" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none">
                 </div>
-                @error('kode') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                @error('nomor_apar') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Lokasi Penempatan -->
-                        <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Penempatan</label>
-                <div x-data="{
-                        open: false,
-                        search: '',
-                        
-                        options: [
-                            @foreach($lokasis as $lokasi)
-                            { id: '{{ $lokasi->id }}', name: '{{ addslashes($lokasi->nama) }} {{ addslashes($lokasi->gedung->nama) }}', lokasi: '{{ addslashes($lokasi->nama) }}', gedung: '{{ addslashes($lokasi->gedung->nama) }}' },
-                            @endforeach
-                        ],
-                        get selectedName() {
-                            let sel = this.options.find(o => o.id == this.editApar.lokasi_id);
-                            return sel ? sel : null;
-                        },
-                        get filteredOptions() {
-                            if (this.search === '') return this.options;
-                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                        }
-                    }" class="relative">
-                    <input type="hidden" name="lokasi_id" :value="editApar.lokasi_id" required>
-                    <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-amber-500' : 'peer-focus:text-amber-500'"></i>
+            <!-- Gedung -->
+            <div x-data="{
+                open: false,
+                search: '',
+                options: [
+                    @foreach($gedungs as $gedung)
+                    { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
+                    @endforeach
+                ],
+                get selectedName() {
+                    let sel = this.options.find(o => o.id == editApar.gedung_id);
+                    return sel ? sel.name : 'Pilih Gedung';
+                },
+                get filteredOptions() {
+                    if (this.search === '') return this.options;
+                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                }
+            }">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gedung</label>
+                <div class="relative">
+                    <input type="hidden" name="gedung_id" :value="editApar.gedung_id" required>
+                    <i class="ph-bold ph-buildings absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-amber-500' : 'peer-focus:text-amber-500'"></i>
                     <button type="button" @click="open = !open" @click.away="open = false" 
                             class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                             :class="open ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : ''">
-                        <template x-if="selectedName">
-                            <div class="flex items-center gap-2 truncate">
-                                <span x-text="selectedName.lokasi" class="font-bold text-slate-700"></span>
-                                <span x-text="selectedName.gedung" class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 py-0.5 px-2 rounded-md"></span>
-                            </div>
-                        </template>
-                        <template x-if="!selectedName">
-                            <span class="text-slate-400 font-medium truncate block">Pilih Lokasi</span>
-                        </template>
-                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
+                        <span x-text="selectedName" :class="editApar.gedung_id ? 'font-bold text-slate-700' : 'text-slate-400 font-medium'" class="truncate block"></span>
+                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-amber-500' : ''"></i>
                     </button>
-                    
-                    <!-- Dropdown Menu -->
                     <div x-show="open" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 scale-95"
@@ -1244,17 +1334,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
                             <div class="relative">
                                 <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="text" x-model="search" placeholder="Cari..." class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all" @click.stop @keydown.enter.prevent>
+                                <input type="text" x-model="search" placeholder="Cari..." class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all" @click.stop @keydown.enter.prevent>
                             </div>
                         </div>
                         <div class="py-1">
                             <template x-for="option in filteredOptions" :key="option.id">
-                            <button type="button" @click="editApar.lokasi_id = option.id; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="editApar.lokasi_id == option.id ? 'text-amber-500 bg-amber-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                                <div class="flex items-center justify-between w-full pr-4">
-                                    <span x-text="option.lokasi" class="font-bold"></span>
-                                    <span x-text="option.gedung" class="text-[10px] font-bold uppercase tracking-wider py-0.5 px-2 rounded-md transition-colors" :class="editApar.lokasi_id == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'bg-slate-100 text-slate-500'"></span>
-                                </div>
-                                <i class="ph-bold ph-check text-[#009B77]" x-show="editApar.lokasi_id == option.id" x-cloak></i>
+                            <button type="button" @click="editApar.gedung_id = option.id; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="editApar.gedung_id == option.id ? 'text-amber-500 bg-amber-500/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                                <span x-text="option.name" class="font-bold"></span>
+                                <i class="ph-bold ph-check text-amber-500" x-show="editApar.gedung_id == option.id" x-cloak></i>
                             </button>
                             </template>
                             <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
@@ -1263,7 +1350,51 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                     </div>
                 </div>
-                @error('lokasi_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                @error('gedung_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+            </div>
+
+            <!-- Lokasi -->
+            <div x-data="{
+                open: false,
+                search: '',
+                get filtered() {
+                    if (this.search === '') return this.filteredLokasi;
+                    return this.filteredLokasi.filter(l => l.nama.toLowerCase().includes(this.search.toLowerCase()));
+                },
+                init() {
+                    this.search = editApar.lokasi || '';
+                    this.$watch('editApar.lokasi', val => this.search = val || '');
+                }
+            }">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi <span class="text-[10px] text-slate-400 font-medium normal-case">(Pilih / Ketik Baru)</span></label>
+                <div class="relative">
+                    <input type="hidden" name="lokasi" :value="editApar.lokasi">
+                    <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-amber-500' : 'peer-focus:text-amber-500'"></i>
+                    <input type="text" x-model="editApar.lokasi" @focus="open = true" @click.away="open = false" placeholder="Contoh: Corridor" required 
+                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none"
+                           :class="open ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : ''">
+                    <div x-show="open && filteredLokasi.length > 0" x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top">
+                        <div class="py-1">
+                            <template x-for="lok in filtered" :key="lok.id">
+                            <button type="button" @click="editApar.lokasi = lok.nama; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="editApar.lokasi == lok.nama ? 'text-amber-500 bg-amber-500/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                                <span x-text="lok.nama" class="font-bold"></span>
+                                <i class="ph-bold ph-check text-amber-500" x-show="editApar.lokasi == lok.nama" x-cloak></i>
+                            </button>
+                            </template>
+                            <div x-show="filtered.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                Ketik untuk menambah lokasi baru
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @error('lokasi') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <!-- Jenis APAR -->
@@ -1394,24 +1525,25 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 @error('kapasitas_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Vendor Refill -->
+            <!-- Qty -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Vendor Refill</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Qty</label>
                 <div class="relative">
-                    <i class="ph-bold ph-storefront absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                    <input type="text" name="vendor" placeholder="Nama perusahaan vendor..." x-model="editApar.vendor"
-                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15">
+                    <i class="ph-bold ph-hash absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                    <input type="number" name="qty" min="0" placeholder="Masukkan jumlah" x-model="editApar.qty" required
+                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                 </div>
-                @error('vendor') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                @error('qty') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <!-- Tanggal Kedaluwarsa -->
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Kedaluwarsa</label>
                 <div class="relative">
-                    <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                    <input type="text" name="tgl_kedaluwarsa" placeholder="Pilih Tanggal..." x-model="editApar.tgl_kedaluwarsa"
-                           class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
+                    <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
+                    <input type="text" name="tgl_kedaluwarsa" placeholder="Pilih Tanggal..." x-model="editApar.tgl_kedaluwarsa" required
+                           class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
+                    <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                 </div>
                 @error('tgl_kedaluwarsa') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
@@ -1693,12 +1825,12 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <div x-show="showQrModal"
              x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-             class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" x-cloak></div>
+             class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                 <div x-show="showQrModal" @click.away="showQrModal = false"
-                     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-sm border border-slate-100" x-cloak>
                     
                     <div class="bg-gradient-to-br from-[#009B77] to-[#007b5e] p-6 text-center relative overflow-hidden">
@@ -1730,6 +1862,62 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
     </div>
 
-</div>
+    <!-- Modal History -->
+    <div x-data="{ 
+        show: false, 
+        loading: false, 
+        htmlContent: '', 
+        aparKode: '',
+        openModal(e) { 
+            this.show = true; 
+            this.loading = true;
+            this.aparKode = e.detail.kode;
+            this.htmlContent = '';
+            fetch('/master-data/apar/' + e.detail.id + '/history')
+                .then(res => res.text())
+                .then(html => {
+                    this.htmlContent = html;
+                    this.loading = false;
+                });
+        }
+    }" 
+    @open-history.window="openModal($event)" 
+    x-show="show" 
+    class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div x-show="show" class="fixed inset-0 bg-slate-900/40" @click="show = false"></div>
 
+            <div x-show="show" class="relative inline-block w-full max-w-4xl p-6 overflow-hidden text-left align-middle bg-white shadow-2xl rounded-3xl sm:my-8 border border-slate-100">
+                
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center border border-indigo-100">
+                            <i class="ph-bold ph-clock-counter-clockwise text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-slate-800 tracking-tight">Riwayat Perubahan Data</h3>
+                            <p class="text-sm font-semibold text-slate-500 mt-0.5">Timeline aktivitas untuk APAR <span class="text-indigo-600 font-bold" x-text="aparKode"></span></p>
+                        </div>
+                    </div>
+                    <button @click="show = false" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl">
+                        <i class="ph-bold ph-x text-lg"></i>
+                    </button>
+                </div>
+
+                <div x-show="loading" class="py-16 flex flex-col justify-center items-center gap-3">
+                    <p class="text-sm font-bold text-slate-500">Memuat riwayat data...</p>
+                </div>
+                
+                <div x-show="!loading" x-html="htmlContent" class="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                </div>
+
+                <div class="mt-6 flex justify-end pt-5 border-t border-slate-100">
+                    <button @click="show = false" class="px-6 py-2.5 text-sm font-bold text-slate-600 bg-white border-2 border-slate-200/60 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 rounded-xl shadow-sm">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

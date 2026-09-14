@@ -55,26 +55,45 @@
             </div>
         </div>
         <div class="flex-shrink-0 flex items-center gap-2">
-            @if($isTerlewat)
-                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200">
-                    TERLEWAT
+            @php
+                $pct = $jadwal->total_apar > 0 ? round(($jadwal->inspected_apar / $jadwal->total_apar) * 100) : 0;
+            @endphp
+            @if($isTerlewat && $jadwal->status !== 'selesai')
+                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 flex flex-col items-center">
+                    <span>TERLEWAT</span>
+                    <span class="text-[8px] opacity-80 mt-0.5">{{ $jadwal->inspected_apar }}/{{ $jadwal->total_apar }} ({{ $pct }}%)</span>
+                </span>
+            @elseif($jadwal->status === 'menunggu')
+                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 border border-orange-200 flex flex-col items-center">
+                    <span>MENUNGGU</span>
+                    <span class="text-[8px] opacity-80 mt-0.5">0/{{ $jadwal->total_apar }} (0%)</span>
+                </span>
+            @elseif($jadwal->status === 'proses')
+                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 flex flex-col items-center">
+                    <span>PROSES</span>
+                    <span class="text-[8px] opacity-80 mt-0.5">{{ $jadwal->inspected_apar }}/{{ $jadwal->total_apar }} ({{ $pct }}%)</span>
                 </span>
             @else
-                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg {{ $jadwal->status === 'menunggu' ? 'bg-orange-50 text-orange-600 border border-orange-200' : 'bg-[#009B77]/10 text-[#009B77] border border-[#009B77]/20' }}">
-                    {{ $jadwal->status }}
+                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-[#009B77]/10 text-[#009B77] border border-[#009B77]/20 flex flex-col items-center">
+                    <span>SELESAI</span>
+                    <span class="text-[8px] opacity-80 mt-0.5">{{ $jadwal->total_apar }}/{{ $jadwal->total_apar }} (100%)</span>
                 </span>
             @endif
-            <button type="button" @click="editData = { id: {{ $jadwal->id }}, jenis_jadwal: '{{ addslashes($jadwal->jenis_jadwal) }}', tanggal: '{{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->format('Y-m-d') }}', tipe_area: '{{ $jadwal->tipe_area }}', gedung_id: {{ $jadwal->gedung_id ?? 'null' }}, lokasi_id: {{ $jadwal->lokasi_id ?? 'null' }}, user_id: {{ $jadwal->user_id ?? 'null' }}, catatan_tambahan: '{{ addslashes(str_replace(PHP_EOL, ' ', $jadwal->catatan_tambahan)) }}' }; showModalEditJadwal = true" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors" title="Edit Jadwal">
-                <i class="ph-bold ph-pencil-simple text-lg"></i>
-            </button>
-            <form action="/inspection-schedule/{{ $jadwal->id }}" method="POST" class="inline-block"
-                  onsubmit="event.preventDefault(); Swal.fire({ title: 'Hapus Jadwal?', text: 'Jadwal yang dihapus tidak dapat dikembalikan!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal', customClass: { confirmButton: 'rounded-xl', cancelButton: 'rounded-xl' } }).then((result) => { if (result.isConfirmed) { this.submit(); } })">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus Jadwal">
-                    <i class="ph-bold ph-trash text-lg"></i>
+            @if(auth()->user()->role !== 'Staff' && $jadwal->status !== 'selesai')
+                @if(!isset($jadwal->is_rutin_virtual))
+                <button type="button" @click="editData = { id: {{ $jadwal->id }}, jenis_jadwal: '{{ addslashes($jadwal->jenis_jadwal) }}', tanggal: '{{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->format('Y-m-d') }}', tipe_area: '{{ $jadwal->tipe_area }}', gedung_id: {{ $jadwal->gedung_id ?? 'null' }}, lokasi_id: {{ $jadwal->lokasi_id ?? 'null' }}, user_id: {{ $jadwal->user_id ?? 'null' }}, catatan_tambahan: '{{ addslashes(str_replace(PHP_EOL, ' ', $jadwal->catatan_tambahan)) }}' }; showModalEditJadwal = true" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors" title="Edit Jadwal">
+                    <i class="ph-bold ph-pencil-simple text-lg"></i>
                 </button>
-            </form>
+                <form action="/inspection-schedule/{{ $jadwal->id }}" method="POST" class="inline-block"
+                      onsubmit="event.preventDefault(); Swal.fire({ title: 'Hapus Jadwal?', text: 'Jadwal yang dihapus tidak dapat dikembalikan!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal', customClass: { confirmButton: 'rounded-xl', cancelButton: 'rounded-xl' } }).then((result) => { if (result.isConfirmed) { this.submit(); } })">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus Jadwal">
+                        <i class="ph-bold ph-trash text-lg"></i>
+                    </button>
+                </form>
+                @endif
+            @endif
         </div>
     </div>
 </div>

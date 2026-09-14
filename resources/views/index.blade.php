@@ -118,7 +118,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-2">
                         <label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Password</label>
-                        <a href="#" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">Lupa Password?</a>
+                            <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">Lupa Password?</a>
                     </div>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">

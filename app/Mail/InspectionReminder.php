@@ -2,33 +2,30 @@
 
 namespace App\Mail;
 
-use App\Models\JadwalInspeksi;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InspectionAssigned extends Mailable
+class InspectionReminder extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $user;
-
-    public $jadwals;
-
-    public $pin;
+    public $jenis;
+    public $tanggal;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $user, $jadwals, ?string $pin = null)
+    public function __construct($user, $jenis, $tanggal)
     {
         $this->user = $user;
-        $this->jadwals = $jadwals;
-        $this->pin = $pin;
+        $this->jenis = $jenis;
+        $this->tanggal = $tanggal;
     }
 
     /**
@@ -37,7 +34,7 @@ class InspectionAssigned extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pemberitahuan Jadwal Inspeksi APAR',
+            subject: 'Pengingat Jadwal Inspeksi APAR - B. Braun',
         );
     }
 
@@ -47,7 +44,7 @@ class InspectionAssigned extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.inspection_assigned',
+            view: 'emails.inspection-reminder',
         );
     }
 

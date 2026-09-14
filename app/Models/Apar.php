@@ -13,7 +13,7 @@ class Apar extends Model
 
     protected $table = 'apar';
 
-    protected $fillable = ['kode', 'lokasi_id', 'jenis_id', 'kapasitas_id', 'vendor', 'tgl_kedaluwarsa', 'foto'];
+    protected $fillable = ['kode', 'qty', 'lokasi_id', 'jenis_id', 'kapasitas_id', 'vendor', 'tgl_kedaluwarsa', 'foto', 'pic_id'];
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -45,5 +45,15 @@ class Apar extends Model
     public function inspeksis()
     {
         return $this->hasMany(Inspeksi::class);
+    }
+
+    public function latestInspeksi()
+    {
+        return $this->hasOne(Inspeksi::class)->latestOfMany();
+    }
+
+    public function pic()
+    {
+        return $this->belongsTo(User::class, 'pic_id');
     }
 }

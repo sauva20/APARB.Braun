@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-#[Fillable(['name', 'email', 'password', 'pin', 'role'])]
+#[Fillable(['name', 'email', 'password', 'employee_id', 'pin', 'role', 'jadwal_rutin_tanggal'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -38,5 +38,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function gedungs()
+    {
+        return $this->belongsToMany(Gedung::class);
     }
 }

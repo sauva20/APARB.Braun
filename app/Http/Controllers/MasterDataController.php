@@ -20,7 +20,7 @@ class MasterDataController extends Controller
         $jenisApars = JenisApar::all();
         $kapasitasApars = KapasitasApar::all();
 
-        $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas']);
+        $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas', 'latestInspeksi.user']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -53,9 +53,145 @@ class MasterDataController extends Controller
             $query->where('jenis_id', $request->jenis_id);
         }
 
-        $apars = $query->latest()->paginate(10)->withQueryString();
+        $apars = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
 
         return view('master-data.index', compact('gedungs', 'lokasis', 'jenisApars', 'kapasitasApars', 'apars'));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas', 'latestInspeksi.user']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('kode', 'like', "%{$search}%")
+                    ->orWhereHas('lokasi', function ($q2) use ($search) {
+                        $q2->where('nama', 'like', "%{$search}%")
+                            ->orWhereHas('gedung', function ($q3) use ($search) {
+                                $q3->where('nama', 'like', "%{$search}%");
+                            });
+                    });
+            });
+        }
+
+        if ($request->filled('gedung_id')) {
+            $query->whereHas('lokasi', function ($q) use ($request) {
+                $q->where('gedung_id', $request->gedung_id);
+            });
+        }
+
+        if ($request->filled('lokasi_id')) {
+            $query->where('lokasi_id', $request->lokasi_id);
+        }
+
+        if ($request->filled('kapasitas_id')) {
+            $query->where('kapasitas_id', $request->kapasitas_id);
+        }
+
+        if ($request->filled('jenis_id')) {
+            $query->where('jenis_id', $request->jenis_id);
+        }
+
+        $apars = $query->orderBy('id', 'asc')->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('master-data.pdf', compact('apars'))->setPaper('a4', 'portrait');
+        return $pdf->stream('Data_APAR_' . date('Ymd_His') . '.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas', 'latestInspeksi.user', 'pic']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('kode', 'like', "%{$search}%")
+                    ->orWhereHas('lokasi', function ($q2) use ($search) {
+                        $q2->where('nama', 'like', "%{$search}%")
+                            ->orWhereHas('gedung', function ($q3) use ($search) {
+                                $q3->where('nama', 'like', "%{$search}%");
+                            });
+                    });
+            });
+        }
+
+        if ($request->filled('gedung_id')) {
+            $query->whereHas('lokasi', function ($q) use ($request) {
+                $q->where('gedung_id', $request->gedung_id);
+            });
+        }
+
+        if ($request->filled('lokasi_id')) {
+            $query->where('lokasi_id', $request->lokasi_id);
+        }
+
+        if ($request->filled('kapasitas_id')) {
+            $query->where('kapasitas_id', $request->kapasitas_id);
+        }
+
+        if ($request->filled('jenis_id')) {
+            $query->where('jenis_id', $request->jenis_id);
+        }
+
+        $apars = $query->orderBy('id', 'asc')->get();
+
+        $filename = "Data_APAR_" . date('Ymd_His') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['No', 'ID APAR', 'Lokasi', 'Gedung', 'Jenis', 'Kapasitas', 'Kelas Kebakaran', 'Tgl Kedaluwarsa', 'Qty', 'Vendor', 'PIC', 'Terakhir Inspeksi'];
+
+        $callback = function() use($apars, $columns) {
+            $file = fopen('php://output', 'w');
+            // add BOM to fix UTF-8 in Excel
+            fputs($file, $bom =(chr(0xEF) . chr(0xBB) . chr(0xBF)));
+            fputcsv($file, $columns);
+
+            foreach ($apars as $index => $apar) {
+                $jenisNamaL = strtolower($apar->jenis->nama ?? '');
+                $kelas = '-';
+                if (strpos($jenisNamaL, 'dry chemical') !== false || strpos($jenisNamaL, 'powder') !== false) {
+                    $kelas = 'A-B-C';
+                } elseif (strpos($jenisNamaL, 'carbon') !== false || strpos($jenisNamaL, 'dioxide') !== false || strpos($jenisNamaL, 'co2') !== false) {
+                    $kelas = 'B-C';
+                }
+
+                $lastInspeksi = $apar->latestInspeksi;
+                $picName = '-';
+                if ($lastInspeksi && $lastInspeksi->user) {
+                    $picName = $lastInspeksi->user->name;
+                } elseif ($apar->pic) {
+                    $picName = $apar->pic->name;
+                }
+
+                $row = [
+                    $index + 1,
+                    $apar->kode,
+                    $apar->lokasi->nama ?? '-',
+                    $apar->lokasi->gedung->nama ?? '-',
+                    $apar->jenis->nama ?? '-',
+                    $apar->kapasitas->ukuran ?? '-',
+                    $kelas,
+                    $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-',
+                    $apar->qty,
+                    $apar->vendor ?? '-',
+                    $picName,
+                    $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
+                ];
+
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function storeGedung(Request $request)
@@ -182,17 +318,32 @@ class MasterDataController extends Controller
     public function storeApar(Request $request)
     {
         $request->validate([
-            'lokasi_id' => 'required|exists:lokasi,id',
+            'gedung_id' => 'required|exists:gedung,id',
+            'lokasi' => 'required|string|max:255',
             'jenis_id' => 'required|exists:jenis_apar,id',
             'kapasitas_id' => 'required|exists:kapasitas_apar,id',
             'vendor' => 'nullable|string|max:255',
             'tgl_kedaluwarsa' => 'nullable|date',
+            'nomor_apar' => 'required|string|max:10',
         ]);
 
-        $kode = $this->generateKode($request->lokasi_id, $request->jenis_id);
+        $lokasi = Lokasi::firstOrCreate([
+            'gedung_id' => $request->gedung_id,
+            'nama' => $request->lokasi,
+        ]);
 
-        $data = $request->except('kode');
+        $prefix = $this->generatePrefix($lokasi->id, $request->jenis_id);
+        $kode = $prefix . $request->nomor_apar;
+
+        // Cek unik
+        if (Apar::where('kode', $kode)->exists()) {
+            return redirect()->back()->withErrors(['nomor_apar' => 'Nomor APAR ini sudah digunakan untuk prefix ' . $prefix])->withInput()->with('form_type', 'tambah_apar');
+        }
+
+        $data = $request->except(['kode', 'nomor_apar', 'form_type', 'gedung_id', 'lokasi']);
         $data['kode'] = $kode;
+        $data['lokasi_id'] = $lokasi->id;
+        $data['pic_id'] = auth()->id();
 
         if (empty($data['vendor'])) {
             $data['vendor'] = 'N/A';
@@ -255,29 +406,44 @@ class MasterDataController extends Controller
     public function updateApar(Request $request, Apar $apar)
     {
         $request->validate([
-            'lokasi_id' => 'required|exists:lokasi,id',
+            'gedung_id' => 'required|exists:gedung,id',
+            'lokasi' => 'required|string|max:255',
             'jenis_id' => 'required|exists:jenis_apar,id',
             'kapasitas_id' => 'required|exists:kapasitas_apar,id',
             'vendor' => 'nullable|string|max:255',
             'tgl_kedaluwarsa' => 'nullable|date',
+            'nomor_apar' => 'required|string|max:10',
         ]);
 
-        $data = $request->except('kode');
+        $lokasi = Lokasi::firstOrCreate([
+            'gedung_id' => $request->gedung_id,
+            'nama' => $request->lokasi,
+        ]);
+
+        $data = $request->except(['kode', 'nomor_apar', 'form_type', 'gedung_id', 'lokasi']);
+        $data['lokasi_id'] = $lokasi->id;
+        $data['pic_id'] = auth()->id();
 
         if (empty($data['vendor'])) {
             $data['vendor'] = 'N/A';
         }
 
-        if ($apar->lokasi_id != $request->lokasi_id || $apar->jenis_id != $request->jenis_id) {
-            $data['kode'] = $this->generateKode($request->lokasi_id, $request->jenis_id);
+        $prefix = $this->generatePrefix($lokasi->id, $request->jenis_id);
+        $newKode = $prefix . $request->nomor_apar;
+
+        // Cek unik untuk kode yang baru jika ada perubahan
+        if ($newKode !== $apar->kode && Apar::where('kode', $newKode)->where('id', '!=', $apar->id)->exists()) {
+            return redirect()->back()->withErrors(['nomor_apar' => 'Nomor APAR ini sudah digunakan untuk prefix ' . $prefix])->withInput()->with('form_type', 'edit_apar')->with('id', $apar->id);
         }
+
+        $data['kode'] = $newKode;
 
         $apar->update($data);
 
         return redirect()->back()->with('success', 'Data APAR berhasil diperbarui!');
     }
 
-    private function generateKode($lokasi_id, $jenis_id)
+    private function generatePrefix($lokasi_id, $jenis_id)
     {
         $lokasi = Lokasi::with('gedung')->find($lokasi_id);
         $jenis = JenisApar::find($jenis_id);
@@ -303,27 +469,13 @@ class MasterDataController extends Controller
         }
 
         $buildingPrefix = "PFE-{$gedungCode}-";
+        return $buildingPrefix . $jenisCode;
+    }
 
-        $lastApar = Apar::where('kode', 'like', 'PFE-%')->get();
-        $usedNumbers = [];
-        foreach ($lastApar as $ap) {
-            if (preg_match('/(\d+)$/', $ap->kode, $matches)) {
-                $usedNumbers[] = (int) $matches[1];
-            }
-        }
-
-        $nextSeq = 1;
-        if (! empty($usedNumbers)) {
-            sort($usedNumbers);
-            foreach ($usedNumbers as $num) {
-                if ($num == $nextSeq) {
-                    $nextSeq++;
-                } elseif ($num > $nextSeq) {
-                    break;
-                }
-            }
-        }
-
-        return $buildingPrefix.$jenisCode.$nextSeq;
+    public function history(Apar $apar)
+    {
+        // Hanya ambil 1 data aktivitas terakhir (yang paling baru)
+        $activities = $apar->activities()->with('causer')->latest()->take(1)->get();
+        return view('master-data.history-partial', compact('apar', 'activities'));
     }
 }

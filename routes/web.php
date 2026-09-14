@@ -6,6 +6,8 @@ use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PasswordSetupController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,15 +17,32 @@ Route::get('/', function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    });
+Route::get('/setup-password/{user}', [PasswordSetupController::class, 'show'])->name('setup-password')->middleware('signed');
+Route::post('/setup-password/{user}', [PasswordSetupController::class, 'store'])->middleware('signed');
+Route::get('/setup-password-success', [PasswordSetupController::class, 'success'])->name('setup-password.success');
 
+use App\Http\Controllers\ForgotPasswordController;
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{user}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset')->middleware('signed');
+Route::post('/reset-password/{user}', [ForgotPasswordController::class, 'reset'])->name('password.update')->middleware('signed');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change-password');
+    Route::post('/profile/change-pin', [ProfileController::class, 'updatePin'])->name('profile.change-pin');
+
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index']);
+
+    Route::get('/users/export-pdf', [UserController::class, 'exportPdf'])->name('users.export-pdf');
+    Route::get('/users/export-excel', [UserController::class, 'exportExcel'])->name('users.export-excel');
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
 
     Route::get('/master-data', [MasterDataController::class, 'index']);
+    Route::get('/master-data/export-pdf', [MasterDataController::class, 'exportPdf'])->name('master-data.export-pdf');
+    Route::get('/master-data/export-excel', [MasterDataController::class, 'exportExcel'])->name('master-data.export-excel');
     Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+    Route::get('/activity-log/export-pdf', [ActivityLogController::class, 'exportPdf'])->name('activity-log.export-pdf');
+    Route::get('/activity-log/export-excel', [ActivityLogController::class, 'exportExcel'])->name('activity-log.export-excel');
 
     // Master Data Reference Routes
     Route::post('/master-data/gedung', [MasterDataController::class, 'storeGedung']);
@@ -50,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/master-data/apar/{apar}/qr-data', [MasterDataController::class, 'getQrData']);
     Route::get('/master-data/apar/{apar}/download-qr', [MasterDataController::class, 'downloadQr']);
     Route::get('/master-data/apar/{apar}/print-qr', [MasterDataController::class, 'printSingleQr'])->name('apar.print-single-qr');
+    Route::get('/master-data/apar/{apar}/history', [MasterDataController::class, 'history']);
 
     Route::put('/master-data/apar/{apar}', [MasterDataController::class, 'updateApar']);
     Route::delete('/master-data/apar/{apar}', [MasterDataController::class, 'destroyApar']);
@@ -60,6 +80,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/inspection-schedule/{jadwal}', [InspeksiController::class, 'destroyJadwal']);
 
     Route::get('/inspeksi/mulai/{apar}', [InspeksiController::class, 'create'])->name('inspeksi.mulai');
+    Route::get('/inspeksi/sukses/{apar}', [InspeksiController::class, 'sukses'])->name('inspeksi.sukses');
+    Route::get('/inspeksi/sukses/{apar}', [InspeksiController::class, 'sukses'])->name('inspeksi.sukses');
     Route::post('/inspeksi/store/{apar}', [InspeksiController::class, 'store'])->name('inspeksi.store');
 });
 

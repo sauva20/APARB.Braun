@@ -55,6 +55,10 @@
     </script>
 
     <style>
+        .flatpickr-wrapper {
+            display: block !important;
+            width: 100% !important;
+        }
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
             background: #009B77 !important;
             border-color: #009B77 !important;
@@ -160,7 +164,7 @@
     <!-- Sidebar -->
     <aside @mouseenter="sidebarOpen = true" @mouseleave="sidebarOpen = false" 
            :class="sidebarOpen ? 'w-[260px]' : 'w-[80px]'" 
-           class="w-[80px] bg-white flex-col hidden md:flex border-r border-slate-200/60 z-20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] relative flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.01)] will-change-[width] overflow-x-hidden">
+           class="w-[80px] bg-white flex-col hidden md:flex border-r border-slate-200/60 z-20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] relative flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.01)] will-change-[width]">
         
         <!-- Logo Area -->
         <div class="px-0 justify-center h-[72px] flex items-center border-b border-slate-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] w-full overflow-hidden" :class="sidebarOpen ? 'px-6 justify-start' : 'px-0 justify-center'">
@@ -170,13 +174,19 @@
         </div>
         
         <!-- User Profile -->
-        <div class="justify-center p-4 border-b border-slate-50 flex items-center transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
-            <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center">
-                <span class="text-sm font-bold text-[#009B77]">SS</span>
-            </div>
-            <div class="opacity-0 w-0 ml-0 whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">
-                <h3 class="font-bold text-sm text-slate-800">Safety Systems</h3>
-                <p class="text-xs text-slate-500">EHSS, SM, OE, LPMO</p>
+        <div class="relative z-50" x-data>
+            <div @click="$dispatch('open-profile-modal')" class="justify-center p-4 border-b border-slate-50 flex items-center transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden cursor-pointer hover:bg-slate-50" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
+                <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center">
+                    @php
+                        $nameParts = explode(' ', auth()->user()->name);
+                        $initials = isset($nameParts[1]) ? substr($nameParts[0], 0, 1) . substr($nameParts[1], 0, 1) : substr($nameParts[0], 0, 2);
+                    @endphp
+                    <span class="text-sm font-bold text-[#009B77] uppercase">{{ $initials }}</span>
+                </div>
+                <div class="opacity-0 w-0 ml-0 whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">
+                    <h3 class="font-bold text-sm text-slate-800 truncate" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</h3>
+                    <p class="text-xs text-slate-500 truncate" title="{{ auth()->user()->role }}">{{ auth()->user()->role }}</p>
+                </div>
             </div>
         </div>
 
@@ -197,26 +207,30 @@
                 <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Inspection Schedule</span>
             </a>
 
+            @if(auth()->user()->role !== 'Staff')
             <a href="/users" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('users') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Manajemen User">
                 <i class="ph-duotone ph-users text-xl flex-shrink-0"></i>
                 <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Manajemen User</span>
             </a>
+            @endif
             
-            <a href="/activity-log" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('activity-log') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Log Aktivitas">
-                <i class="ph-duotone ph-clock-counter-clockwise text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Log Aktivitas</span>
+            @if(auth()->user()->role !== 'Staff')
+            <a href="/activity-log" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('activity-log') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Audit Trail">
+                <i class="ph-bold ph-clock-counter-clockwise text-xl flex-shrink-0"></i>
+                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Audit Trail</span>
             </a>
             
             <a href="#" class="justify-center flex items-center p-3 overflow-hidden rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium transition-colors" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Reports">
                 <i class="ph-duotone ph-file-text text-xl flex-shrink-0"></i>
                 <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Reports</span>
             </a>
+            @endif
         </nav>
         <!-- Bottom Actions (Removed) -->
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative print:h-auto print:overflow-visible">
         
         <!-- Top Navbar -->
         <header class="h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-8 z-10 flex-shrink-0 shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
@@ -250,17 +264,14 @@
                 <button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-[#009B77] transition-colors" title="Pengaturan">
                     <i class="ph-bold ph-gear text-xl"></i>
                 </button>
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Keluar">
-                        <i class="ph-bold ph-sign-out text-xl"></i>
-                    </button>
-                </form>
+                <button type="button" @click="$dispatch('open-logout-modal')" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Keluar">
+                    <i class="ph-bold ph-sign-out text-xl"></i>
+                </button>
             </div>
         </header>
 
         <!-- Page Content -->
-        <div class="p-8 overflow-y-auto flex-1">
+        <div class="p-8 overflow-y-auto flex-1 print:overflow-visible print:h-auto print:p-0">
             <div class="w-full max-w-[1400px] mx-auto">
                 @yield('content')
             </div>
@@ -276,5 +287,247 @@
             });
         });
     </script>
+
+    <!-- Change Password Modal -->
+    <div x-data="{ open: false }" @open-change-password.window="open = true" x-show="open" class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4" style="display: none;" x-cloak>
+        <div x-show="open" @click.away="open = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar border border-slate-100">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <i class="ph-bold ph-key text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">Ganti Kata Sandi</h3>
+                        <p class="text-xs font-semibold text-slate-500">Perbarui kata sandi akun Anda</p>
+                    </div>
+                </div>
+                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            
+            <form action="{{ route('profile.change-password') }}" method="POST">
+                @csrf
+                <div class="p-6 space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sandi Saat Ini</label>
+                        <input type="password" name="current_password" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sandi Baru (Min. 8)</label>
+                        <input type="password" name="new_password" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi Sandi Baru</label>
+                        <input type="password" name="new_password_confirmation" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
+                    <button type="submit" class="bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-teal-500/30 transition-all text-sm">Simpan Sandi Baru</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change PIN Modal -->
+    <div x-data="{ open: false }" @open-change-pin.window="open = true" x-show="open" class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4" style="display: none;" x-cloak>
+        <div x-show="open" @click.away="open = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar border border-slate-100">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <i class="ph-bold ph-password text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">Ganti PIN</h3>
+                        <p class="text-xs font-semibold text-slate-500">Perbarui PIN 4-digit Anda</p>
+                    </div>
+                </div>
+                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            
+            <form action="{{ route('profile.change-pin') }}" method="POST">
+                @csrf
+                <div class="p-6 space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Saat Ini</label>
+                        <input type="password" name="current_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Baru (4 Digit Angka)</label>
+                        <input type="password" name="new_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi PIN Baru</label>
+                        <input type="password" name="new_pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
+                    <button type="submit" class="bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-teal-500/30 transition-all text-sm">Simpan PIN Baru</button>
+                </div>
+            </form>
+        </div>
+    </div>
+        <!-- Profile Modal -->
+        <div x-data="{ show: false }"
+             @open-profile-modal.window="show = true"
+             x-show="show"
+             style="display: none;"
+             class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4">
+            
+            <div x-show="show" 
+                 @click.away="show = false"
+                 class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar">
+                
+                <!-- Modal Header -->
+                <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 flex items-center justify-center text-[#009B77]">
+                            <i class="ph-fill ph-user-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Profil Saya</h3>
+                            <p class="text-xs font-semibold text-slate-500">Informasi akun dan PIC APAR</p>
+                        </div>
+                    </div>
+                    <button @click="show = false" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors">
+                        <i class="ph-bold ph-x text-lg"></i>
+                    </button>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="p-6 space-y-6">
+                    <!-- Info Section -->
+                    <div class="flex items-center gap-5 p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div class="w-16 h-16 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center shadow-sm flex-shrink-0">
+                            @php
+                                $nameParts = explode(' ', auth()->user()->name);
+                                $initials = isset($nameParts[1]) ? substr($nameParts[0], 0, 1) . substr($nameParts[1], 0, 1) : substr($nameParts[0], 0, 2);
+                            @endphp
+                            <span class="text-xl font-bold text-[#009B77] uppercase">{{ $initials }}</span>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-slate-800 text-lg mb-1 truncate">{{ auth()->user()->name }}</h4>
+                            <div class="flex items-center gap-3 text-sm text-slate-500 font-medium truncate">
+                                <span class="flex items-center gap-1.5 truncate"><i class="ph-bold ph-envelope-simple text-slate-400"></i> {{ auth()->user()->email }}</span>
+                            </div>
+                            <div class="mt-2 inline-flex px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#009B77]/10 text-[#009B77] uppercase tracking-wider">
+                                {{ auth()->user()->role }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PIC Info -->
+                    <div>
+                        <h5 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="ph-bold ph-buildings"></i> Tanggung Jawab Utama Gedung
+                        </h5>
+                        @php
+                            $user = auth()->user();
+                        @endphp
+                        
+                        @if($user->role === 'Head')
+                            <div class="p-4 bg-[#009B77]/10 border border-[#009B77]/20 rounded-xl flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-lg bg-white text-[#009B77] flex items-center justify-center shadow-sm flex-shrink-0">
+                                    <i class="ph-fill ph-buildings text-xl"></i>
+                                </div>
+                                <div>
+                                    <h6 class="font-bold text-slate-800">Semua Gedung (Admin)</h6>
+                                    <p class="text-xs font-medium text-slate-500 mt-0.5">Memiliki akses pantau penuh ke semua area.</p>
+                                </div>
+                            </div>
+                        @else
+                            @if($user->gedungs->isEmpty())
+                                <div class="p-4 bg-slate-50 border border-slate-100 border-dashed rounded-xl text-center text-sm font-medium text-slate-500">
+                                    Anda belum ditugaskan sebagai PIC untuk gedung manapun.
+                                </div>
+                            @else
+                                <div class="space-y-3 mb-4">
+                                    @foreach($user->gedungs as $gedung)
+                                        <div class="p-3 border border-slate-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between hover:bg-slate-50 transition-colors gap-2">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                                                    <i class="ph-fill ph-building"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-slate-800">{{ $gedung->nama }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                
+                                @if($user->jadwal_rutin_tanggal)
+                                <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-3">
+                                    <i class="ph-fill ph-calendar-blank text-amber-500 text-lg mt-0.5"></i>
+                                    <div>
+                                        <h6 class="text-sm font-bold text-slate-800">Jadwal Inspeksi Rutin</h6>
+                                        <p class="text-xs font-medium text-slate-600 mt-0.5">Setiap tanggal <strong>{{ $user->jadwal_rutin_tanggal }}</strong> setiap bulannya.</p>
+                                    </div>
+                                </div>
+                                @endif
+                            @endif
+                        @endif
+                    </div>
+
+                    <!-- Actions -->
+                    <div>
+                        <h5 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="ph-bold ph-shield-check"></i> Keamanan Akun
+                        </h5>
+                        <div class="flex flex-col gap-2">
+                            <button type="button" @click="$dispatch('open-change-password'); show = false" class="w-full text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-[#009B77] hover:bg-[#009B77]/5 transition-all flex items-center justify-between group">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-[#009B77] flex items-center justify-center transition-colors">
+                                        <i class="ph-bold ph-key"></i>
+                                    </div>
+                                    <span class="text-sm font-bold text-slate-700 group-hover:text-[#009B77] transition-colors">Ganti Kata Sandi</span>
+                                </div>
+                                <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-[#009B77] transition-colors"></i>
+                            </button>
+                            <button type="button" @click="$dispatch('open-change-pin'); show = false" class="w-full text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-[#009B77] hover:bg-[#009B77]/5 transition-all flex items-center justify-between group">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-[#009B77] flex items-center justify-center transition-colors">
+                                        <i class="ph-bold ph-password"></i>
+                                    </div>
+                                    <span class="text-sm font-bold text-slate-700 group-hover:text-[#009B77] transition-colors">Ganti PIN</span>
+                                </div>
+                                <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-[#009B77] transition-colors"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
+                    <button type="button" @click="$dispatch('open-logout-modal'); show = false" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-rose-500 hover:text-white border-2 border-rose-500 hover:bg-rose-500 transition-all text-sm">
+                        <i class="ph-bold ph-sign-out text-lg"></i>
+                        Keluar dari Sistem
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    <!-- Logout Confirmation Modal -->
+    <div x-data="{ open: false }" @open-logout-modal.window="open = true" x-show="open" class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4" style="display: none;" x-cloak>
+        <div x-show="open" @click.away="open = false" class="bg-white rounded-3xl shadow-xl w-full max-w-sm flex flex-col border border-slate-100 overflow-hidden">
+            <div class="p-8 text-center space-y-4">
+                <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-4 border border-rose-100">
+                    <i class="ph-bold ph-sign-out text-3xl"></i>
+                </div>
+                <h3 class="font-black text-slate-800 text-xl tracking-tight">Keluar Sistem?</h3>
+                <p class="text-sm text-slate-500 font-medium">Apakah Anda yakin ingin keluar dari aplikasi APAR Monitoring System?</p>
+            </div>
+            <div class="px-6 py-5 bg-slate-50 border-t border-slate-100 flex gap-3">
+                <button type="button" @click="open = false" class="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-600 bg-white border-2 border-slate-200 hover:bg-slate-50 transition-colors text-sm">Batal</button>
+                <form action="{{ route('logout') }}" method="POST" class="flex-1 flex">
+                    @csrf
+                    <button type="submit" class="w-full px-4 py-2.5 rounded-xl font-bold text-white bg-rose-500 hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/30 text-sm">Ya, Keluar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -2,160 +2,279 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Informasi APAR - {{ $apar->kode }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Setup Rotis Sans Serif */
+        @font-face {
+            font-family: 'Rotis Sans Serif';
+            src: url('/fonts/RotisSansSerif.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Rotis Sans Serif';
+            src: url('/fonts/RotisSansSerif-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body {
+            font-family: 'Rotis Sans Serif', sans-serif;
+            background-color: #F0F0F0;
+            color: #1A1A1A;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         [x-cloak] { display: none !important; }
     </style>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- AlpineJS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Flatpickr (for date picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <style>
+        .flatpickr-calendar { font-family: 'Rotis Sans Serif', sans-serif !important; }
+        .flatpickr-wrapper { display: block !important; width: 100% !important; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-20">
+<body class="bg-[#F0F0F0] text-[#1A1A1A] relative h-[100dvh] w-screen overflow-hidden flex flex-col">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl border-x border-slate-100 relative">
-        <!-- Header -->
-        <div class="bg-gradient-to-br from-[#009B77] to-[#007b5e] pt-12 pb-6 px-6 text-center relative overflow-hidden rounded-b-3xl">
-            <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-            <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+    <!-- Decorative Background Elements -->
+    <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[40%] bg-[#009B77] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 pointer-events-none"></div>
+    <div class="absolute bottom-10 right-[-10%] w-[50%] h-[40%] bg-[#8A4B9F] rounded-full mix-blend-multiply filter blur-[100px] opacity-15 pointer-events-none"></div>
+
+    <div class="w-full h-full max-w-md mx-auto relative z-10 flex flex-col p-4 overflow-hidden" x-data="{ showPinModal: false, pinAction: 'inspeksi', showModalEditApar: {{ request('edit') == 1 && !session('success') ? 'true' : 'false' }}, editApar: {
+        id: {{ $apar->id }},
+        kode: '{{ addslashes($apar->kode) }}',
+        nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '',
+        gedung_id: '{{ $apar->lokasi->gedung_id ?? '' }}',
+        lokasi: '{{ addslashes($apar->lokasi->nama ?? '') }}',
+        jenis_id: '{{ $apar->jenis_id }}',
+        kapasitas_id: '{{ $apar->kapasitas_id }}',
+        vendor: '{{ addslashes($apar->vendor) }}',
+        tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}'
+    } }">
+        
+        <!-- Header / Photo Section -->
+        <div class="bg-white rounded-[24px] shadow-[0_10px_30px_-15px_rgba(0,155,119,0.15)] overflow-hidden border border-slate-100 mb-4 shrink-0 relative group">
             
-            <div class="w-16 h-16 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center text-[#009B77] mb-4 relative z-10">
-                <i class="ph-fill ph-fire-extinguisher text-3xl"></i>
+            @if($apar->foto)
+            <div class="w-full h-56 relative overflow-hidden bg-slate-100">
+                <img src="{{ Storage::url($apar->foto) }}" alt="Foto APAR {{ $apar->kode }}" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
             </div>
-            <h1 class="text-2xl font-black text-white tracking-wide relative z-10">{{ $apar->kode }}</h1>
-            <p class="text-white/80 font-medium mt-1 text-sm relative z-10">Informasi & Status APAR</p>
-        </div>
-
-        <!-- Content -->
-        <div class="p-6 -mt-4 relative z-20 space-y-4">
-            
-            @if(session('error'))
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl mb-4">
-                <div class="flex items-start">
-                    <i class="ph-fill ph-warning-circle text-red-500 text-xl mr-3"></i>
-                    <p class="text-sm font-bold text-red-700">{{ session('error') }}</p>
-                </div>
-            </div>
-            @endif
-
-            <!-- Info Cards -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0">
-                    <i class="ph-fill ph-map-pin text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Lokasi</p>
-                    <p class="text-sm font-bold text-slate-800">{{ $apar->lokasi->nama ?? '-' }} ({{ $apar->lokasi->gedung->nama ?? '-' }})</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center flex-shrink-0">
-                    <i class="ph-fill ph-drop text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Jenis</p>
-                    <p class="text-sm font-bold text-slate-800">{{ $apar->jenis->nama ?? '-' }}</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center flex-shrink-0">
-                    <i class="ph-fill ph-scales text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Kapasitas</p>
-                    <p class="text-sm font-bold text-slate-800">{{ $apar->kapasitas->ukuran ?? '-' }}</p>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center flex-shrink-0">
-                    <i class="ph-fill ph-calendar-blank text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Kedaluwarsa</p>
-                    <p class="text-sm font-bold text-slate-800">{{ $apar->tgl_kedaluwarsa ? \Carbon\Carbon::parse($apar->tgl_kedaluwarsa)->format('d F Y') : '-' }}</p>
-                </div>
-            </div>
-
-            @php
-                $terakhirInspeksi = $apar->inspeksis()->latest()->first();
-            @endphp
-            
-            @if($terakhirInspeksi)
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                <div class="flex items-center justify-between mb-3">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status Terakhir</p>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase {{ $terakhirInspeksi->status == 'layak' ? 'bg-[#009B77]/10 text-[#009B77]' : 'bg-red-100 text-red-600' }}">
-                        {{ $terakhirInspeksi->status }}
-                    </span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-                        <i class="ph-fill ph-user text-xl"></i>
-                    </div>
+            <div class="absolute bottom-4 left-5 right-5">
+                <div class="flex justify-between items-end">
                     <div>
-                        <p class="text-sm font-bold text-slate-800">{{ $terakhirInspeksi->user->name ?? 'User' }}</p>
-                        <p class="text-xs font-semibold text-slate-500">{{ $terakhirInspeksi->created_at->format('d M Y, H:i') }}</p>
+                        <p class="text-white/80 text-[10px] font-bold tracking-widest uppercase mb-0.5 drop-shadow-md">Kode APAR</p>
+                        <h1 class="text-2xl font-bold text-white drop-shadow-md tracking-tight">{{ $apar->kode }}</h1>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-lg">
+                        <i class="ph-light ph-fire-extinguisher text-xl"></i>
                     </div>
                 </div>
             </div>
             @else
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 border-dashed text-center">
-                <p class="text-xs font-semibold text-slate-500">Belum ada riwayat inspeksi untuk APAR ini.</p>
+            <div class="w-full h-56 bg-gradient-to-br from-[#009B77] to-[#007b5e] relative overflow-hidden flex flex-col items-center justify-center">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                
+                <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-lg mb-2 z-10">
+                    <i class="ph-light ph-fire-extinguisher text-2xl"></i>
+                </div>
+                <h1 class="text-xl font-bold text-white tracking-wide z-10">{{ $apar->kode }}</h1>
             </div>
             @endif
-
         </div>
 
-        <!-- Fixed Action Button -->
-        <div x-data="{ showPinModal: false }" class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
-            <div class="max-w-md mx-auto p-6 pointer-events-auto bg-gradient-to-t from-white via-white to-transparent">
-                <button @click="showPinModal = true" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg shadow-slate-800/20 flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
-                    <i class="ph-bold ph-scan text-xl"></i>
-                    Lakukan Inspeksi
-                </button>
-            </div>
+        @if(session('error'))
+        <div class="bg-red-50/90 backdrop-blur-md border border-red-100 p-3 rounded-xl mb-4 shadow-sm flex items-start gap-2 shrink-0">
+            <i class="ph-fill ph-warning-circle text-red-500 text-lg shrink-0 mt-0.5"></i>
+            <p class="text-xs font-medium text-red-700 leading-tight">{{ session('error') }}</p>
+        </div>
+        @endif
 
-            <!-- PIN Modal -->
-            <div x-show="showPinModal" style="display: none;" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 pointer-events-auto" x-cloak>
-                <div x-show="showPinModal" x-transition.opacity class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm" @click="showPinModal = false"></div>
-                
-                <div x-show="showPinModal" 
-                     x-transition:enter="ease-out duration-300" x-transition:enter-start="translate-y-full sm:translate-y-8 sm:scale-95 opacity-0" x-transition:enter-end="translate-y-0 sm:scale-100 opacity-100"
-                     x-transition:leave="ease-in duration-200" x-transition:leave-start="translate-y-0 sm:scale-100 opacity-100" x-transition:leave-end="translate-y-full sm:translate-y-8 sm:scale-95 opacity-0"
-                     class="relative w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
-                    
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-slate-800">Verifikasi Petugas</h3>
-                            <button @click="showPinModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full"><i class="ph-bold ph-x text-lg"></i></button>
-                        </div>
-                        
-                        <p class="text-sm font-medium text-slate-500 mb-6">Masukkan 6 digit PIN Anda untuk melakukan inspeksi pada APAR ini.</p>
-                        
-                        <form action="{{ route('scan.verify', $apar->kode) }}" method="POST">
-                            @csrf
-                            <div class="mb-6">
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Petugas</label>
-                                <input type="password" name="pin" maxlength="6" inputmode="numeric" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3 px-4 text-center tracking-[0.5em] text-xl font-black text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••••">
-                            </div>
-                            
-                            <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-colors text-sm flex items-center justify-center gap-2">
-                                Lanjut Inspeksi <i class="ph-bold ph-arrow-right"></i>
-                            </button>
-                        </form>
+        @if(session('success'))
+        <div class="bg-teal-50/90 backdrop-blur-md border border-teal-100 p-3 rounded-xl mb-4 shadow-sm flex items-start gap-2 shrink-0">
+            <i class="ph-fill ph-check-circle text-teal-500 text-lg shrink-0 mt-0.5"></i>
+            <p class="text-xs font-medium text-teal-700 leading-tight">{{ session('success') }}</p>
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="bg-red-50/90 backdrop-blur-md border border-red-100 p-3 rounded-xl mb-4 shadow-sm flex items-start gap-2 shrink-0">
+            <i class="ph-fill ph-warning-circle text-red-500 text-lg shrink-0 mt-0.5"></i>
+            <div class="flex flex-col">
+                @foreach ($errors->all() as $error)
+                    <p class="text-xs font-medium text-red-700 leading-tight">{{ $error }}</p>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Master Data Cards -->
+        <div class="bg-white rounded-[24px] shadow-[0_10px_30px_-15px_rgba(0,155,119,0.1)] border border-slate-100 p-5 flex flex-col flex-1 overflow-hidden">
+            
+            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="ph-light ph-list-dashes text-[#009B77] text-lg"></i>
+                    <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Detail Informasi</h2>
+                </div>
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button @click="showPinModal = true; pinAction = 'inspeksi'" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 transition-colors">
+                        <i class="ph-light ph-scan text-sm"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest">Inspeksi</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="space-y-4 overflow-y-auto pr-1 pb-2" style="scrollbar-width: none;">
+                <!-- Lokasi -->
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 text-[#009B77] border border-[#009B77] flex items-center justify-center shrink-0">
+                        <i class="ph-light ph-map-pin text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Lokasi & Gedung</p>
+                        <p class="text-xs font-medium text-slate-800">{{ $apar->lokasi->nama ?? '-' }} — {{ $apar->lokasi->gedung->nama ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <!-- Jenis -->
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 text-[#009B77] border border-[#009B77] flex items-center justify-center shrink-0">
+                        <i class="ph-light ph-drop text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Jenis / Media</p>
+                        <p class="text-xs font-medium text-slate-800">{{ $apar->jenis->nama ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <!-- Kelas Kebakaran -->
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 text-[#009B77] border border-[#009B77] flex items-center justify-center shrink-0">
+                        <i class="ph-light ph-fire text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Kelas Kebakaran</p>
+                        @php
+                            $jenis = strtolower($apar->jenis->nama ?? '');
+                            $kelas = 'A, B, C'; // Default for Dry Powder / Halotron
+                            if (str_contains($jenis, 'co2') || str_contains($jenis, 'carbon')) {
+                                $kelas = 'B, C';
+                            } elseif (str_contains($jenis, 'foam')) {
+                                $kelas = 'A, B';
+                            } elseif (str_contains($jenis, 'air') || str_contains($jenis, 'water')) {
+                                $kelas = 'A';
+                            }
+                        @endphp
+                        <p class="text-xs font-medium text-slate-800">Kelas {{ $kelas }}</p>
+                    </div>
+                </div>
+
+                <!-- Kapasitas -->
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 text-[#009B77] border border-[#009B77] flex items-center justify-center shrink-0">
+                        <i class="ph-light ph-scales text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Kapasitas</p>
+                        <p class="text-xs font-medium text-slate-800">{{ $apar->kapasitas->ukuran ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <!-- Kedaluwarsa -->
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 text-[#009B77] border border-[#009B77] flex items-center justify-center shrink-0">
+                        <i class="ph-light ph-calendar-blank text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Kedaluwarsa</p>
+                        <p class="text-xs font-medium text-slate-800">{{ $apar->tgl_kedaluwarsa ? \Carbon\Carbon::parse($apar->tgl_kedaluwarsa)->format('d F Y') : '-' }}</p>
+                    </div>
+                </div>
+
+                <!-- Inspeksi Terakhir -->
+                <div class="flex items-start gap-3 pt-1">
+                    <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 text-[#009B77] border border-[#009B77] flex items-center justify-center shrink-0">
+                        <i class="ph-light ph-clock-counter-clockwise text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest mb-0.5">Inspeksi Terakhir</p>
+                        @if($latestInspeksi)
+                            <p class="text-xs font-medium text-slate-800 leading-tight">
+                                {{ $latestInspeksi->created_at->format('d M Y') }} oleh <span class="font-bold">{{ $latestInspeksi->user->name ?? 'User' }}</span>
+                                <span class="ml-1 inline-flex items-center text-[8px] px-1.5 py-0.5 rounded {{ $latestInspeksi->status == 'layak' ? 'bg-teal-50 text-teal-600' : 'bg-red-50 text-red-600' }} uppercase font-bold">{{ $latestInspeksi->status }}</span>
+                            </p>
+                            @if(!empty($latestInspeksi->catatan_tambahan))
+                                <p class="mt-1 text-[10px] text-slate-500 italic bg-slate-50 p-1.5 rounded border border-slate-100">
+                                    "{{ $latestInspeksi->catatan_tambahan }}"
+                                </p>
+                            @endif
+                        @else
+                            <p class="text-xs font-medium text-slate-400 italic">Belum pernah diinspeksi</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
 
-    </div>
+        <!-- PIN Modal -->
+        <div x-show="showPinModal" class="fixed inset-0 z-[100] flex items-center justify-center pointer-events-auto px-4" x-cloak>
+            <div x-show="showPinModal" class="fixed inset-0 bg-slate-900/60" @click="showPinModal = false"></div>
+            
+            <div x-show="showPinModal" class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden p-6 border border-slate-100">
+                
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 tracking-tight">Verifikasi Petugas</h3>
+                        <p class="text-[10px] font-medium text-slate-500 mt-0.5">Masukkan 6 digit PIN untuk memulai inspeksi.</p>
+                    </div>
+                    <button @click="showPinModal = false" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-full transition-colors">
+                        <i class="ph-light ph-x"></i>
+                    </button>
+                </div>
+                
+                <form action="{{ route('scan.verify', $apar->kode) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="action" :value="pinAction">
+                    <div class="mb-5">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">PIN Petugas</label>
+                        <input type="password" name="pin" maxlength="6" inputmode="numeric" required 
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-center tracking-[0.5em] text-xl font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all outline-none" 
+                            placeholder="••••••">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-medium py-3 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-xs flex items-center justify-center gap-2 uppercase tracking-widest active:scale-[0.98]">
+                        <span>Verifikasi</span>
+                        <i class="ph-bold ph-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr(".datepicker", {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d F Y",
+                allowInput: true,
+                disableMobile: true
+            });
+        });
+    </script>
 </body>
 </html>

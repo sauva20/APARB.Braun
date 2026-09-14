@@ -186,7 +186,7 @@
                 {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->generate(route('scan.apar', $apar->kode)) !!}
             </div>
             <div class="info-wrapper">
-                <div class="tag-system">APAR Monitoring System</div>
+                <div class="tag-system">PFE Monitoring System</div>
                 <div class="kode-apar">{{ $apar->kode }}</div>
                 
                 <div class="meta-row">

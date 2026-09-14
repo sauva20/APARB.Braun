@@ -34,13 +34,37 @@ class InspeksiController extends Controller
         ];
     }
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $gedungs = Gedung::with(['lokasi.apar.inspeksis' => function ($query) {
-            $query->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->latest();
-        }, 'lokasi.apar.inspeksis.user'])->get();
+        $currentMonth = (int) $request->input('month', now()->month);
+        $currentYear = (int) $request->input('year', now()->year);
+
+        $query = Gedung::query();
+
+        // Jika Staff, hanya ambil gedung yang ditugaskan ke dia
+        if (auth()->user()->role === 'Staff') {
+            $query->whereHas('users', function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        }
+
+        $gedungs = $query->with([
+            'lokasi.apar',
+            'lokasi.apar.inspeksis' => function ($query) use ($currentMonth, $currentYear) {
+                $query->whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
+                    ->latest();
+            }, 
+            'lokasi.apar.inspeksis.user'
+        ])->get();
+
+        // Filter out empty gedungs and lokasis for cleaner UI
+        $gedungs = $gedungs->filter(function ($gedung) {
+            $gedung->lokasi = $gedung->lokasi->filter(function ($lokasi) {
+                return $lokasi->apar->isNotEmpty();
+            });
+            return $gedung->lokasi->isNotEmpty();
+        });
 
         $totalApar = 0;
         $selesai = 0;
@@ -59,17 +83,99 @@ class InspeksiController extends Controller
         $menunggu = $totalApar - $selesai;
         $pertanyaan = $this->getPertanyaan();
 
-        $jadwals = JadwalInspeksi::with(['gedung', 'lokasi', 'user'])->orderBy('tanggal_inspeksi', 'asc')->get();
-        $users = User::all();
+        $jadwalsQuery = JadwalInspeksi::with(['gedung', 'lokasi', 'user'])->orderBy('tanggal_inspeksi', 'asc');
+        $jadwals = $jadwalsQuery->get();
+        $users = User::with('gedungs')->get();
 
-        return view('inspection-schedule.index', compact('gedungs', 'totalApar', 'selesai', 'menunggu', 'pertanyaan', 'jadwals', 'users'));
+        // Hitung progres untuk jadwal asli (Ad-Hoc)
+        foreach ($jadwals as $jadwal) {
+            $aparsInSchedule = $jadwal->tipe_area === 'gedung' 
+                ? Apar::whereHas('lokasi', fn($q) => $q->where('gedung_id', $jadwal->gedung_id))->get()
+                : Apar::where('lokasi_id', $jadwal->lokasi_id)->get();
+            
+            $jadwalMonth = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->month;
+            $jadwalYear = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->year;
+
+            $totalAparInArea = $aparsInSchedule->count();
+            $inspectedCount = 0;
+
+            foreach ($aparsInSchedule as $a) {
+                if ($a->inspeksis()->whereMonth('created_at', $jadwalMonth)->whereYear('created_at', $jadwalYear)->exists()) {
+                    $inspectedCount++;
+                }
+            }
+
+            $jadwal->total_apar = $totalAparInArea;
+            $jadwal->inspected_apar = $inspectedCount;
+
+            if ($totalAparInArea > 0 && $inspectedCount === $totalAparInArea) {
+                $jadwal->status = 'selesai';
+            } elseif ($inspectedCount > 0) {
+                $jadwal->status = 'proses';
+            }
+        }
+
+        // Gabungkan jadwal rutin dari profil Staff ke dalam daftar jadwal
+        foreach ($users as $user) {
+            if ($user->role === 'Staff' && $user->jadwal_rutin_tanggal) {
+                $maxDays = \Carbon\Carbon::create($currentYear, $currentMonth, 1)->daysInMonth;
+                $tgl = min($user->jadwal_rutin_tanggal, $maxDays);
+                $tanggalRutin = \Carbon\Carbon::create($currentYear, $currentMonth, $tgl)->format('Y-m-d');
+                
+                foreach ($user->gedungs as $gedung) {
+                    $mockJadwal = new JadwalInspeksi([
+                        'jenis_jadwal' => 'Inspeksi Rutin Bulanan',
+                        'tanggal_inspeksi' => $tanggalRutin,
+                        'tipe_area' => 'gedung',
+                        'gedung_id' => $gedung->id,
+                        'user_id' => $user->id,
+                        'catatan_tambahan' => 'Jadwal rutin bulanan otomatis',
+                        'status' => 'menunggu'
+                    ]);
+                    $mockJadwal->id = 'rutin_'.$user->id.'_'.$gedung->id; 
+                    $mockJadwal->setRelation('gedung', $gedung);
+                    $mockJadwal->setRelation('user', $user);
+                    $mockJadwal->is_rutin_virtual = true;
+
+                    // Cek progres
+                    $aparsInGedung = $gedung->lokasi->flatMap->apar;
+                    $totalAparInArea = $aparsInGedung->count();
+                    $inspectedCount = 0;
+
+                    foreach ($aparsInGedung as $a) {
+                        if ($a->inspeksis()->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->exists()) {
+                            $inspectedCount++;
+                        }
+                    }
+
+                    $mockJadwal->total_apar = $totalAparInArea;
+                    $mockJadwal->inspected_apar = $inspectedCount;
+
+                    if ($totalAparInArea > 0 && $inspectedCount === $totalAparInArea) {
+                        $mockJadwal->status = 'selesai';
+                    } elseif ($inspectedCount > 0) {
+                        $mockJadwal->status = 'proses';
+                    }
+
+                    $jadwals->push($mockJadwal);
+                }
+            }
+        }
+
+        // Urutkan ulang setelah digabung
+        $jadwals = $jadwals->sortBy('tanggal_inspeksi')->values();
+
+        return view('inspection-schedule.index', compact('gedungs', 'totalApar', 'selesai', 'menunggu', 'pertanyaan', 'jadwals', 'users', 'currentMonth', 'currentYear'));
     }
 
     public function create(Apar $apar)
     {
         $pertanyaan = $this->getPertanyaan();
+        $gedungs = \App\Models\Gedung::with('lokasi')->get();
+        $jenisApars = \App\Models\JenisApar::all();
+        $kapasitasApars = \App\Models\KapasitasApar::all();
 
-        return view('inspeksi.mulai', compact('apar', 'pertanyaan'));
+        return view('inspeksi.mulai', compact('apar', 'pertanyaan', 'gedungs', 'jenisApars', 'kapasitasApars'));
     }
 
     public function store(Request $request, Apar $apar)
@@ -80,7 +186,12 @@ class InspeksiController extends Controller
             'checklist.*.keterangan' => 'nullable|string',
             'status' => 'required|string',
             'catatan_tambahan' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240', // 10MB
+            'foto_base64' => 'required|string',
+            'qty' => 'required|integer|min:1',
+            'tgl_kedaluwarsa' => 'required|date',
+        ], [
+            'foto_base64.required' => 'Foto kondisi APAR wajib diambil sebelum submit.',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -89,7 +200,25 @@ class InspeksiController extends Controller
             }
             $path = $request->file('foto')->store('foto-apar', 'public');
             $apar->update(['foto' => $path]);
+        } elseif ($request->filled('foto_base64')) {
+            if ($apar->foto && Storage::disk('public')->exists($apar->foto)) {
+                Storage::disk('public')->delete($apar->foto);
+            }
+            $image_parts = explode(";base64,", $request->foto_base64);
+            $image_type_aux = explode("image/", $image_parts[0]);
+            $image_type = $image_type_aux[1] ?? 'jpeg';
+            $image_base64 = base64_decode($image_parts[1]);
+            $path = 'foto-apar/' . uniqid() . '.' . $image_type;
+            Storage::disk('public')->put($path, $image_base64);
+            $apar->update(['foto' => $path]);
         }
+
+        // Update qty, tgl_kedaluwarsa, and pic_id to the person who inspected
+        $apar->update([
+            'qty' => $request->qty,
+            'tgl_kedaluwarsa' => $request->tgl_kedaluwarsa,
+            'pic_id' => auth()->id()
+        ]);
 
         $apar->inspeksis()->create([
             'user_id' => auth()->id(),
@@ -98,7 +227,39 @@ class InspeksiController extends Controller
             'catatan_tambahan' => $request->catatan_tambahan,
         ]);
 
-        return redirect('/inspection-schedule')->with('success', 'Inspeksi berhasil disimpan!');
+        // Check if related JadwalInspeksi should be marked as selesai
+        $jadwals = JadwalInspeksi::where('status', 'menunggu')
+            ->where(function($q) use ($apar) {
+                $q->where(function($qGedung) use ($apar) {
+                    $qGedung->where('tipe_area', 'gedung')->where('gedung_id', $apar->lokasi->gedung_id);
+                })->orWhere(function($qLokasi) use ($apar) {
+                    $qLokasi->where('tipe_area', 'lokasi')->where('lokasi_id', $apar->lokasi_id);
+                });
+            })->get();
+
+        foreach ($jadwals as $jadwal) {
+            $aparsInSchedule = $jadwal->tipe_area === 'gedung' 
+                ? Apar::whereHas('lokasi', fn($q) => $q->where('gedung_id', $jadwal->gedung_id))->get()
+                : Apar::where('lokasi_id', $jadwal->lokasi_id)->get();
+            
+            $allInspected = $aparsInSchedule->every(function ($a) use ($jadwal) {
+                return $a->inspeksis()
+                    ->whereMonth('created_at', \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->month)
+                    ->whereYear('created_at', \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->year)
+                    ->exists();
+            });
+
+            if ($allInspected && $aparsInSchedule->isNotEmpty()) {
+                $jadwal->update(['status' => 'selesai']);
+            }
+        }
+
+        return redirect()->route('inspeksi.sukses', $apar->id);
+    }
+
+    public function sukses(Apar $apar)
+    {
+        return view('inspeksi.sukses', compact('apar'));
     }
 
     public function storeJadwal(Request $request)
@@ -106,27 +267,34 @@ class InspeksiController extends Controller
         $request->validate([
             'jenis_jadwal' => 'required|string',
             'tanggal' => 'required|date',
-            'tipe_area' => 'required|in:gedung,lokasi',
-            'gedung_id' => 'required_if:tipe_area,gedung',
-            'lokasi_id' => 'required_if:tipe_area,lokasi',
+            'areas' => 'required|array|min:1',
             'user_id' => 'required|exists:users,id',
             'catatan_tambahan' => 'nullable|string',
         ]);
 
-        $jadwal = JadwalInspeksi::create([
-            'jenis_jadwal' => $request->jenis_jadwal,
-            'tanggal_inspeksi' => $request->tanggal,
-            'tipe_area' => $request->tipe_area,
-            'gedung_id' => $request->tipe_area === 'gedung' ? $request->gedung_id : null,
-            'lokasi_id' => $request->tipe_area === 'lokasi' ? $request->lokasi_id : null,
-            'user_id' => $request->user_id,
-            'catatan_tambahan' => $request->catatan_tambahan,
-            'status' => 'menunggu',
-        ]);
+        $jadwals = collect();
+
+        foreach ($request->areas as $area) {
+            $isGedung = str_starts_with($area, 'g_');
+            $id = substr($area, 2);
+
+            $jadwal = JadwalInspeksi::create([
+                'jenis_jadwal' => $request->jenis_jadwal,
+                'tanggal_inspeksi' => $request->tanggal,
+                'tipe_area' => $isGedung ? 'gedung' : 'lokasi',
+                'gedung_id' => $isGedung ? $id : null,
+                'lokasi_id' => !$isGedung ? $id : null,
+                'user_id' => $request->user_id,
+                'catatan_tambahan' => $request->catatan_tambahan,
+                'status' => 'menunggu',
+            ]);
+            
+            $jadwals->push($jadwal);
+        }
 
         $user = User::find($request->user_id);
-        if ($user && $user->email) {
-            Mail::to($user->email)->send(new InspectionAssigned($user, $jadwal, $user->pin));
+        if ($user && $user->email && $jadwals->isNotEmpty()) {
+            Mail::to($user->email)->send(new InspectionAssigned($user, $jadwals, $user->pin));
         }
 
         return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dibuat dan notifikasi email telah dikirim!');
@@ -157,10 +325,15 @@ class InspeksiController extends Controller
         return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil diperbarui!');
     }
 
-    public function destroyJadwal(JadwalInspeksi $jadwal)
+    public function destroyJadwal($id)
     {
-        $jadwal->delete();
+        $jadwal = JadwalInspeksi::find($id);
+        
+        if ($jadwal) {
+            $jadwal->delete();
+            return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dihapus!');
+        }
 
-        return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dihapus!');
+        return redirect('/inspection-schedule');
     }
 }
