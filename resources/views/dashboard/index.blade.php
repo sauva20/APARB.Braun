@@ -379,8 +379,8 @@
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="py-3 px-5 text-center font-semibold text-slate-400">{{ $index + 1 }}</td>
                         <td class="py-3 px-5 font-bold text-slate-700">{{ $apar->kode }}</td>
-                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->nama ?? '-' }}</td>
-                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->gedung->nama ?? '-' }}</td>
+                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->nama ?? 'n/a' }}</td>
+                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</td>
                         @if(auth()->user()->role !== 'Staff')
                         <td class="py-3 px-5 text-center">
                             <a href="/scan/{{ $apar->kode }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#009B77] bg-[#009B77]/10 hover:bg-[#009B77]/20 px-3 py-1.5 rounded-lg transition-colors">
@@ -415,8 +415,8 @@
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="py-3 px-5 text-center font-semibold text-slate-400">{{ $index + 1 }}</td>
                         <td class="py-3 px-5 font-bold text-slate-700">{{ $apar->kode }}</td>
-                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->nama ?? '-' }}</td>
-                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->gedung->nama ?? '-' }}</td>
+                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->nama ?? 'n/a' }}</td>
+                        <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</td>
                         <td class="py-3 px-5 text-center">
                             <span class="inline-flex items-center gap-1 text-xs font-bold text-[#009B77] bg-[#009B77]/10 px-2.5 py-1 rounded-md">
                                 <i class="ph-bold ph-check-circle"></i> Selesai
@@ -503,8 +503,8 @@
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="py-4 px-6">
                             <div class="flex flex-col">
-                                <span class="font-bold text-slate-800">{{ $inspeksi->apar->kode ?? '-' }}</span>
-                                <span class="text-xs font-medium text-slate-500">{{ $inspeksi->apar->lokasi->nama ?? '-' }} - {{ $inspeksi->apar->lokasi->gedung->nama ?? '-' }}</span>
+                                <span class="font-bold text-slate-800">{{ $inspeksi->apar->kode ?? 'n/a' }}</span>
+                                <span class="text-xs font-medium text-slate-500">{{ $inspeksi->apar->lokasi->nama ?? 'n/a' }} - {{ $inspeksi->apar->lokasi->gedung->nama ?? 'n/a' }}</span>
                             </div>
                         </td>
                         <td class="py-4 px-6">
@@ -518,17 +518,17 @@
                                 <div class="w-8 h-8 rounded-full bg-[#009B77]/10 flex items-center justify-center text-[#009B77] text-xs font-bold border border-[#009B77]/20">
                                     {{ strtoupper(substr($inspeksi->user->name ?? 'U', 0, 2)) }}
                                 </div>
-                                <span class="font-semibold text-slate-700">{{ $inspeksi->user->name ?? '-' }}</span>
+                                <span class="font-semibold text-slate-700">{{ $inspeksi->user->name ?? 'n/a' }}</span>
                             </div>
                         </td>
                         <td class="py-4 px-6 text-center">
                             @if($inspeksi->status === 'layak')
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-teal-50 text-teal-600 border border-teal-100 uppercase tracking-wider">
-                                    <i class="ph-fill ph-check-circle"></i> Bagus
+                                    <i class="ph-fill ph-check-circle"></i> Layak
                                 </span>
                             @elseif($inspeksi->status === 'perbaikan' || $inspeksi->status === 'rusak')
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-red-50 text-red-600 border border-red-100 uppercase tracking-wider">
-                                    <i class="ph-fill ph-warning-circle"></i> Rusak
+                                    <i class="ph-fill ph-warning-circle"></i> Perbaikan
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-50 text-amber-600 border border-amber-100 uppercase tracking-wider">

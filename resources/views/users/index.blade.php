@@ -19,7 +19,7 @@
 }">
 
     <!-- Header Area -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
         <!-- Left: Page Context -->
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
@@ -130,7 +130,7 @@
                     @forelse($users as $index => $user)
                     <tr class="hover:bg-slate-50 transition-colors divide-x divide-slate-100">
                         <td class="py-4 px-5 text-center text-slate-500">{{ $users->firstItem() + $index }}</td>
-                        <td class="py-4 px-5 text-slate-800 font-medium">{{ $user->employee_id ?? '-' }}</td>
+                        <td class="py-4 px-5 text-slate-800 font-medium">{{ $user->employee_id ?? 'n/a' }}</td>
                         <td class="py-4 px-5">
                             <span class="text-slate-800">{{ $user->name }}</span>
                         </td>
@@ -186,11 +186,11 @@
     </div>
 
     <!-- Modal Tambah User -->
-    <div x-show="showModalUser" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
+    <div x-show="showModalUser" class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40" @click="showModalUser = false"></div>
 
-            <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8">
+            <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8" style="max-height: 85vh; overflow-y: auto;">
                 
                 <div class="flex items-center justify-between mb-5">
                     <div>
@@ -224,13 +224,26 @@
                         @if(old('form_type') == 'tambah_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
-                    <div>
+                    <div x-data="{ open: false }" class="relative">
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
-                        <select name="role" x-model="formRoleTambah" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
-                            <option value="" disabled selected>Pilih Role</option>
-                            <option value="EHSS">EHSS</option>
-                            <option value="Staff">Staff</option>
-                        </select>
+                        <!-- Hidden input to submit the value -->
+                        <input type="hidden" name="role" x-model="formRoleTambah" required>
+                        
+                        <button type="button" @click="open = !open" @click.away="open = false" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] p-2.5 transition-colors font-medium flex items-center justify-between">
+                            <span x-text="formRoleTambah === '' ? 'Pilih Role' : formRoleTambah" :class="formRoleTambah === '' ? 'text-slate-500' : 'text-slate-800'"></span>
+                            <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                        </button>
+                        
+                        <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 w-full mt-1 bg-white border border-slate-200/60 rounded-xl shadow-lg py-1 overflow-hidden" style="display: none;">
+                            <div @click="formRoleTambah = 'EHSS'; open = false" class="px-4 py-2 text-sm text-slate-700 hover:bg-[#009B77]/10 hover:text-[#009B77] cursor-pointer font-medium transition-colors flex items-center justify-between group">
+                                EHSS
+                                <i class="ph-bold ph-check text-[#009B77] opacity-0 group-hover:opacity-100" x-show="formRoleTambah === 'EHSS'"></i>
+                            </div>
+                            <div @click="formRoleTambah = 'Staff'; open = false" class="px-4 py-2 text-sm text-slate-700 hover:bg-[#009B77]/10 hover:text-[#009B77] cursor-pointer font-medium transition-colors flex items-center justify-between group">
+                                Staff
+                                <i class="ph-bold ph-check text-[#009B77] opacity-0 group-hover:opacity-100" x-show="formRoleTambah === 'Staff'"></i>
+                            </div>
+                        </div>
                         @if(old('form_type') == 'tambah_user') @error('role') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
@@ -277,11 +290,11 @@
     </div>
 
     <!-- Modal Edit User -->
-    <div x-show="showEditUser" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
+    <div x-show="showEditUser" class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40" @click="showEditUser = false"></div>
 
-            <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8">
+            <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8" style="max-height: 85vh; overflow-y: auto;">
                 
                 <div class="flex items-center justify-between mb-5">
                     <div>
@@ -317,12 +330,26 @@
                         @if(old('form_type') == 'edit_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
-                    <div>
+                    <div x-data="{ open: false }" class="relative">
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
-                        <select name="role" x-model="editUser.role" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
-                            <option value="EHSS">EHSS</option>
-                            <option value="Staff">Staff</option>
-                        </select>
+                        <!-- Hidden input to submit the value -->
+                        <input type="hidden" name="role" x-model="editUser.role" required>
+                        
+                        <button type="button" @click="open = !open" @click.away="open = false" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] p-2.5 transition-colors font-medium flex items-center justify-between">
+                            <span x-text="editUser.role === '' ? 'Pilih Role' : editUser.role" :class="editUser.role === '' ? 'text-slate-500' : 'text-slate-800'"></span>
+                            <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                        </button>
+                        
+                        <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 w-full mt-1 bg-white border border-slate-200/60 rounded-xl shadow-lg py-1 overflow-hidden" style="display: none;">
+                            <div @click="editUser.role = 'EHSS'; open = false" class="px-4 py-2 text-sm text-slate-700 hover:bg-[#009B77]/10 hover:text-[#009B77] cursor-pointer font-medium transition-colors flex items-center justify-between group">
+                                EHSS
+                                <i class="ph-bold ph-check text-[#009B77] opacity-0 group-hover:opacity-100" x-show="editUser.role === 'EHSS'"></i>
+                            </div>
+                            <div @click="editUser.role = 'Staff'; open = false" class="px-4 py-2 text-sm text-slate-700 hover:bg-[#009B77]/10 hover:text-[#009B77] cursor-pointer font-medium transition-colors flex items-center justify-between group">
+                                Staff
+                                <i class="ph-bold ph-check text-[#009B77] opacity-0 group-hover:opacity-100" x-show="editUser.role === 'Staff'"></i>
+                            </div>
+                        </div>
                         @if(old('form_type') == 'edit_user') @error('role') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 

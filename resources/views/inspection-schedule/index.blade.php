@@ -9,20 +9,24 @@
     window.jadwalsData = @json($jadwals->map(function($j) { return ['tanggal' => \Carbon\Carbon::parse($j->tanggal_inspeksi)->format('Y-m-d'), 'status' => $j->status, 'area_id' => $j->tipe_area == 'gedung' ? 'g_'.$j->gedung_id : 'l_'.$j->lokasi_id]; })->groupBy('tanggal'));
 </script>
 
+<style>
+    /* Prevent the entire page from scrolling, let the right column handle it */
+    main { overflow: hidden !important; }
+</style>
+
 <div x-data="{ showPanelHasil: false, showPanelDetail: false, showModalBuatJadwal: false, showModalEditJadwal: false, editData: null, selectedInspeksi: null }">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 mb-6 flex-shrink-0">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
                 <i class="ph-bold ph-calendar-check text-xl"></i>
             </div>
             <div>
-                <h2 class="text-xl font-bold text-slate-800 leading-tight">Jadwal Inspeksi</h2>
-                <p class="text-sm font-semibold text-slate-500 mt-0.5">Kelola dan pantau rutinitas pengecekan APAR</p>
+                <h2 class="text-base font-bold text-slate-800 leading-tight">Jadwal Inspeksi</h2>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">Kelola dan pantau rutinitas pengecekan APAR</p>
             </div>
         </div>
         <div class="flex items-center gap-3">
-
             @if(auth()->user()->role !== 'Staff')
             <button @click="showModalBuatJadwal = true" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                 <i class="ph-bold ph-calendar-plus text-lg"></i>
@@ -36,7 +40,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:h-[calc(100vh-230px)]">
         
         <!-- Left Column: Calendar & Filters -->
-        <div class="space-y-6 h-full flex flex-col">
+        <div class="space-y-6 h-full flex flex-col flex-shrink-0">
             <!-- Stats Mini -->
             <div class="bg-[#009B77] rounded-2xl p-5 text-white shadow-[0_8px_30px_rgba(0,155,119,0.2)] relative overflow-hidden flex-shrink-0">
                 <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full border-4 border-white/10"></div>
@@ -228,7 +232,7 @@
                                             </div>
                                             <div>
                                                 <h5 class="font-bold text-slate-800 text-sm">{{ $apar->kode }}</h5>
-                                                <p class="text-xs font-semibold text-slate-500 mb-1">{{ $apar->lokasi->nama ?? '-' }}</p>
+                                                <p class="text-xs font-semibold text-slate-500 mb-1">{{ $apar->lokasi->nama ?? 'n/a' }}</p>
                                                 <p class="text-[10px] font-bold text-slate-400 flex items-center gap-1"><i class="ph-bold ph-user"></i> Ditugaskan ke: Siapa Saja</p>
                                             </div>
                                         </div>
@@ -252,7 +256,7 @@
                                             </div>
                                             <div>
                                                 <h5 class="font-bold text-slate-800 text-sm">{{ $apar->kode }}</h5>
-                                                <p class="text-xs font-semibold text-slate-500 mb-1">{{ $apar->lokasi->nama ?? '-' }}</p>
+                                                <p class="text-xs font-semibold text-slate-500 mb-1">{{ $apar->lokasi->nama ?? 'n/a' }}</p>
                                                 <p class="text-[10px] font-bold text-[#009B77] flex items-center gap-1">
                                                     <i class="ph-bold ph-check-circle"></i> Selesai oleh 
                                                     @if(!$isPic)
@@ -269,7 +273,7 @@
                                         @php
                                             $inspeksiData = [
                                                 'apar_kode' => $apar->kode,
-                                                'lokasi' => $apar->lokasi->nama ?? '-',
+                                                'lokasi' => $apar->lokasi->nama ?? 'n/a',
                                                 'waktu' => $inspeksi->created_at->format('d M Y, H:i'),
                                                 'petugas' => ucwords(strtolower($inspeksi->user->name ?? 'User')),
                                                 'is_pic' => $isPic,
@@ -301,20 +305,24 @@
                 </div>
                 </div>
 
-                <!-- Daftar Jadwal Mendatang -->
+                <!-- Pembagian Jadwal -->
                 @php
                     $jadwalTerlewat = collect();
                     $jadwalHariIni = collect();
                     $jadwalMendatang = collect();
+                    $jadwalSelesai = collect();
                     $today = \Carbon\Carbon::today();
 
                     foreach($jadwals as $jadwal) {
+                        if ($jadwal->status === 'selesai') {
+                            $jadwalSelesai->push($jadwal);
+                            continue;
+                        }
+
                         $jadwalDate = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->startOfDay();
                         
                         if ($jadwalDate->lessThan($today)) {
-                            if ($jadwal->status === 'menunggu') {
-                                $jadwalTerlewat->push($jadwal);
-                            }
+                            $jadwalTerlewat->push($jadwal);
                         } elseif ($jadwalDate->equalTo($today)) {
                             $jadwalHariIni->push($jadwal);
                         } else {
@@ -323,9 +331,24 @@
                     }
                 @endphp
 
+                @if($jadwalTerlewat->isNotEmpty())
+                <div class="mt-10">
+                    <h2 class="text-[11px] font-bold text-red-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-warning-circle"></i> Jadwal Terlewat</h2>
+                    
+                    <div class="space-y-4">
+                        @foreach($jadwalTerlewat as $jadwal)
+                            @php
+                                $isTerlewat = true;
+                            @endphp
+                            @include('inspection-schedule.partials.jadwal-card')
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 @if($jadwalHariIni->isNotEmpty())
                 <div class="mt-10">
-                    <h2 class="text-[11px] font-bold text-indigo-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-calendar-star"></i> Jadwal Hari Ini</h2>
+                    <h2 class="text-[11px] font-bold text-blue-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-calendar-star"></i> Jadwal Hari Ini</h2>
                     
                     <div class="space-y-4">
                         @foreach($jadwalHariIni as $jadwal)
@@ -356,14 +379,14 @@
                     </div>
                 </div>
 
-                @if($jadwalTerlewat->isNotEmpty())
+                @if($jadwalSelesai->isNotEmpty())
                 <div class="mt-10">
-                    <h2 class="text-[11px] font-bold text-red-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-warning-circle"></i> Jadwal Terlewat</h2>
+                    <h2 class="text-[11px] font-bold text-[#009B77] uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-check-circle"></i> Jadwal Selesai</h2>
                     
-                    <div class="space-y-4">
-                        @foreach($jadwalTerlewat as $jadwal)
+                    <div class="space-y-4 opacity-80 hover:opacity-100 transition-opacity">
+                        @foreach($jadwalSelesai as $jadwal)
                             @php
-                                $isTerlewat = true;
+                                $isTerlewat = false;
                             @endphp
                             @include('inspection-schedule.partials.jadwal-card')
                         @endforeach
@@ -592,70 +615,8 @@
                         <input type="hidden" name="areas[]" :value="a">
                     </template>
 
-                    <!-- Cakupan Gedung -->
-                    <div class="col-span-1" x-data="{
-                        open: false,
-                        search: '',
-                        options: [
-                            @foreach($gedungs as $gedung)
-                            { id: 'g_{{ $gedung->id }}', nama: '{{ addslashes($gedung->nama) }}' },
-                            @endforeach
-                        ],
-                        toggleArea(id) {
-                            if (formAreas.includes(id)) {
-                                formAreas = formAreas.filter(x => x !== id);
-                            } else {
-                                formAreas.push(id);
-                            }
-                        },
-                        get countSelected() {
-                            return formAreas.filter(id => id.startsWith('g_')).length;
-                        }
-                    }">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pilih Gedung</label>
-                        
-                        <div class="relative" @click.away="open = false; search = ''">
-                            <i class="ph-bold ph-buildings absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
-                            <button type="button" @click="open = !open" 
-                                    class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
-                                    :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="countSelected > 0 ? countSelected + ' gedung terpilih' : 'Pilih Gedung'" :class="countSelected === 0 ? 'text-slate-400 font-medium' : 'font-medium text-slate-800'" class="truncate block"></span>
-                                <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
-                            </button>
-                            
-                            <div x-show="open" style="display: none;" class="absolute left-0 z-50 w-full mt-1.5 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 overflow-hidden origin-top max-h-60 flex flex-col">
-                                <div class="px-2 pb-1.5 mb-1.5 border-b border-slate-100 flex-shrink-0">
-                                    <div class="relative">
-                                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                        <input type="text" x-model="search" placeholder="Cari gedung..." class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
-                                    </div>
-                                </div>
-                                <div class="overflow-y-auto">
-                                    <template x-for="option in options" :key="option.id">
-                                        <button type="button" x-show="option.nama.toLowerCase().includes(search.toLowerCase())" 
-                                                @click="if(!isAreaScheduledOnDate(option.id)) toggleArea(option.id)" 
-                                                class="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between" 
-                                                :class="[
-                                                    formAreas.includes(option.id) ? 'bg-[#009B77]/5' : 'hover:bg-slate-50',
-                                                    isAreaScheduledOnDate(option.id) ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''
-                                                ]"
-                                                :disabled="isAreaScheduledOnDate(option.id)">
-                                            <div class="flex items-center">
-                                                <span class="font-medium" :class="formAreas.includes(option.id) ? 'text-[#009B77] font-bold' : 'text-slate-700'" x-text="option.nama"></span>
-                                                <span x-show="isAreaScheduledOnDate(option.id)" class="text-[9px] font-bold text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded ml-2 uppercase">Terjadwal</span>
-                                            </div>
-                                            <div class="w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0 ml-3" :class="formAreas.includes(option.id) ? 'bg-[#009B77] border-[#009B77]' : 'border-slate-300 bg-white'">
-                                                <i class="ph-bold ph-check text-white text-[10px]" x-show="formAreas.includes(option.id)"></i>
-                                            </div>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Cakupan Lokasi -->
-                    <div class="col-span-1" x-data="{
+                    <div class="col-span-1 md:col-span-2" x-data="{
                         open: false,
                         search: '',
                         options: [

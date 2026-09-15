@@ -285,12 +285,18 @@
     <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative print:h-auto print:overflow-visible">
         
         <!-- Top Navbar -->
-        <header class="h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-8 z-40 relative flex-shrink-0 shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
+        <header class="h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-8 z-[60] relative flex-shrink-0 shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
             <!-- Left Title -->
-            <div class="flex-1 flex items-center">
-                <h2 class="text-md font-bold text-[#009B77] tracking-wider uppercase">
-                    APAR MONITORING SYSTEM
-                </h2>
+            <div class="flex-1 flex items-center gap-3">
+                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-[#009B77] to-[#007A5E] shadow-sm shadow-[#009B77]/30 text-white">
+                    <i class="ph-fill ph-fire-extinguisher text-lg"></i>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-[15px] font-extrabold text-slate-800 tracking-tight leading-none uppercase">
+                        APAR <span class="text-[#009B77]">Monitoring</span>
+                    </h1>
+                    <span class="text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase mt-0.5">Control System</span>
+                </div>
             </div>
 
             <!-- Center Search Area (Dashboard only) -->
@@ -308,14 +314,40 @@
 
             <!-- Right Actions -->
             <div class="flex-1 flex items-center justify-end gap-3">
+                @php
+                    $notifSignature = md5($importantNotifications->pluck('id')->join(','));
+                @endphp
                 <!-- Notification Bell -->
-                <div class="relative" x-data="{ showNotif: false, hasUnread: {{ $importantNotifications->count() > 0 ? 'true' : 'false' }} }" @click.outside="showNotif = false">
-                    <button @click="showNotif = !showNotif; hasUnread = false" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-[#009B77] transition-colors relative" title="Notifikasi">
+                 <!-- Notifications -->
+                <div class="relative" x-data="{ 
+                    showNotif: false, 
+                    hasUnread: false,
+                    initialReadIds: JSON.parse(localStorage.getItem('read_notif_ids') || '[]').map(String),
+                    currentIds: {{ json_encode($importantNotifications->pluck('id')) }}.map(String),
+                    signature: '{{ md5($importantNotifications->pluck('id')->sort()->join(',')) }}',
+                    init() {
+                        if (localStorage.getItem('notif_signature') !== this.signature) {
+                            this.hasUnread = true;
+                        }
+                    },
+                    openNotif() {
+                        this.showNotif = !this.showNotif;
+                        if (this.showNotif) {
+                            this.hasUnread = false;
+                            localStorage.setItem('notif_signature', this.signature);
+                            // Simpan semua ID saat ini sebagai terbaca untuk reload berikutnya
+                            let allRead = [...new Set([...this.initialReadIds, ...this.currentIds])];
+                            localStorage.setItem('read_notif_ids', JSON.stringify(allRead));
+                        }
+                    }
+                }" x-init="init()" @click.outside="showNotif = false">
+                    
+                    <button @click="openNotif()" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-[#009B77] transition-colors relative">
                         <i class="ph-bold ph-bell text-xl"></i>
-                        <span x-show="hasUnread" style="display: none;" class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                        <span x-show="hasUnread" style="display: none;" class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                     </button>
 
-                    <!-- Dropdown Panel -->
+                    <!-- Dropdown -->
                     <div x-show="showNotif" 
                          style="display: none;"
                          x-transition:enter="transition ease-out duration-200"
@@ -326,11 +358,7 @@
                          x-transition:leave-end="opacity-0 translate-y-2"
                          class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200/60 overflow-hidden z-50">
                         
-                        <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                            <h3 class="font-bold text-slate-800 text-sm">Notifikasi Penting</h3>
-                        </div>
-                        
-                        <div class="max-h-[300px] overflow-y-auto">
+                        <div style="max-height: 400px; overflow-y: auto;">
                             @if($importantNotifications->isEmpty())
                                 <div class="px-4 py-6 text-center text-sm text-slate-500">
                                     <i class="ph-duotone ph-check-circle text-3xl text-emerald-500 mb-2"></i>
@@ -346,16 +374,18 @@
                                             $statusColor = $isExpired ? 'text-red-600 bg-red-50' : 'text-amber-600 bg-amber-50';
                                             $iconColor = $isExpired ? 'text-red-500' : 'text-amber-500';
                                         @endphp
-                                        <li>
-                                            <a href="/master-data" class="block px-4 py-3 hover:bg-slate-50 transition-colors">
-                                                <div class="flex items-start gap-3">
+                                        <li :class="initialReadIds.includes('{{ $notifApar->id }}') ? 'bg-white hover:bg-slate-50' : 'bg-blue-50/50 hover:bg-blue-50'">
+                                            <a href="/master-data" style="display: block; padding: 12px 16px;" class="transition-colors relative">
+                                                <div style="display: flex; align-items: flex-start; gap: 12px;">
                                                     <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 {{ $statusColor }}">
                                                         <i class="ph-fill ph-warning-circle text-lg {{ $iconColor }}"></i>
                                                     </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <p class="text-sm font-bold text-slate-800 truncate">APAR {{ $notifApar->kode }}</p>
-                                                        <p class="text-xs text-slate-500 truncate">{{ $notifApar->lokasi->gedung->nama ?? '-' }} - {{ $notifApar->lokasi->nama ?? '-' }}</p>
-                                                        <p class="text-xs font-semibold mt-1 {{ $isExpired ? 'text-red-600' : 'text-amber-600' }}">{{ $statusText }}</p>
+                                                    <div style="flex: 1; min-width: 0;">
+                                                        <div class="flex items-center justify-between mb-0.5">
+                                                            <p class="text-sm font-bold text-slate-800 truncate">APAR {{ $notifApar->kode }}</p>
+                                                        </div>
+                                                        <p class="text-xs text-slate-500 truncate">{{ $notifApar->lokasi->gedung->nama ?? 'n/a' }} - {{ $notifApar->lokasi->nama ?? 'n/a' }}</p>
+                                                        <p class="text-xs font-semibold text-red-600" style="margin-top: 4px;">{{ $statusText }}</p>
                                                     </div>
                                                 </div>
                                             </a>
@@ -363,9 +393,6 @@
                                     @endforeach
                                 </ul>
                             @endif
-                        </div>
-                        <div class="px-4 py-2 border-t border-slate-100 text-center bg-slate-50/50">
-                            <a href="/master-data" class="text-xs font-semibold text-[#009B77] hover:text-[#008264] transition-colors">Lihat Semua Data APAR</a>
                         </div>
                     </div>
                 </div>
@@ -431,15 +458,30 @@
                 <div class="p-6 space-y-5">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sandi Saat Ini</label>
-                        <input type="password" name="current_password" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'" name="current_password" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-4 pr-12 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                                <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sandi Baru (Min. 8)</label>
-                        <input type="password" name="new_password" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'" name="new_password" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-4 pr-12 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                                <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi Sandi Baru</label>
-                        <input type="password" name="new_password_confirmation" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'" name="new_password_confirmation" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-4 pr-12 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                                <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
@@ -473,15 +515,30 @@
                 <div class="p-6 space-y-5">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Saat Ini</label>
-                        <input type="password" name="current_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'" name="current_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                                <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Baru (4 Digit Angka)</label>
-                        <input type="password" name="new_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'" name="new_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                                <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi PIN Baru</label>
-                        <input type="password" name="new_pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'" name="new_pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                                <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">

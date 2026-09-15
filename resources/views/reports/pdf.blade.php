@@ -62,31 +62,13 @@
             margin-top: 40px;
             font-size: 10px;
         }
-        .signature-table {
-            width: 100%;
-            border: none;
-            margin-top: 30px;
-        }
-        .signature-table td {
-            border: none;
-            text-align: center;
-            width: 50%;
-        }
-        .signature-line {
-            margin-top: 50px;
-            border-top: 1px solid #000;
-            width: 60%;
-            margin-left: auto;
-            margin-right: auto;
-            display: inline-block;
-        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Laporan Inspeksi APAR Bulanan</h1>
-        <p>Bulan: {{ $monthName }} | Gedung: {{ $gedungName }} | Filter: {{ ucfirst($status) }}</p>
+        <h1>Laporan Inspeksi APAR Bulan {{ $monthName }}</h1>
+        <p>Tanggal Cetak: {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }} | Gedung: {{ $gedungName }}</p>
     </div>
 
     <table>
@@ -96,12 +78,13 @@
                 <th width="8%">ID APAR</th>
                 <th width="6%">Gedung</th>
                 <th width="8%">Lokasi</th>
-                <th width="10%">Jenis / Kapasitas</th>
+                <th width="12%">Jenis</th>
+                <th width="8%">Kapasitas</th>
                 <th width="8%">Status</th>
                 <th width="12%">Tgl Inspeksi</th>
                 <th width="10%">Inspektor</th>
                 <th width="7%">Kondisi</th>
-                <th width="30%">Cek Fisik (Tekanan/Pin/Tuas/Selang/Bersih) & Ket</th>
+                <th width="30%">Catatan Tambahan</th>
             </tr>
         </thead>
         <tbody>
@@ -113,12 +96,10 @@
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td><b>{{ $apar->kode }}</b></td>
-                    <td><b>{{ $apar->lokasi->gedung->nama ?? '-' }}</b></td>
-                    <td>{{ $apar->lokasi->nama ?? '-' }}</td>
-                    <td>
-                        {{ $apar->jenis->nama ?? '-' }}<br>
-                        {{ $apar->kapasitas_id ?? '-' }} Kg
-                    </td>
+                    <td><b>{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</b></td>
+                    <td>{{ $apar->lokasi->nama ?? 'n/a' }}</td>
+                    <td>{{ $apar->jenis->nama ?? 'n/a' }}</td>
+                    <td>{{ $apar->kapasitas->ukuran ?? 'n/a' }}</td>
                     <td class="text-center">
                         @if($row['status'] == 'Sudah Diinspeksi')
                             <span class="badge bg-green">Sudah</span>
@@ -127,32 +108,22 @@
                         @endif
                     </td>
                     <td>
-                        {{ $inspeksi ? \Carbon\Carbon::parse($inspeksi->created_at)->format('d-m-Y H:i') : '-' }}
+                        {{ $inspeksi ? \Carbon\Carbon::parse($inspeksi->created_at)->format('d-m-Y H:i') : 'n/a' }}
                     </td>
-                    <td>{{ $inspeksi->user->name ?? '-' }}</td>
+                    <td>{{ $inspeksi->user->name ?? 'n/a' }}</td>
                     <td>
                         @if($inspeksi)
                             @if($inspeksi->status == 'layak')
-                                <span class="badge bg-green">Layak</span>
+                                <span style="color: #009B77; font-weight: bold;">LAYAK</span>
                             @else
-                                <span class="badge bg-red">{{ $inspeksi->status }}</span>
+                                <span style="color: #EF4444; font-weight: bold;">PERBAIKAN</span>
                             @endif
                         @else
-                            -
+                            n/a
                         @endif
                     </td>
                     <td style="font-size: 8px;">
-                        @if($inspeksi)
-                            T: {{ $inspeksi->tekanan ? 'Ok' : 'X' }} | 
-                            P: {{ $inspeksi->pin ? 'Ok' : 'X' }} | 
-                            Ts: {{ $inspeksi->tuas ? 'Ok' : 'X' }} | 
-                            S: {{ $inspeksi->selang ? 'Ok' : 'X' }} | 
-                            B: {{ $inspeksi->kebersihan ? 'Ok' : 'X' }}
-                            <br>
-                            <i>Ket: {{ $inspeksi->keterangan ?? '-' }}</i>
-                        @else
-                            -
-                        @endif
+                        {{ $inspeksi->catatan_tambahan ?? 'n/a' }}
                     </td>
                 </tr>
             @empty
@@ -161,24 +132,6 @@
                 </tr>
             @endforelse
         </tbody>
-    </table>
-
-    <table class="signature-table">
-        <tr>
-            <td>
-                Dibuat Oleh,
-                <br><br><br><br>
-                <span class="signature-line"></span><br>
-                <b>{{ auth()->user()->name }}</b><br>
-                {{ auth()->user()->role }}
-            </td>
-            <td>
-                Mengetahui,
-                <br><br><br><br>
-                <span class="signature-line"></span><br>
-                <b>EHSS Manager</b>
-            </td>
-        </tr>
     </table>
 
 </body>

@@ -1,5 +1,5 @@
-<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm transition-all hover:shadow-md {{ $isTerlewat ? 'ring-1 ring-red-100' : '' }}">
-    <div class="flex items-start justify-between gap-4">
+<div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md {{ $isTerlewat ? 'ring-1 ring-red-100' : '' }}">
+    <div class="p-5 flex items-start justify-between gap-4 cursor-pointer" @click="expanded = !expanded">
         <div class="flex gap-4">
             <div class="w-12 h-12 rounded-xl {{ $isTerlewat ? 'bg-red-50 border-red-200 text-red-500' : 'bg-[#009B77]/5 border-[#009B77]/20 text-[#009B77]' }} border flex items-center justify-center flex-shrink-0">
                 @if($jadwal->tipe_area === 'gedung')
@@ -38,7 +38,7 @@
                     @if($jadwal->tipe_area === 'gedung')
                         {{ $jadwal->gedung->nama ?? 'Gedung Terhapus' }} <span class="text-xs font-semibold text-slate-400 ml-1">(Semua Area)</span>
                     @else
-                        {{ $jadwal->lokasi->nama ?? 'Lokasi Terhapus' }} <span class="text-xs font-semibold text-slate-400 ml-1">({{ $jadwal->gedung->nama ?? '-' }})</span>
+                        {{ $jadwal->lokasi->nama ?? 'Lokasi Terhapus' }} <span class="text-xs font-semibold text-slate-400 ml-1">({{ $jadwal->gedung->nama ?? 'n/a' }})</span>
                     @endif
                 </h3>
                 <p class="text-[13px] font-medium text-slate-500 mt-1 flex items-center gap-1.5">
@@ -81,18 +81,71 @@
             @endif
             @if(auth()->user()->role !== 'Staff' && $jadwal->status !== 'selesai')
                 @if(!isset($jadwal->is_rutin_virtual))
-                <button type="button" @click="editData = { id: {{ $jadwal->id }}, jenis_jadwal: '{{ addslashes($jadwal->jenis_jadwal) }}', tanggal: '{{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->format('Y-m-d') }}', tipe_area: '{{ $jadwal->tipe_area }}', gedung_id: {{ $jadwal->gedung_id ?? 'null' }}, lokasi_id: {{ $jadwal->lokasi_id ?? 'null' }}, user_id: {{ $jadwal->user_id ?? 'null' }}, catatan_tambahan: '{{ addslashes(str_replace(PHP_EOL, ' ', $jadwal->catatan_tambahan)) }}' }; showModalEditJadwal = true" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors" title="Edit Jadwal">
+                <button type="button" @click.stop="editData = { id: {{ $jadwal->id }}, jenis_jadwal: '{{ addslashes($jadwal->jenis_jadwal) }}', tanggal: '{{ \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->format('Y-m-d') }}', tipe_area: '{{ $jadwal->tipe_area }}', gedung_id: {{ $jadwal->gedung_id ?? 'null' }}, lokasi_id: {{ $jadwal->lokasi_id ?? 'null' }}, user_id: {{ $jadwal->user_id ?? 'null' }}, catatan_tambahan: '{{ addslashes(str_replace(PHP_EOL, ' ', $jadwal->catatan_tambahan)) }}' }; showModalEditJadwal = true" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors" title="Edit Jadwal">
                     <i class="ph-bold ph-pencil-simple text-lg"></i>
                 </button>
                 <form action="/inspection-schedule/{{ $jadwal->id }}" method="POST" class="inline-block"
                       onsubmit="event.preventDefault(); Swal.fire({ title: 'Hapus Jadwal?', text: 'Jadwal yang dihapus tidak dapat dikembalikan!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#94a3b8', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal', customClass: { confirmButton: 'rounded-xl', cancelButton: 'rounded-xl' } }).then((result) => { if (result.isConfirmed) { this.submit(); } })">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus Jadwal">
+                    <button type="submit" @click.stop class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus Jadwal">
                         <i class="ph-bold ph-trash text-lg"></i>
                     </button>
                 </form>
                 @endif
+            @endif
+            <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 transition-transform duration-300 ml-1" :class="expanded ? 'rotate-180' : ''">
+                <i class="ph-bold ph-caret-down text-sm"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dropdown List APAR -->
+    <div x-show="expanded" x-collapse>
+        <div class="px-5 pb-5 border-t border-slate-100 pt-4 space-y-2.5">
+            @php
+                $apars = collect();
+                if ($jadwal->tipe_area === 'gedung' && $jadwal->gedung) {
+                    foreach($jadwal->gedung->lokasi as $l) {
+                        foreach($l->apar as $a) {
+                            $apars->push($a);
+                        }
+                    }
+                } elseif ($jadwal->lokasi) {
+                    $apars = $jadwal->lokasi->apar;
+                }
+                $jadwalMonth = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->month;
+                $jadwalYear = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->year;
+            @endphp
+            
+            @if($apars->isEmpty())
+                <p class="text-xs text-center text-slate-400 font-medium py-3">Tidak ada APAR di area ini.</p>
+            @else
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    @foreach($apars as $apar)
+                        @php
+                            $isInspected = $apar->inspeksis()->whereMonth('created_at', $jadwalMonth)->whereYear('created_at', $jadwalYear)->exists();
+                        @endphp
+                        <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 {{ $isInspected ? 'bg-emerald-50/50' : 'bg-slate-50 hover:bg-slate-100 transition-colors' }}">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 {{ $isInspected ? 'bg-emerald-100 text-emerald-600' : 'bg-white border border-slate-200 text-slate-400' }}">
+                                    <i class="ph-fill ph-fire-extinguisher text-lg"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-slate-700 truncate">{{ $apar->kode }}</p>
+                                    <p class="text-[10px] text-slate-500 truncate">{{ $apar->lokasi->nama ?? 'n/a' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0 pl-2">
+                                @if($isInspected)
+                                    <span class="text-[9px] font-bold text-emerald-600 bg-emerald-100 px-2 py-1 rounded uppercase flex items-center gap-1"><i class="ph-bold ph-check"></i> Selesai</span>
+                                @else
+                                    <span class="text-[9px] font-bold text-slate-500 bg-slate-200 px-2 py-1 rounded uppercase">Menunggu</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             @endif
         </div>
     </div>

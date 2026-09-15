@@ -174,14 +174,14 @@ class MasterDataController extends Controller
                 $row = [
                     $index + 1,
                     $apar->kode,
-                    $apar->lokasi->nama ?? '-',
-                    $apar->lokasi->gedung->nama ?? '-',
-                    $apar->jenis->nama ?? '-',
-                    $apar->kapasitas->ukuran ?? '-',
+                    $apar->lokasi->nama ?? 'n/a',
+                    $apar->lokasi->gedung->nama ?? 'n/a',
+                    $apar->jenis->nama ?? 'n/a',
+                    $apar->kapasitas->ukuran ?? 'n/a',
                     $kelas,
                     $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-',
                     $apar->qty,
-                    $apar->vendor ?? '-',
+                    $apar->vendor ?? 'n/a',
                     $picName,
                     $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
                 ];

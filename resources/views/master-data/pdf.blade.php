@@ -76,10 +76,10 @@
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td class="font-bold">{{ $apar->kode }}</td>
-                    <td>{{ $apar->lokasi->nama ?? '-' }}</td>
-                    <td>{{ $apar->lokasi->gedung->nama ?? '-' }}</td>
-                    <td>{{ $apar->jenis->nama ?? '-' }}</td>
-                    <td>{{ $apar->kapasitas->ukuran ?? '-' }}</td>
+                    <td>{{ $apar->lokasi->nama ?? 'n/a' }}</td>
+                    <td>{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</td>
+                    <td>{{ $apar->jenis->nama ?? 'n/a' }}</td>
+                    <td>{{ $apar->kapasitas->ukuran ?? 'n/a' }}</td>
                     <td class="text-center">{{ $kelas }}</td>
                     <td>
                         @if($apar->tgl_kedaluwarsa && $apar->tgl_kedaluwarsa->isPast())

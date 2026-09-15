@@ -60,7 +60,7 @@
                     <td class="font-bold">{{ $activity->created_at->format('d M Y H:i:s') }}</td>
                     <td>{{ $activity->causer->name ?? 'Sistem / Guest' }}</td>
                     <td class="text-center font-bold">{{ strtoupper($activity->event) }}</td>
-                    <td>{{ class_basename($activity->subject_type) }}</td>
+                    <td>{{ preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type)) }}</td>
                     <td>{{ $activity->description }}</td>
                 </tr>
             @endforeach

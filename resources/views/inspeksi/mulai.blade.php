@@ -79,17 +79,17 @@
             </div>
             <div>
                 <h3 class="font-black text-slate-800 text-lg tracking-tight mb-0.5">{{ $apar->kode ?? 'APAR-XXX' }}</h3>
-                <p class="text-xs font-semibold text-slate-500 flex items-center gap-1"><i class="ph-fill ph-map-pin text-[#009B77]"></i> {{ $apar->lokasi->nama ?? '-' }}</p>
+                <p class="text-xs font-semibold text-slate-500 flex items-center gap-1"><i class="ph-fill ph-map-pin text-[#009B77]"></i> {{ $apar->lokasi->nama ?? 'n/a' }}</p>
             </div>
         </div>
         <div class="flex flex-wrap gap-3 relative z-10">
             <div class="px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100 flex flex-col items-center min-w-[80px] hover:bg-white hover:shadow-sm transition-all cursor-default">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Jenis</span>
-                <span class="text-xs font-bold text-[#009B77]">{{ $apar->jenis->nama ?? '-' }}</span>
+                <span class="text-xs font-bold text-[#009B77]">{{ $apar->jenis->nama ?? 'n/a' }}</span>
             </div>
             <div class="px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100 flex flex-col items-center min-w-[80px] hover:bg-white hover:shadow-sm transition-all cursor-default">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Kapasitas</span>
-                <span class="text-xs font-bold text-[#009B77]">{{ $apar->kapasitas->ukuran ?? '-' }}</span>
+                <span class="text-xs font-bold text-[#009B77]">{{ $apar->kapasitas->ukuran ?? 'n/a' }}</span>
             </div>
         </div>
     </div>

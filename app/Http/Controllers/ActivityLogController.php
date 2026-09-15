@@ -50,7 +50,7 @@ class ActivityLogController extends Controller
                     $activity->created_at->format('d M Y H:i:s'),
                     $activity->causer->name ?? 'Sistem / Guest',
                     strtoupper($activity->event),
-                    class_basename($activity->subject_type),
+                    preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type)),
                     $activity->description,
                 ];
                 fputcsv($file, $row);

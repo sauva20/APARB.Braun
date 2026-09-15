@@ -47,25 +47,37 @@
     <table>
         <thead>
             <tr>
-                <th class="text-center" style="width: 10%;">No</th>
-                <th style="width: 35%;">Nama</th>
-                <th style="width: 35%;">Email</th>
-                <th style="width: 20%;">Role</th>
+                <th class="text-center" style="width: 5%;">No</th>
+                <th style="width: 12%;">User ID</th>
+                <th style="width: 23%;">Nama</th>
+                <th style="width: 22%;">Email</th>
+                <th style="width: 15%;">Gedung</th>
+                <th style="width: 8%;">Role</th>
+                <th style="width: 15%;">Jadwal Inspeksi</th>
             </tr>
         </thead>
         <tbody>
             @foreach($users as $index => $user)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="font-bold">{{ $user->name }}</td>
+                    <td>{{ $user->employee_id ?? 'n/a' }}</td>
+                    <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>
+                        @if($user->gedungs->count() > 0)
+                            {{ $user->gedungs->pluck('nama')->implode(', ') }}
+                        @else
+                            n/a
+                        @endif
+                    </td>
                     <td>{{ $user->role }}</td>
+                    <td>{{ $user->jadwal_rutin_tanggal ? 'Tanggal ' . $user->jadwal_rutin_tanggal : 'n/a' }}</td>
                 </tr>
             @endforeach
             
             @if($users->isEmpty())
                 <tr>
-                    <td colspan="4" class="text-center" style="padding: 20px;">Belum ada data User.</td>
+                    <td colspan="7" class="text-center" style="padding: 20px;">Belum ada data User.</td>
                 </tr>
             @endif
         </tbody>

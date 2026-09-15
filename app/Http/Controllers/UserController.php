@@ -48,7 +48,7 @@ class UserController extends Controller
             $query->where('role', $request->role);
         }
 
-        $users = $query->latest()->get();
+        $users = $query->with('gedungs')->latest()->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('users.pdf', compact('users'))->setPaper('a4', 'portrait');
         return $pdf->stream('Data_User_' . date('Ymd_His') . '.pdf');
@@ -70,7 +70,7 @@ class UserController extends Controller
             $query->where('role', $request->role);
         }
 
-        $users = $query->latest()->get();
+        $users = $query->with('gedungs')->latest()->get();
 
         $filename = "Data_User_" . date('Ymd_His') . ".csv";
 
@@ -82,7 +82,7 @@ class UserController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['No', 'Nama', 'Email', 'Role'];
+        $columns = ['No', 'User ID', 'Nama', 'Email', 'Gedung', 'Role', 'Jadwal Inspeksi'];
 
         $callback = function() use($users, $columns) {
             $file = fopen('php://output', 'w');
@@ -91,11 +91,15 @@ class UserController extends Controller
             fputcsv($file, $columns);
 
             foreach ($users as $index => $user) {
+                $gedungsStr = $user->gedungs->pluck('nama')->implode(', ');
                 $row = [
                     $index + 1,
+                    $user->employee_id ?? 'n/a',
                     $user->name,
                     $user->email,
+                    $gedungsStr ?: 'n/a',
                     $user->role,
+                    $user->jadwal_rutin_tanggal ? 'Tanggal ' . $user->jadwal_rutin_tanggal : 'n/a',
                 ];
                 fputcsv($file, $row);
             }

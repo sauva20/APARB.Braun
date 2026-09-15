@@ -118,9 +118,9 @@
                     @foreach($apars as $apar)
                     <tr>
                         <td style="font-weight: 600;">{{ $apar->kode }}</td>
-                        <td>{{ $apar->lokasi->gedung->nama ?? '-' }}</td>
-                        <td>{{ $apar->lokasi->nama ?? '-' }}</td>
-                        <td>{{ $apar->jenis->nama ?? '-' }}</td>
+                        <td>{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</td>
+                        <td>{{ $apar->lokasi->nama ?? 'n/a' }}</td>
+                        <td>{{ $apar->jenis->nama ?? 'n/a' }}</td>
                     </tr>
                     @endforeach
                 </tbody>

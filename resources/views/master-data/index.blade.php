@@ -22,7 +22,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
     <!-- Header Area & Tabs -->
     <div class="flex flex-col gap-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
             <!-- Left: Page Context -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
@@ -300,10 +300,10 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <td class="py-4 px-5">
                             <span class="font-bold text-slate-800">{{ $apar->kode }}</span>
                         </td>
-                        <td class="py-4 px-5 font-semibold text-slate-600 capitalize">{{ $apar->lokasi->nama ?? '-' }}</td>
-                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->lokasi->gedung->nama ?? '-' }}</td>
-                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->jenis->nama ?? '-' }}</td>
-                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->kapasitas->ukuran ?? '-' }}</td>
+                        <td class="py-4 px-5 font-semibold text-slate-600 capitalize">{{ $apar->lokasi->nama ?? 'n/a' }}</td>
+                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</td>
+                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->jenis->nama ?? 'n/a' }}</td>
+                        <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->kapasitas->ukuran ?? 'n/a' }}</td>
                         <td class="py-4 px-5">
                             @php
                                 $jenisNamaL = strtolower($apar->jenis->nama ?? '');
@@ -337,13 +337,23 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <td class="py-4 px-5 font-semibold text-slate-600">
                             @php
                                 $lastInspeksi = $apar->latestInspeksi;
+                                $picUser = null;
+                                if ($lastInspeksi && $lastInspeksi->user) {
+                                    $picUser = $lastInspeksi->user;
+                                } elseif ($apar->pic) {
+                                    $picUser = $apar->pic;
+                                }
                             @endphp
-                            @if($lastInspeksi && $lastInspeksi->user)
-                                <span>{{ $lastInspeksi->user->name }}</span>
-                            @elseif($apar->pic)
-                                {{ $apar->pic->name }}
+                            
+                            @if($picUser)
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-[#009B77]/10 flex items-center justify-center text-[#009B77] text-xs font-bold border border-[#009B77]/20">
+                                        {{ strtoupper(substr($picUser->name, 0, 2)) }}
+                                    </div>
+                                    <span class="font-semibold text-slate-700">{{ $picUser->name }}</span>
+                                </div>
                             @else
-                                <span class="text-slate-400">-</span>
+                                <span class="text-slate-400 font-medium">-</span>
                             @endif
                         </td>
                         @if(auth()->user()->role !== 'Staff')
@@ -485,26 +495,27 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 <div class="p-4 bg-slate-50/50 flex-1 overflow-y-auto max-h-[400px]">
                     <div class="space-y-4">
                         @forelse($gedungs as $gedung)
-                            <div class="flex flex-col gap-2">
+                            <div x-data="{ expanded: false }" class="flex flex-col gap-2">
                                 <!-- Gedung Header -->
-                                <div class="bg-white border border-indigo-100 p-3 rounded-xl flex items-center justify-between shadow-[0_2px_10px_rgba(0,0,0,0.02)] group/gedung">
+                                <div @click="expanded = !expanded" class="bg-white border border-indigo-100 p-3 rounded-xl flex items-center justify-between shadow-[0_2px_10px_rgba(0,0,0,0.02)] group/gedung cursor-pointer hover:border-indigo-300 transition-colors">
                                     <div class="flex items-center gap-2">
                                         <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                                             <i class="ph-bold ph-buildings text-sm"></i>
                                         </div>
                                         <span class="font-extrabold text-slate-800 text-sm tracking-wide">{{ $gedung->nama }}</span>
+                                        <i class="ph-bold ph-caret-down text-slate-400 text-xs transition-transform duration-300 ml-1" :class="expanded ? 'rotate-180' : ''"></i>
                                     </div>
                                     <div class="flex items-center gap-1 opacity-0 group-hover/gedung:opacity-100 transition-opacity">
-                                        <button @click="editGedung = { id: {{ $gedung->id }}, nama: '{{ addslashes($gedung->nama) }}' }; showEditGedung = true" class="w-7 h-7 rounded bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors" title="Edit Gedung"><i class="ph-bold ph-pencil-simple text-sm"></i></button>
+                                        <button @click.stop="editGedung = { id: {{ $gedung->id }}, nama: '{{ addslashes($gedung->nama) }}' }; showEditGedung = true" class="w-7 h-7 rounded bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors" title="Edit Gedung"><i class="ph-bold ph-pencil-simple text-sm"></i></button>
                                         <form action="/master-data/gedung/{{ $gedung->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'Yakin hapus gedung ini? Semua lokasi di dalamnya juga akan terhapus!');">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="w-7 h-7 rounded bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors" title="Hapus Gedung"><i class="ph-bold ph-trash text-sm"></i></button>
+                                            <button @click.stop type="submit" class="w-7 h-7 rounded bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors" title="Hapus Gedung"><i class="ph-bold ph-trash text-sm"></i></button>
                                         </form>
                                     </div>
                                 </div>
                                 
                                 <!-- Child Lokasi List -->
-                                <div class="flex flex-col pl-6 space-y-2 border-l-2 border-slate-200/60 ml-4 relative">
+                                <div x-show="expanded" x-collapse class="flex flex-col pl-6 space-y-2 border-l-2 border-slate-200/60 ml-4 relative">
                                     @php
                                         $lokasiByGedung = $lokasis->where('gedung_id', $gedung->id);
                                     @endphp

@@ -182,15 +182,15 @@
         <div class="info-section">
             <div class="info-row">
                 <span>Gedung:</span>
-                <strong>{{ $apar->lokasi->gedung->nama ?? '-' }}</strong>
+                <strong>{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</strong>
             </div>
             <div class="info-row">
                 <span>Lokasi:</span>
-                <strong>{{ $apar->lokasi->nama ?? '-' }}</strong>
+                <strong>{{ $apar->lokasi->nama ?? 'n/a' }}</strong>
             </div>
             <div class="info-row">
                 <span>Jenis:</span>
-                <strong>{{ $apar->jenis->nama ?? '-' }} ({{ $apar->kapasitas->ukuran ?? '-' }})</strong>
+                <strong>{{ $apar->jenis->nama ?? 'n/a' }} ({{ $apar->kapasitas->ukuran ?? 'n/a' }})</strong>
             </div>
         </div>
 

@@ -6,26 +6,22 @@
 <div class="space-y-6">
 
     <!-- Header Area -->
-    <div class="flex flex-col gap-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
-                    <i class="ph-bold ph-clock-counter-clockwise text-xl"></i>
-                </div>
-                <div>
-                    <h2 class="text-base font-bold text-slate-800 leading-tight">Audit Trail</h2>
-                    <p class="text-xs font-semibold text-slate-500 mt-0.5">Riwayat tindakan pengguna dalam sistem</p>
-                </div>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
+                <i class="ph-bold ph-clock-counter-clockwise text-xl"></i>
             </div>
-            
-            <div class="flex items-center gap-3">
-                <div class="relative z-50">
-                    <a href="{{ route('activity-log.export-pdf', request()->all()) }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg shadow-red-600/20 transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
-                        <i class="ph-bold ph-file-pdf text-lg"></i>
-                        <span class="hidden sm:inline">Export PDF</span>
-                    </a>
-                </div>
+            <div>
+                <h2 class="text-base font-bold text-slate-800 leading-tight">Audit Trail</h2>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">Riwayat tindakan pengguna dalam sistem</p>
             </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <a href="{{ route('activity-log.export-pdf', request()->all()) }}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 text-sm bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl transition-colors">
+                <i class="ph-bold ph-file-pdf text-lg"></i>
+                Export PDF
+            </a>
         </div>
     </div>
 
@@ -70,7 +66,7 @@
                         </td>
                         <td class="py-4 px-5">
                             <span class="text-sm font-semibold text-slate-600">
-                                {{ class_basename($activity->subject_type) }}
+                                {{ preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type)) }}
                             </span>
                         </td>
                         <td class="py-4 px-5">

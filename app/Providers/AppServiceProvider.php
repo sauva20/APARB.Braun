@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
                                 ->whereDate('tgl_kedaluwarsa', '<=', $targetDate);
 
                 if ($user->role === 'EHSS') {
-                    $notifications = $query->orderBy('tgl_kedaluwarsa', 'asc')->get();
+                    $notifications = $query->orderBy('updated_at', 'desc')->get();
                 } elseif ($user->role === 'Staff') {
                     $assignedGedungIds = $user->gedungs()->pluck('gedung.id')->toArray();
                     
@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
                     if (!empty($assignedGedungIds)) {
                         $notifications = $query->whereHas('lokasi', function ($q) use ($assignedGedungIds) {
                             $q->whereIn('gedung_id', $assignedGedungIds);
-                        })->orderBy('tgl_kedaluwarsa', 'asc')->get();
+                        })->orderBy('updated_at', 'desc')->get();
                     }
                 }
             }

@@ -147,7 +147,7 @@
                     </div>
                     <div>
                         <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Lokasi & Gedung</p>
-                        <p class="text-xs font-medium text-slate-800">{{ $apar->lokasi->nama ?? '-' }} — {{ $apar->lokasi->gedung->nama ?? '-' }}</p>
+                        <p class="text-xs font-medium text-slate-800">{{ $apar->lokasi->nama ?? 'n/a' }} — {{ $apar->lokasi->gedung->nama ?? 'n/a' }}</p>
                     </div>
                 </div>
 
@@ -158,7 +158,7 @@
                     </div>
                     <div>
                         <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Jenis / Media</p>
-                        <p class="text-xs font-medium text-slate-800">{{ $apar->jenis->nama ?? '-' }}</p>
+                        <p class="text-xs font-medium text-slate-800">{{ $apar->jenis->nama ?? 'n/a' }}</p>
                     </div>
                 </div>
 
@@ -191,7 +191,7 @@
                     </div>
                     <div>
                         <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Kapasitas</p>
-                        <p class="text-xs font-medium text-slate-800">{{ $apar->kapasitas->ukuran ?? '-' }}</p>
+                        <p class="text-xs font-medium text-slate-800">{{ $apar->kapasitas->ukuran ?? 'n/a' }}</p>
                     </div>
                 </div>
 
@@ -252,10 +252,15 @@
                     <input type="hidden" name="action" :value="pinAction">
                     <div class="mb-5">
                         <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">PIN Petugas</label>
-                        <input type="password" name="pin" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" required 
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-center tracking-[0.5em] text-xl font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all outline-none" 
-                            placeholder="••••">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'" name="pin" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" required 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 pr-12 text-center tracking-[0.5em] text-xl font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all outline-none" 
+                                placeholder="••••">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                                <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-medium py-3 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-xs flex items-center justify-center gap-2 uppercase tracking-widest active:scale-[0.98]">

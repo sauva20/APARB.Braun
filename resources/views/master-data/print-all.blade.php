@@ -191,15 +191,15 @@
                 
                 <div class="meta-row">
                     <i class="ph-bold ph-buildings" style="color: #009B77;"></i>
-                    <span><strong>{{ $apar->lokasi->gedung->nama ?? '-' }}</strong></span>
+                    <span><strong>{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</strong></span>
                 </div>
                 <div class="meta-row">
                     <i class="ph-bold ph-map-pin" style="color: #009B77;"></i>
-                    <span>{{ $apar->lokasi->nama ?? '-' }}</span>
+                    <span>{{ $apar->lokasi->nama ?? 'n/a' }}</span>
                 </div>
                 <div class="meta-row">
                     <i class="ph-bold ph-fire-extinguisher" style="color: #009B77;"></i>
-                    <span>{{ $apar->jenis->nama ?? '-' }} ({{ $apar->kapasitas->ukuran ?? '-' }})</span>
+                    <span>{{ $apar->jenis->nama ?? 'n/a' }} ({{ $apar->kapasitas->ukuran ?? 'n/a' }})</span>
                 </div>
 
                 <div class="scan-hint">

@@ -19,7 +19,7 @@ class ReportController extends Controller
         $selectedGedung = $request->input('gedung_id');
         $status = $request->input('status', 'all');
 
-        $query = Apar::with(['lokasi.gedung', 'jenis']);
+        $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas']);
         
         if ($selectedGedung) {
             $query->whereHas('lokasi', function($q) use ($selectedGedung) {
@@ -125,7 +125,7 @@ class ReportController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['No', 'ID APAR', 'Gedung', 'Lokasi', 'Status Inspeksi', 'Tanggal Inspeksi', 'Inspektor', 'Kondisi', 'Tekanan', 'Pin', 'Tuas', 'Selang', 'Kebersihan', 'Keterangan'];
+        $columns = ['No', 'ID APAR', 'Gedung', 'Lokasi', 'Jenis', 'Kapasitas', 'Status Inspeksi', 'Tanggal Inspeksi', 'Inspektor', 'Kondisi', 'Catatan Tambahan'];
 
         $callback = function() use($reportData, $columns) {
             $file = fopen('php://output', 'w');
@@ -135,22 +135,20 @@ class ReportController extends Controller
             foreach ($reportData as $row) {
                 $apar = $row['apar'];
                 $inspeksi = $row['inspeksi'];
+                $isInspected = $row['status'] === 'Sudah Diinspeksi';
                 
                 fputcsv($file, [
                     $no++,
                     $apar->kode,
-                    $apar->lokasi->gedung->nama ?? '-',
-                    $apar->lokasi->nama ?? '-',
-                    $row['status'],
-                    $inspeksi ? Carbon::parse($inspeksi->created_at)->format('d M Y H:i') : '-',
-                    $inspeksi->user->name ?? '-',
-                    $inspeksi->status ?? '-',
-                    $inspeksi->tekanan ?? '-',
-                    $inspeksi->pin ?? '-',
-                    $inspeksi->tuas ?? '-',
-                    $inspeksi->selang ?? '-',
-                    $inspeksi->kebersihan ?? '-',
-                    $inspeksi->keterangan ?? '-'
+                    $apar->lokasi->gedung->nama ?? 'n/a',
+                    $apar->lokasi->nama ?? 'n/a',
+                    $apar->jenis->nama ?? 'n/a',
+                    $apar->kapasitas->ukuran ?? 'n/a',
+                    $isInspected ? 'Sudah Diinspeksi' : 'Belum Diinspeksi',
+                    $inspeksi ? Carbon::parse($inspeksi->created_at)->format('d M Y H:i') : 'n/a',
+                    $inspeksi?->user?->name ?? 'n/a',
+                    $inspeksi?->status ?? 'n/a',
+                    $inspeksi?->catatan_tambahan ?? 'n/a'
                 ]);
             }
 

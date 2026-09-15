@@ -120,12 +120,15 @@
                         <label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Password</label>
                             <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">Lupa Password?</a>
                     </div>
-                    <div class="relative group">
+                    <div class="relative group" x-data="{ show: false }">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-lock-key text-lg"></i>
                         </div>
-                        <input type="password" id="password" name="password" placeholder="••••••••" 
-                            class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm tracking-widest font-mono placeholder:font-sans placeholder:tracking-normal" required>
+                        <input :type="show ? 'text' : 'password'" id="password" name="password" placeholder="••••••••" 
+                            class="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm tracking-widest font-mono placeholder:font-sans placeholder:tracking-normal" required>
+                        <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-[#009B77] transition-colors focus:outline-none">
+                            <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
+                        </button>
                     </div>
                 </div>
 
