@@ -47,9 +47,20 @@
         grid-column: span 2 / span 2 !important;
     }
     
+    /* Force green box grid layout for print */
+    .md\:grid-cols-12 {
+        grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+    }
+    .md\:col-span-3 {
+        grid-column: span 3 / span 3 !important;
+    }
+    .md\:col-span-6 {
+        grid-column: span 6 / span 6 !important;
+    }
+    
     .report-card, .chart-container {
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 
     /* Hide the tabs dropdown in print */
@@ -129,7 +140,7 @@
                 </div>
             </form>
 
-            <button onclick="window.print()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-4 rounded-xl shadow-md hover:shadow-lg shadow-rose-500/20 transition-all flex items-center gap-2 text-sm">
+            <button onclick="window.print()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl shadow-md hover:shadow-lg shadow-red-600/20 transition-all flex items-center gap-2 text-sm">
                 <i class="ph-bold ph-file-pdf text-lg"></i>
                 <span class="hidden sm:inline">Export PDF</span>
             </button>
@@ -293,8 +304,8 @@
                 </div>
 
                 <!-- Tabs -->
-                <div class="flex space-x-2 w-full max-w-sm">
-                    <button @click="tab = tab === 'belum' ? null : 'belum'" :class="tab === 'belum' ? 'bg-slate-800 text-white shadow-md' : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'" class="flex-1 py-2 px-3 text-xs font-bold rounded-xl transition-all outline-none flex items-center justify-center gap-2">
+                <div class="flex space-x-2 w-full max-w-sm print:hidden">
+                    <button @click="tab = tab === 'belum' ? null : 'belum'" :class="tab === 'belum' ? 'bg-white text-[#009B77] shadow-md' : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'" class="flex-1 py-2 px-3 text-xs font-bold rounded-xl transition-all outline-none flex items-center justify-center gap-2">
                         Daftar Belum
                         <i class="ph-bold transition-transform duration-300" :class="tab === 'belum' ? 'ph-caret-up' : 'ph-caret-down'"></i>
                     </button>
@@ -321,33 +332,33 @@
                     }
                 @endphp
                 
-                <div class="bg-white rounded-xl p-4 shadow-sm w-full min-h-[140px] flex flex-col justify-center relative overflow-hidden">
+                <div class="bg-transparent rounded-2xl p-5 border-2 border-white/50 w-full min-h-[140px] flex flex-col justify-center relative overflow-hidden transition-colors duration-300 hover:bg-white/5">
                     <div class="flex items-center justify-between mb-3 relative z-10">
-                        <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sisa Waktu</h3>
-                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center">
-                            <i class="ph-bold ph-hourglass-high text-lg"></i>
+                        <h3 class="text-[11px] font-bold text-emerald-100 uppercase tracking-wider">Batas Inspeksi Bulanan</h3>
+                        <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
+                            <i class="ph-bold ph-hourglass-high text-xl"></i>
                         </div>
                     </div>
                     
                     <div class="relative z-10">
                         @if($isCurrentMonth && $daysLeft > 0)
                             <div class="flex items-baseline gap-1">
-                                <span class="text-4xl font-extrabold text-slate-800">{{ $daysLeft }}</span>
-                                <span class="text-sm font-semibold text-slate-500">Hari</span>
+                                <span class="text-5xl font-extrabold text-white tracking-tight">{{ $daysLeft }}</span>
+                                <span class="text-sm font-semibold text-emerald-100">Hari</span>
                             </div>
                         @elseif($isCurrentMonth && $daysLeft === 0)
-                            <span class="text-xl font-extrabold text-rose-500">Hari Terakhir!</span>
+                            <span class="text-2xl font-extrabold text-rose-200">Hari Terakhir!</span>
                         @elseif($endOfMonth->isPast())
-                            <span class="text-xl font-extrabold text-slate-400">Bulan Berakhir</span>
+                            <span class="text-xl font-extrabold text-emerald-100">Bulan Berakhir</span>
                         @else
-                            <span class="text-xl font-extrabold text-teal-500">Segera Datang</span>
+                            <span class="text-xl font-extrabold text-emerald-100">Segera Datang</span>
                         @endif
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="p-4 md:p-6 bg-slate-50/50" x-show="tab !== null" x-collapse x-cloak>
+        <div class="p-4 md:p-6 bg-slate-50 print:hidden" x-show="tab !== null" x-cloak>
 
         <!-- Table Belum Diinspeksi -->
         <div x-show="tab === 'belum'" class="overflow-x-auto bg-white rounded-xl border border-slate-200 mb-4">
@@ -358,7 +369,9 @@
                         <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">ID APAR</th>
                         <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">Lokasi</th>
                         <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">Gedung</th>
+                        @if(auth()->user()->role !== 'Staff')
                         <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider text-center">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100">
@@ -368,15 +381,17 @@
                         <td class="py-3 px-5 font-bold text-slate-700">{{ $apar->kode }}</td>
                         <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->nama ?? '-' }}</td>
                         <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->gedung->nama ?? '-' }}</td>
+                        @if(auth()->user()->role !== 'Staff')
                         <td class="py-3 px-5 text-center">
                             <a href="/scan/{{ $apar->kode }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#009B77] bg-[#009B77]/10 hover:bg-[#009B77]/20 px-3 py-1.5 rounded-lg transition-colors">
                                 <i class="ph-bold ph-scan"></i> Scan
                             </a>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-8 text-center text-slate-500 font-semibold">Semua APAR telah diinspeksi bulan ini! 🎉</td>
+                        <td colspan="{{ auth()->user()->role !== 'Staff' ? '5' : '4' }}" class="py-8 text-center text-slate-500 font-semibold">Semua APAR telah diinspeksi bulan ini! 🎉</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -422,7 +437,7 @@
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <!-- Monthly Inspections Chart -->
-        <div class="lg:col-span-2 print-col-span-2 bg-white rounded-2xl shadow-sm border border-slate-00/60 p-4 flex flex-col h-full">
+        <div class="lg:col-span-2 print-col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 flex flex-col h-full chart-container">
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h3 class="text-lg font-bold text-slate-800">Tren Inspeksi Tahun {{ $selectedYear }}</h3>
@@ -438,7 +453,7 @@
         </div>
 
         <!-- APAR by Type Donut Chart -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 flex flex-col h-full">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 flex flex-col h-full chart-container">
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h3 class="text-lg font-bold text-slate-800">Sebaran Jenis APAR</h3>
@@ -641,7 +656,7 @@
         const typeOptions = {
             series: typeSeries,
             chart: {
-                type: 'donut',
+                type: 'pie',
                 height: 210,
                 fontFamily: 'inherit',
                 animations: {
@@ -660,36 +675,6 @@
             },
             labels: typeLabels,
             colors: colors,
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '70%',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                color: '#64748b'
-                            },
-                            value: {
-                                show: true,
-                                fontSize: '24px',
-                                fontWeight: 800,
-                                color: '#1e293b'
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: 'Total APAR',
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                color: '#64748b'
-                            }
-                        }
-                    }
-                }
-            },
             dataLabels: { enabled: false },
             stroke: {
                 show: true,
@@ -745,7 +730,7 @@
                 }
             },
             labels: ['Sudah Diinspeksi', 'Belum Diinspeksi'],
-            colors: ['#ffffff', '#007055'],
+            colors: ['#ffffff', '#a7f3d0'],
             plotOptions: {
                 pie: {
                     donut: {
@@ -754,17 +739,17 @@
                             show: true,
                             name: {
                                 show: true,
-                                fontSize: '8px',
+                                fontSize: '10px',
                                 fontWeight: 700,
                                 color: '#a7f3d0',
-                                offsetY: 18
+                                offsetY: -5
                             },
                             value: {
                                 show: true,
-                                fontSize: '20px',
+                                fontSize: '22px',
                                 fontWeight: 800,
                                 color: '#ffffff',
-                                offsetY: -2,
+                                offsetY: 5,
                                 formatter: function (val) {
                                     return progressPercentage + "%";
                                 }
@@ -775,7 +760,7 @@
                                 label: 'PROGRES',
                                 fontSize: '10px',
                                 fontWeight: 700,
-                                color: '#94a3b8',
+                                color: '#a7f3d0',
                                 formatter: function (w) {
                                     return progressPercentage + "%";
                                 }
@@ -786,9 +771,8 @@
             },
             dataLabels: { enabled: false },
             stroke: {
-                show: true,
-                colors: '#ffffff',
-                width: 4
+                show: false,
+                width: 0
             },
             legend: { show: false },
             tooltip: {

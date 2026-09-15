@@ -44,6 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/activity-log/export-pdf', [ActivityLogController::class, 'exportPdf'])->name('activity-log.export-pdf');
     Route::get('/activity-log/export-excel', [ActivityLogController::class, 'exportExcel'])->name('activity-log.export-excel');
 
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('reports.export-pdf');
+    Route::get('/reports/export-excel', [\App\Http\Controllers\ReportController::class, 'exportExcel'])->name('reports.export-excel');
+
     // Master Data Reference Routes
     Route::post('/master-data/gedung', [MasterDataController::class, 'storeGedung']);
     Route::put('/master-data/gedung/{gedung}', [MasterDataController::class, 'updateGedung']);

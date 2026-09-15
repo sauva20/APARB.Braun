@@ -173,22 +173,7 @@
             </div>
         </div>
         
-        <!-- User Profile -->
-        <div class="relative z-50" x-data>
-            <div @click="$dispatch('open-profile-modal')" class="justify-center p-4 border-b border-slate-50 flex items-center transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden cursor-pointer hover:bg-slate-50" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
-                <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center">
-                    @php
-                        $nameParts = explode(' ', auth()->user()->name);
-                        $initials = isset($nameParts[1]) ? substr($nameParts[0], 0, 1) . substr($nameParts[1], 0, 1) : substr($nameParts[0], 0, 2);
-                    @endphp
-                    <span class="text-sm font-bold text-[#009B77] uppercase">{{ $initials }}</span>
-                </div>
-                <div class="opacity-0 w-0 ml-0 whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">
-                    <h3 class="font-bold text-sm text-slate-800 truncate" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</h3>
-                    <p class="text-xs text-slate-500 truncate" title="{{ auth()->user()->role }}">{{ auth()->user()->role }}</p>
-                </div>
-            </div>
-        </div>
+        <!-- User Profile (Moved to Navbar) -->
 
         <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1.5">
@@ -220,20 +205,87 @@
                 <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Audit Trail</span>
             </a>
             
-            <a href="#" class="justify-center flex items-center p-3 overflow-hidden rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium transition-colors" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Reports">
+            <a href="/reports" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('reports') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Reports">
                 <i class="ph-duotone ph-file-text text-xl flex-shrink-0"></i>
                 <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Reports</span>
             </a>
             @endif
         </nav>
-        <!-- Bottom Actions (Removed) -->
+        
+        <!-- Bottom Actions (Settings & Logout) -->
+        <div class="mt-auto p-4 border-t border-slate-250 flex flex-col gap-1.5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+            <!-- Settings Gear -->
+            <div class="relative" x-data="{ showSettings: false }" @click.outside="showSettings = false">
+                <button @click="showSettings = !showSettings" class="w-full justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold text-slate-500 hover:bg-slate-50 hover:text-[#009B77] transition-all" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Pengaturan">
+                    <i class="ph-bold ph-gear text-xl flex-shrink-0"></i>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3 text-left' : 'opacity-0 w-0 ml-0'">Pengaturan</span>
+                </button>
+
+                <!-- Settings Dropdown -->
+                <div x-show="showSettings" 
+                     style="display: none;"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 translate-y-2"
+                     class="absolute left-full bottom-0 ml-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200/60 overflow-hidden z-50">
+                    
+                    <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+                        <h3 class="font-bold text-slate-800 text-sm">Pengaturan Akun</h3>
+                    </div>
+                    
+                    <ul class="divide-y divide-slate-100">
+                        <li>
+                            <button @click="$dispatch('open-profile-modal'); showSettings = false" class="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-[#009B77]/10 flex items-center justify-center text-[#009B77]">
+                                    <i class="ph-fill ph-user-circle text-lg"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-bold text-slate-800">Profil Saya</span>
+                                    <span class="block text-xs text-slate-500">Lihat profil Anda</span>
+                                </div>
+                            </button>
+                        </li>
+                        <li>
+                            <button @click="$dispatch('open-change-password'); showSettings = false" class="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
+                                    <i class="ph-fill ph-key text-lg"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-bold text-slate-800">Ganti Sandi</span>
+                                    <span class="block text-xs text-slate-500">Perbarui kata sandi</span>
+                                </div>
+                            </button>
+                        </li>
+                        <li>
+                            <button @click="$dispatch('open-change-pin'); showSettings = false" class="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+                                    <i class="ph-fill ph-password text-lg"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-bold text-slate-800">Ganti PIN</span>
+                                    <span class="block text-xs text-slate-500">Ubah PIN 4-digit</span>
+                                </div>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <button type="button" @click="$dispatch('open-logout-modal')" class="w-full justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Keluar">
+                <i class="ph-bold ph-sign-out text-xl flex-shrink-0"></i>
+                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3 text-left' : 'opacity-0 w-0 ml-0'">Keluar</span>
+            </button>
+        </div>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative print:h-auto print:overflow-visible">
         
         <!-- Top Navbar -->
-        <header class="h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-8 z-10 flex-shrink-0 shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
+        <header class="h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-8 z-40 relative flex-shrink-0 shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
             <!-- Left Title -->
             <div class="flex-1 flex items-center">
                 <h2 class="text-md font-bold text-[#009B77] tracking-wider uppercase">
@@ -256,17 +308,84 @@
 
             <!-- Right Actions -->
             <div class="flex-1 flex items-center justify-end gap-3">
-                <button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-[#009B77] transition-colors relative">
-                    <i class="ph-bold ph-bell text-xl"></i>
-                    <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                </button>
+                <!-- Notification Bell -->
+                <div class="relative" x-data="{ showNotif: false, hasUnread: {{ $importantNotifications->count() > 0 ? 'true' : 'false' }} }" @click.outside="showNotif = false">
+                    <button @click="showNotif = !showNotif; hasUnread = false" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-[#009B77] transition-colors relative" title="Notifikasi">
+                        <i class="ph-bold ph-bell text-xl"></i>
+                        <span x-show="hasUnread" style="display: none;" class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                    </button>
+
+                    <!-- Dropdown Panel -->
+                    <div x-show="showNotif" 
+                         style="display: none;"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-2"
+                         class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200/60 overflow-hidden z-50">
+                        
+                        <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">Notifikasi Penting</h3>
+                        </div>
+                        
+                        <div class="max-h-[300px] overflow-y-auto">
+                            @if($importantNotifications->isEmpty())
+                                <div class="px-4 py-6 text-center text-sm text-slate-500">
+                                    <i class="ph-duotone ph-check-circle text-3xl text-emerald-500 mb-2"></i>
+                                    <p>Tidak ada notifikasi penting.</p>
+                                </div>
+                            @else
+                                <ul class="divide-y divide-slate-100">
+                                    @foreach($importantNotifications as $notifApar)
+                                        @php
+                                            $diffDays = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($notifApar->tgl_kedaluwarsa)->startOfDay(), false);
+                                            $isExpired = $diffDays < 0;
+                                            $statusText = $isExpired ? 'Sudah Kedaluwarsa!' : ($diffDays == 0 ? 'Kedaluwarsa Hari Ini!' : 'H-' . $diffDays . ' Kedaluwarsa');
+                                            $statusColor = $isExpired ? 'text-red-600 bg-red-50' : 'text-amber-600 bg-amber-50';
+                                            $iconColor = $isExpired ? 'text-red-500' : 'text-amber-500';
+                                        @endphp
+                                        <li>
+                                            <a href="/master-data" class="block px-4 py-3 hover:bg-slate-50 transition-colors">
+                                                <div class="flex items-start gap-3">
+                                                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 {{ $statusColor }}">
+                                                        <i class="ph-fill ph-warning-circle text-lg {{ $iconColor }}"></i>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-sm font-bold text-slate-800 truncate">APAR {{ $notifApar->kode }}</p>
+                                                        <p class="text-xs text-slate-500 truncate">{{ $notifApar->lokasi->gedung->nama ?? '-' }} - {{ $notifApar->lokasi->nama ?? '-' }}</p>
+                                                        <p class="text-xs font-semibold mt-1 {{ $isExpired ? 'text-red-600' : 'text-amber-600' }}">{{ $statusText }}</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                        <div class="px-4 py-2 border-t border-slate-100 text-center bg-slate-50/50">
+                            <a href="/master-data" class="text-xs font-semibold text-[#009B77] hover:text-[#008264] transition-colors">Lihat Semua Data APAR</a>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="w-px h-6 bg-slate-200 mx-1"></div>
-                <button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-[#009B77] transition-colors" title="Pengaturan">
-                    <i class="ph-bold ph-gear text-xl"></i>
-                </button>
-                <button type="button" @click="$dispatch('open-logout-modal')" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Keluar">
-                    <i class="ph-bold ph-sign-out text-xl"></i>
-                </button>
+                
+                <!-- User Profile Area -->
+                <div @click="$dispatch('open-profile-modal')" class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1.5 rounded-xl transition-colors">
+                    <div class="text-right hidden sm:block">
+                        <h3 class="font-bold text-sm text-[#009B77]">{{ auth()->user()->name }}</h3>
+                        <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{{ auth()->user()->role }}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                        @php
+                            $nameParts = explode(' ', auth()->user()->name);
+                            $initials = isset($nameParts[1]) ? substr($nameParts[0], 0, 1) . substr($nameParts[1], 0, 1) : substr($nameParts[0], 0, 2);
+                        @endphp
+                        <span class="text-sm font-bold text-[#009B77] uppercase">{{ $initials }}</span>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -354,15 +473,15 @@
                 <div class="p-6 space-y-5">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Saat Ini</label>
-                        <input type="password" name="current_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                        <input type="password" name="current_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Baru (4 Digit Angka)</label>
-                        <input type="password" name="new_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                        <input type="password" name="new_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi PIN Baru</label>
-                        <input type="password" name="new_pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
+                        <input type="password" name="new_pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
                     </div>
                 </div>
                 <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
@@ -429,7 +548,7 @@
                             $user = auth()->user();
                         @endphp
                         
-                        @if($user->role === 'Head')
+                        @if($user->role === 'EHSS')
                             <div class="p-4 bg-[#009B77]/10 border border-[#009B77]/20 rounded-xl flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-lg bg-white text-[#009B77] flex items-center justify-center shadow-sm flex-shrink-0">
                                     <i class="ph-fill ph-buildings text-xl"></i>

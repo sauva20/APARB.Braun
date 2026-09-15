@@ -8,6 +8,7 @@
     showEditUser: {{ old('form_type') == 'edit_user' && $errors->any() ? 'true' : 'false' }},
     editUser: { 
         id:'{{ old('form_type') == 'edit_user' ? old('id') : '' }}', 
+        employee_id:'{{ old('form_type') == 'edit_user' ? old('employee_id') : '' }}',
         name:'{{ old('form_type') == 'edit_user' ? old('name') : '' }}',
         email:'{{ old('form_type') == 'edit_user' ? old('email') : '' }}',
         role:'{{ old('form_type') == 'edit_user' ? old('role') : '' }}',
@@ -135,7 +136,7 @@
                         </td>
                         <td class="py-4 px-5 text-slate-600">{{ $user->email }}</td>
                         <td class="py-4 px-5 text-slate-600">
-                            @if($user->role === 'Head')
+                            @if($user->role === 'EHSS')
                                 <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">Semua Gedung</span>
                             @elseif($user->gedungs->count() > 0)
                                 <div class="flex flex-wrap gap-1">
@@ -207,27 +208,27 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID / NIK <span class="text-red-500">*</span></label>
-                        <input type="text" name="employee_id" value="{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}" required placeholder="Contoh: 123456" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="employee_id" value="{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}" required placeholder="Contoh: 123456" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" value="{{ old('form_type') == 'tambah_user' ? old('name') : '' }}" required placeholder="Masukkan nama lengkap" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="name" value="{{ old('form_type') == 'tambah_user' ? old('name') : '' }}" required placeholder="Masukkan nama lengkap" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('name') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" value="{{ old('form_type') == 'tambah_user' ? old('email') : '' }}" required placeholder="contoh@bbraun.com" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="email" name="email" value="{{ old('form_type') == 'tambah_user' ? old('email') : '' }}" required placeholder="contoh@bbraun.com" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
-                        <select name="role" x-model="formRoleTambah" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <select name="role" x-model="formRoleTambah" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                             <option value="" disabled selected>Pilih Role</option>
-                            <option value="Head">Head</option>
+                            <option value="EHSS">EHSS</option>
                             <option value="Staff">Staff</option>
                         </select>
                         @if(old('form_type') == 'tambah_user') @error('role') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
@@ -237,7 +238,7 @@
                     <div x-show="formRoleTambah === 'Staff'" x-cloak class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Jadwal Rutin Inspeksi Bulanan (Opsional)</label>
-                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" value="{{ old('form_type') == 'tambah_user' ? old('jadwal_rutin_tanggal') : '' }}" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" value="{{ old('form_type') == 'tambah_user' ? old('jadwal_rutin_tanggal') : '' }}" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                             <p class="mt-1 text-[11px] text-slate-500">Angka 1-31. Email H-3 akan dikirim otomatis.</p>
                             @if(old('form_type') == 'tambah_user') @error('jadwal_rutin_tanggal') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                         </div>
@@ -300,26 +301,26 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID / NIK <span class="text-red-500">*</span></label>
-                        <input type="text" name="employee_id" x-model="editUser.employee_id" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="employee_id" x-model="editUser.employee_id" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" x-model="editUser.name" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="name" x-model="editUser.name" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('name') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" x-model="editUser.email" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="email" name="email" x-model="editUser.email" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
-                        <select name="role" x-model="editUser.role" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
-                            <option value="Head">Head</option>
+                        <select name="role" x-model="editUser.role" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <option value="EHSS">EHSS</option>
                             <option value="Staff">Staff</option>
                         </select>
                         @if(old('form_type') == 'edit_user') @error('role') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
@@ -329,7 +330,7 @@
                     <div x-show="editUser.role === 'Staff'" x-cloak class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Jadwal Rutin Inspeksi Bulanan (Opsional)</label>
-                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" x-model="editUser.jadwal_rutin_tanggal" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" x-model="editUser.jadwal_rutin_tanggal" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                             <p class="mt-1 text-[11px] text-slate-500">Angka 1-31. Email H-3 akan dikirim otomatis.</p>
                             @if(old('form_type') == 'edit_user') @error('jadwal_rutin_tanggal') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                         </div>
@@ -348,7 +349,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Ubah PIN Inspeksi</label>
-                        <input type="text" name="pin" minlength="4" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="4 digit angka (Biarkan kosong jika tidak mengubah PIN)" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="pin" minlength="4" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="4 digit angka (Biarkan kosong jika tidak mengubah PIN)" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('pin') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 

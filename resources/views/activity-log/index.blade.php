@@ -19,22 +19,11 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <div x-data="{ openExport: false }" class="relative z-50">
-                    <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
-                        <i class="ph-bold ph-download-simple text-lg"></i>
-                        <span class="hidden sm:inline">Export Data</span>
-                        <i class="ph-bold ph-caret-down text-slate-400 ml-1 transition-transform" :class="openExport ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div x-show="openExport" 
-                         x-transition.opacity.duration.200ms
-                         class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-100 py-2" x-cloak style="display: none;">
-                        <a href="{{ route('activity-log.export-pdf', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors">
-                            <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> Export ke PDF
-                        </a>
-                        <a href="{{ route('activity-log.export-excel', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-green-50 hover:text-green-600 flex items-center gap-2 transition-colors">
-                            <i class="ph-bold ph-file-csv text-lg text-green-500"></i> Export ke Excel (CSV)
-                        </a>
-                    </div>
+                <div class="relative z-50">
+                    <a href="{{ route('activity-log.export-pdf', request()->all()) }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg shadow-red-600/20 transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
+                        <i class="ph-bold ph-file-pdf text-lg"></i>
+                        <span class="hidden sm:inline">Export PDF</span>
+                    </a>
                 </div>
             </div>
         </div>

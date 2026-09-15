@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 use Illuminate\Support\Facades\Schedule;
 Schedule::command('activitylog:clean')->daily();
 Schedule::command('app:send-reminders')->dailyAt('07:00');
+Schedule::command('app:send-apar-expiry-notification')->dailyAt('08:00');

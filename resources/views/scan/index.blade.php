@@ -240,7 +240,7 @@
                 <div class="flex items-center justify-between mb-5">
                     <div>
                         <h3 class="text-base font-bold text-slate-800 tracking-tight">Verifikasi Petugas</h3>
-                        <p class="text-[10px] font-medium text-slate-500 mt-0.5">Masukkan 6 digit PIN untuk memulai inspeksi.</p>
+                        <p class="text-[10px] font-medium text-slate-500 mt-0.5">Masukkan 4 digit PIN untuk memulai inspeksi.</p>
                     </div>
                     <button @click="showPinModal = false" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-full transition-colors">
                         <i class="ph-light ph-x"></i>
@@ -252,9 +252,10 @@
                     <input type="hidden" name="action" :value="pinAction">
                     <div class="mb-5">
                         <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">PIN Petugas</label>
-                        <input type="password" name="pin" maxlength="6" inputmode="numeric" required 
+                        <input type="password" name="pin" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" required 
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-center tracking-[0.5em] text-xl font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all outline-none" 
-                            placeholder="••••••">
+                            placeholder="••••">
                     </div>
                     
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-medium py-3 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-xs flex items-center justify-center gap-2 uppercase tracking-widest active:scale-[0.98]">

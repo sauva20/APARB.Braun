@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Apar;
+use App\Models\Gedung;
+use App\Models\Inspeksi;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+class ReportController extends Controller
+{
+    private function getReportData(Request $request)
+    {
+        $now = Carbon::now();
+        $selectedYear = $request->input('year', $now->year);
+        $selectedMonth = $request->input('month', $now->month);
+        $selectedGedung = $request->input('gedung_id');
+        $status = $request->input('status', 'all');
+
+        $query = Apar::with(['lokasi.gedung', 'jenis']);
+        
+        if ($selectedGedung) {
+            $query->whereHas('lokasi', function($q) use ($selectedGedung) {
+                $q->where('gedung_id', $selectedGedung);
+            });
+        }
+        
+        $apars = $query->orderBy('kode', 'asc')->get();
+
+        $inspeksiBulanIniAparIds = Inspeksi::whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
+            ->pluck('apar_id')
+            ->unique()
+            ->toArray();
+
+        $reportData = collect();
+
+        foreach ($apars as $apar) {
+            $isInspected = in_array($apar->id, $inspeksiBulanIniAparIds);
+            
+            if ($status === 'sudah' && !$isInspected) continue;
+            if ($status === 'belum' && $isInspected) continue;
+
+            $inspeksi = null;
+            if ($isInspected) {
+                $inspeksi = Inspeksi::with('user')->where('apar_id', $apar->id)
+                    ->whereMonth('created_at', $selectedMonth)
+                    ->whereYear('created_at', $selectedYear)
+                    ->latest()
+                    ->first();
+            }
+
+            $reportData->push([
+                'apar' => $apar,
+                'status' => $isInspected ? 'Sudah Diinspeksi' : 'Belum Diinspeksi',
+                'inspeksi' => $inspeksi
+            ]);
+        }
+
+        return [
+            'data' => $reportData,
+            'selectedYear' => $selectedYear,
+            'selectedMonth' => $selectedMonth,
+            'selectedGedung' => $selectedGedung,
+            'status' => $status
+        ];
+    }
+
+    public function index(Request $request)
+    {
+        $gedungs = Gedung::all();
+        $reportParams = $this->getReportData($request);
+        $reportData = $reportParams['data'];
+
+        $perPage = 15;
+        $page = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        $paginatedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $reportData->forPage($page, $perPage),
+            $reportData->count(),
+            $perPage,
+            $page,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+        );
+        $paginatedData->appends($request->all());
+
+        return view('reports.index', array_merge($reportParams, [
+            'paginatedData' => $paginatedData,
+            'gedungs' => $gedungs
+        ]));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $reportParams = $this->getReportData($request);
+        $reportData = $reportParams['data'];
+        
+        $monthName = Carbon::createFromDate($reportParams['selectedYear'], $reportParams['selectedMonth'], 1)->locale('id')->translatedFormat('F Y');
+        $gedungName = $reportParams['selectedGedung'] ? Gedung::find($reportParams['selectedGedung'])->nama ?? 'Semua Gedung' : 'Semua Gedung';
+
+        $pdf = Pdf::loadView('reports.pdf', [
+            'reportData' => $reportData,
+            'monthName' => $monthName,
+            'gedungName' => $gedungName,
+            'status' => $reportParams['status']
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Laporan_Inspeksi_' . $monthName . '.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $reportParams = $this->getReportData($request);
+        $reportData = $reportParams['data'];
+        $monthName = Carbon::createFromDate($reportParams['selectedYear'], $reportParams['selectedMonth'], 1)->locale('id')->translatedFormat('F Y');
+
+        $filename = "Laporan_Inspeksi_" . date('Ymd_His') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['No', 'ID APAR', 'Gedung', 'Lokasi', 'Status Inspeksi', 'Tanggal Inspeksi', 'Inspektor', 'Kondisi', 'Tekanan', 'Pin', 'Tuas', 'Selang', 'Kebersihan', 'Keterangan'];
+
+        $callback = function() use($reportData, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            $no = 1;
+            foreach ($reportData as $row) {
+                $apar = $row['apar'];
+                $inspeksi = $row['inspeksi'];
+                
+                fputcsv($file, [
+                    $no++,
+                    $apar->kode,
+                    $apar->lokasi->gedung->nama ?? '-',
+                    $apar->lokasi->nama ?? '-',
+                    $row['status'],
+                    $inspeksi ? Carbon::parse($inspeksi->created_at)->format('d M Y H:i') : '-',
+                    $inspeksi->user->name ?? '-',
+                    $inspeksi->status ?? '-',
+                    $inspeksi->tekanan ?? '-',
+                    $inspeksi->pin ?? '-',
+                    $inspeksi->tuas ?? '-',
+                    $inspeksi->selang ?? '-',
+                    $inspeksi->kebersihan ?? '-',
+                    $inspeksi->keterangan ?? '-'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+}
