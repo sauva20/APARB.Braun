@@ -6,58 +6,116 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 11px;
+            font-size: 10px;
             color: #333;
+            margin: 0;
+            padding: 20px;
         }
-        h2 {
+        .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #009B77;
+            padding-bottom: 15px;
+        }
+        .header h1 {
             color: #009B77;
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        .header p {
+            margin: 0;
+            color: #555;
+            font-size: 12px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        table, th, td {
+        th, td {
             border: 1px solid #ddd;
+            padding: 8px 6px;
+            text-align: left;
         }
         th {
-            background-color: #009B77;
-            color: white;
-            padding: 8px;
-            text-align: left;
+            background-color: #e8f5f3;
+            color: #009B77;
+            font-weight: bold;
             text-transform: uppercase;
-        }
-        td {
-            padding: 8px;
-        }
-        .text-center {
+            font-size: 9px;
             text-align: center;
         }
-        .font-bold {
+        .text-center { text-align: center; }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8px;
             font-weight: bold;
+            text-transform: uppercase;
         }
-        .text-red {
-            color: #e3342f;
+        .bg-green { background-color: #d1fae5; color: #059669; }
+        .bg-red { background-color: #fee2e2; color: #dc2626; }
+        .bg-orange { background-color: #fef3c7; color: #d97706; }
+        
+        .footer {
+            margin-top: 40px;
+            font-size: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h2>Laporan Data APAR</h2>
+    <div class="header">
+        <h1>{{ __('PFE DATA REPORT') }} PT B. BRAUN PHARMACEUTICAL INDONESIA</h1>
+        <p>Identify Fire Extinguisher Placement</p>
+    </div>
+
+    @php
+        $activeFilters = [];
+        if (request()->filled('search')) $activeFilters[] = request('search');
+        if (request()->filled('gedung_id')) {
+            $gedung = \App\Models\gedung::find(request('gedung_id'));
+            if($gedung) $activeFilters[] = $gedung->nama;
+        }
+        if (request()->filled('lokasi_id')) {
+            $lokasi = \App\Models\lokasi::find(request('lokasi_id'));
+            if($lokasi) $activeFilters[] = $lokasi->nama;
+        }
+        if (request()->filled('kapasitas_id')) {
+            $kapasitas = \App\Models\kapasitasApar::find(request('kapasitas_id'));
+            if($kapasitas) $activeFilters[] = $kapasitas->ukuran;
+        }
+        if (request()->filled('jenis_id')) {
+            $jenis = \App\Models\jenisApar::find(request('jenis_id'));
+            if($jenis) $activeFilters[] = $jenis->nama;
+        }
+    @endphp
+
+    <table style="width: 100%; margin-bottom: 8px; border: none;">
+        <tr>
+            <td style="text-align: left; font-size: 11px; border: none !important; padding: 0 !important; background: transparent;">
+                Identification Date: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i:s') }}
+            </td>
+            <td style="text-align: right; font-size: 11px; border: none !important; padding: 0 !important; background: transparent;">
+                @if(count($activeFilters) > 0)
+                    {{ implode(' | ', $activeFilters) }}
+                @endif
+            </td>
+        </tr>
+    </table>
 
     <table>
         <thead>
             <tr>
                 <th class="text-center" style="width: 5%;">No</th>
-                <th style="width: 12%;">ID APAR</th>
-                <th style="width: 14%;">Lokasi</th>
-                <th style="width: 14%;">Gedung</th>
-                <th style="width: 13%;">Jenis</th>
-                <th style="width: 10%;">Kapasitas</th>
-                <th class="text-center" style="width: 8%;">Kelas</th>
-                <th style="width: 12%;">Tgl Kedaluwarsa</th>
+                <th style="width: 12%;">{{ __('PFE ID') }}</th>
+                <th style="width: 14%;">Location</th>
+                <th style="width: 14%;">Building</th>
+                <th style="width: 13%;">Type</th>
+                <th style="width: 10%;">Capacity</th>
+                <th class="text-center" style="width: 8%;">Fire Class</th>
+                <th style="width: 12%;">{{ __('Expired DATE') }}</th>
                 <th class="text-center" style="width: 5%;">Qty</th>
                 <th style="width: 12%;">PIC</th>
             </tr>
@@ -83,7 +141,7 @@
                     <td class="text-center">{{ $kelas }}</td>
                     <td>
                         @if($apar->tgl_kedaluwarsa && $apar->tgl_kedaluwarsa->isPast())
-                            <span class="text-red">Expired ({{ $apar->tgl_kedaluwarsa->format('d/m/Y') }})</span>
+                            <span style="color: #dc2626; font-weight: bold;">{{ __('Expired') }} ({{ $apar->tgl_kedaluwarsa->format('d/m/Y') }})</span>
                         @else
                             {{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d/m/Y') : '-' }}
                         @endif
@@ -113,10 +171,6 @@
             @endif
         </tbody>
     </table>
-
-    <div style="font-size: 10px; color: #888; text-align: right;">
-        Dicetak pada: {{ date('d M Y H:i:s') }}
-    </div>
 
 </body>
 </html>

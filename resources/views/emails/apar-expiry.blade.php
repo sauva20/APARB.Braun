@@ -134,7 +134,7 @@
         </div>
 
         <div class="footer">
-            <p>Email ini dikirim secara otomatis oleh APAR Monitoring System (B. Braun). Mohon tidak membalas email ini.</p>
+            <p>Email ini dikirim secara otomatis oleh PFE Monitoring Control System (B. Braun). Mohon tidak membalas email ini.</p>
         </div>
     </div>
 </body>

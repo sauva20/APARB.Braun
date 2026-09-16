@@ -72,6 +72,6 @@
     <em>{{ $jadwals->first()->catatan_tambahan ?: '-' }}</em></p>
 
     <p>Terima kasih,<br>
-    <strong>APAR Monitoring System (B. Braun)</strong></p>
+    <strong>PFE Monitoring Control System (B. Braun)</strong></p>
 </body>
 </html>

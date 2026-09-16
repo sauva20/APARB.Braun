@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - Sistem Monitoring APAR</title>
+    <title>{{ __('Login - PFE Monitoring Control System') }}</title>
 
     <!-- Tailwind CSS (via Vite) -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -65,6 +65,28 @@
     <div class="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-[#8A4B9F] rounded-full mix-blend-multiply filter blur-[120px] opacity-20 pointer-events-none"></div>
 
     <div class="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[28px] shadow-[0_20px_60px_-15px_rgba(0,155,119,0.2)] overflow-hidden relative z-10 border border-white/50">
+        
+        <!-- Language Switcher -->
+        <div class="absolute top-4 right-4 z-20" x-data="{ open: false }">
+            <button @click="open = !open" @click.away="open = false" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-xs font-bold text-gray-600">
+                <i class="ph-bold ph-translate"></i>
+                <span class="uppercase">{{ app()->getLocale() }}</span>
+                <i class="ph-bold ph-caret-down text-[10px]"></i>
+            </button>
+            <div x-show="open" 
+                 x-transition.opacity.duration.200ms
+                 class="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden py-1">
+                <a href="{{ route('set-locale', 'id') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#009B77]/10 hover:text-[#009B77] transition-colors font-medium flex items-center justify-between">
+                    <span>Indonesia</span>
+                    @if(app()->getLocale() == 'id') <i class="ph-bold ph-check text-[#009B77]"></i> @endif
+                </a>
+                <a href="{{ route('set-locale', 'en') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#009B77]/10 hover:text-[#009B77] transition-colors font-medium flex items-center justify-between">
+                    <span>English</span>
+                    @if(app()->getLocale() == 'en') <i class="ph-bold ph-check text-[#009B77]"></i> @endif
+                </a>
+            </div>
+        </div>
+
         <!-- Top Gradient Bar -->
         <div class="h-1.5 w-full bg-gradient-to-r from-[#009B77] via-[#8A4B9F] to-[#009B77]"></div>
 
@@ -78,7 +100,7 @@
 
             <!-- Titles -->
             <div class="text-center mb-10">
-                <h1 class="text-xl sm:text-xl font-extrabold text-[#1A1A1A] tracking-tight mb-1.5">SISTEM MONITORING APAR</h1>
+                <h1 class="text-xl sm:text-xl font-extrabold text-[#1A1A1A] tracking-tight mb-1.5">{{ __('SISTEM MONITORING APAR') }}</h1>
                 <p class="text-sm text-[#009B77] font-bold">
                     PT B | BRAUN PHARMACEUTICAL INDONESIA
                 </p>
@@ -109,7 +131,7 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-envelope text-lg"></i>
                         </div>
-                        <input type="email" id="email" name="email" placeholder="Masukkan email Anda" value="{{ old('email') }}"
+                        <input type="email" id="email" name="email" placeholder="{{ __('Masukkan email Anda') }}" value="{{ old('email') }}"
                             class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm font-medium placeholder:font-normal" required>
                     </div>
                 </div>
@@ -118,7 +140,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-2">
                         <label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Password</label>
-                            <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">Lupa Password?</a>
+                            <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">{{ __('Lupa Password?') }}</a>
                     </div>
                     <div class="relative group" x-data="{ show: false }">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
@@ -135,7 +157,7 @@
                 <!-- Submit Button -->
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
-                        <span>Masuk</span>
+                        <span>{{ __('Masuk') }}</span>
                     </button>
                 </div>
             </form>
@@ -143,7 +165,7 @@
             <!-- Footer -->
             <div class="mt-10 pt-6 border-t border-gray-100 flex justify-center items-center gap-1.5">
                 <i class="ph-fill ph-shield-check text-[#009B77] text-sm"></i>
-                <p class="text-[11px] text-gray-400 font-medium">APAR Monitoring System v1.0 &copy; 2026 B. Braun   </p>
+                <p class="text-[11px] text-gray-400 font-medium">PFE Monitoring Control System v1.0 &copy; 2026 B. Braun   </p>
             </div>
         </div>
     </div>

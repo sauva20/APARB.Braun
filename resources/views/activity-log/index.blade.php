@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Audit Trail - APAR Monitoring System')
+@section('title', 'Audit Trail - PFE Monitoring Control System')
 
 @section('content')
 <div class="space-y-6">
@@ -8,11 +8,11 @@
     <!-- Header Area -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
+            <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 border border-[#009B77]/20 shadow-sm flex items-center justify-center text-[#009B77]">
                 <i class="ph-bold ph-clock-counter-clockwise text-xl"></i>
             </div>
             <div>
-                <h2 class="text-base font-bold text-slate-800 leading-tight">Audit Trail</h2>
+                <h2 class="text-base font-bold text-[#007A5E] leading-tight">Audit Trail</h2>
                 <p class="text-xs font-semibold text-slate-500 mt-0.5">Riwayat tindakan pengguna dalam sistem</p>
             </div>
         </div>

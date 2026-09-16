@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard - APAR Monitoring System')</title>
+    <title>@yield('title', 'PFE Monitoring Control System')</title>
+    <link rel="icon" href="{{ asset('favicon.png') }}?v=4" type="image/png">
     
     <!-- Tailwind CSS (via Vite or CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -176,39 +177,51 @@
         <!-- User Profile (Moved to Navbar) -->
 
         <!-- Navigation -->
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1.5">
-            <a href="/dashboard" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('dashboard') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Dashboard">
-                <i class="ph-fill ph-squares-four text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Dashboard</span>
-            </a>
+        <nav class="flex-1 overflow-y-auto flex flex-col transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
             
-            <a href="/master-data" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('master-data') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Master Data APAR">
-                <i class="ph-duotone ph-list-dashes text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Master Data APAR</span>
-            </a>
-            
-            <a href="/inspection-schedule" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('inspection-schedule') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Inspection Schedule">
-                <i class="ph-duotone ph-calendar-blank text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Inspection Schedule</span>
-            </a>
+            <!-- Group 1: Dashboard & Data Admin -->
+            <div class="p-4 flex flex-col gap-1.5">
+                <a href="/dashboard" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('dashboard') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Dashboard">
+                    <i class="ph-fill ph-squares-four text-xl flex-shrink-0"></i>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Dashboard</span>
+                </a>
 
-            @if(auth()->user()->role !== 'Staff')
-            <a href="/users" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('users') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Manajemen User">
-                <i class="ph-duotone ph-users text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Manajemen User</span>
-            </a>
-            @endif
+                @if(auth()->user()->role !== 'Staff')
+                <a href="/users" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('users') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="{{ __('User Management') }}">
+                    <i class="ph-duotone ph-users text-xl flex-shrink-0"></i>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">{{ __('User Management') }}</span>
+                </a>
+                @endif
+                
+                <a href="/master-data" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('master-data') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="{{ __('PFE Master Data') }}">
+                    <i class="ph-duotone ph-list-dashes text-xl flex-shrink-0"></i>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">{{ __('PFE Master Data') }}</span>
+                </a>
+            </div>
+
+            <!-- Group 3: Inspections & Reports -->
+            <div class="p-4 border-t border-slate-200 flex flex-col gap-1.5">
+                <a href="/inspection-schedule" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('inspection-schedule') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Inspection Schedule">
+                    <i class="ph-duotone ph-calendar-blank text-xl flex-shrink-0"></i>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Inspection Schedule</span>
+                </a>
+
+                @if(auth()->user()->role !== 'Staff')
+                <a href="/reports" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('reports') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Reports">
+                    <i class="ph-duotone ph-file-text text-xl flex-shrink-0"></i>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Inspection Reports</span>
+                </a>
+                @endif
+            </div>
             
+            <!-- Group 4: Audit Trail -->
             @if(auth()->user()->role !== 'Staff')
-            <a href="/activity-log" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('activity-log') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Audit Trail">
-                <i class="ph-bold ph-clock-counter-clockwise text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Audit Trail</span>
-            </a>
-            
-            <a href="/reports" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('reports') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Reports">
-                <i class="ph-duotone ph-file-text text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Reports</span>
-            </a>
+            <div class="p-4 border-t border-slate-200 flex flex-col gap-1.5">
+                <a href="/activity-log" class="justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold transition-all {{ request()->is('activity-log') ? 'bg-[#009B77] text-white shadow-[0_4px_12px_rgba(0,155,119,0.25)] hover:bg-[#008264]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Audit Trail">
+                    <i class="ph-bold ph-clock-counter-clockwise text-xl flex-shrink-0"></i>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3' : 'opacity-0 w-0 ml-0'">Audit Trail</span>
+                </a>
+            </div>
             @endif
         </nav>
         
@@ -216,9 +229,9 @@
         <div class="mt-auto p-4 border-t border-slate-250 flex flex-col gap-1.5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
             <!-- Settings Gear -->
             <div class="relative" x-data="{ showSettings: false }" @click.outside="showSettings = false">
-                <button @click="showSettings = !showSettings" class="w-full justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold text-slate-500 hover:bg-slate-50 hover:text-[#009B77] transition-all" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Pengaturan">
+                <button @click="showSettings = !showSettings" class="w-full justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold text-slate-500 hover:bg-slate-50 hover:text-[#009B77] transition-all" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="{{ __('Settings') }}">
                     <i class="ph-bold ph-gear text-xl flex-shrink-0"></i>
-                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3 text-left' : 'opacity-0 w-0 ml-0'">Pengaturan</span>
+                    <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3 text-left' : 'opacity-0 w-0 ml-0'">{{ __('Settings') }}</span>
                 </button>
 
                 <!-- Settings Dropdown -->
@@ -233,17 +246,42 @@
                      class="absolute left-full bottom-0 ml-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200/60 overflow-hidden z-50">
                     
                     <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                        <h3 class="font-bold text-slate-800 text-sm">Pengaturan Akun</h3>
+                        <h3 class="font-bold text-slate-800 text-sm">{{ __('Settings') }}</h3>
                     </div>
                     
                     <ul class="divide-y divide-slate-100">
+                        <li x-data="{ langOpen: false }" class="relative">
+                            <button @click="langOpen = !langOpen" class="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-[#8A4B9F]/10 flex items-center justify-center text-[#8A4B9F]">
+                                        <i class="ph-fill ph-translate text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Bahasa / Language</span>
+                                        <span class="block text-xs text-slate-500 uppercase">{{ app()->getLocale() == 'id' ? 'Indonesia' : 'English' }}</span>
+                                    </div>
+                                </div>
+                                <i class="ph-bold ph-caret-right text-xs text-slate-400 transition-transform" :class="langOpen ? 'rotate-90' : ''"></i>
+                            </button>
+                            
+                            <div x-show="langOpen" class="bg-slate-50 px-4 py-2 border-y border-slate-100 flex flex-col gap-1">
+                                <a href="{{ route('set-locale', 'id') }}" class="flex items-center justify-between p-2 rounded-lg hover:bg-white transition-colors {{ app()->getLocale() == 'id' ? 'text-[#009B77] font-bold' : 'text-slate-600' }}">
+                                    <span class="text-sm">Indonesia</span>
+                                    @if(app()->getLocale() == 'id') <i class="ph-bold ph-check"></i> @endif
+                                </a>
+                                <a href="{{ route('set-locale', 'en') }}" class="flex items-center justify-between p-2 rounded-lg hover:bg-white transition-colors {{ app()->getLocale() == 'en' ? 'text-[#009B77] font-bold' : 'text-slate-600' }}">
+                                    <span class="text-sm">English</span>
+                                    @if(app()->getLocale() == 'en') <i class="ph-bold ph-check"></i> @endif
+                                </a>
+                            </div>
+                        </li>
                         <li>
                             <button @click="$dispatch('open-profile-modal'); showSettings = false" class="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-[#009B77]/10 flex items-center justify-center text-[#009B77]">
                                     <i class="ph-fill ph-user-circle text-lg"></i>
                                 </div>
                                 <div>
-                                    <span class="block text-sm font-bold text-slate-800">Profil Saya</span>
+                                    <span class="block text-sm font-bold text-slate-800">{{ __('My Profile') }}</span>
                                     <span class="block text-xs text-slate-500">Lihat profil Anda</span>
                                 </div>
                             </button>
@@ -266,7 +304,7 @@
                                 </div>
                                 <div>
                                     <span class="block text-sm font-bold text-slate-800">Ganti PIN</span>
-                                    <span class="block text-xs text-slate-500">Ubah PIN 4-digit</span>
+                                    <span class="block text-xs text-slate-500">{{ __('Change PIN') }} 4-digit</span>
                                 </div>
                             </button>
                         </li>
@@ -274,9 +312,9 @@
                 </div>
             </div>
 
-            <button type="button" @click="$dispatch('open-logout-modal')" class="w-full justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="Keluar">
+            <button type="button" @click="$dispatch('open-logout-modal')" class="w-full justify-center flex items-center p-3 overflow-hidden rounded-xl font-semibold text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all" :class="sidebarOpen ? 'justify-start' : 'justify-center'" title="{{ __('Logout') }}">
                 <i class="ph-bold ph-sign-out text-xl flex-shrink-0"></i>
-                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3 text-left' : 'opacity-0 w-0 ml-0'">Keluar</span>
+                <span class="opacity-0 w-0 ml-0 text-sm whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden" :class="sidebarOpen ? 'opacity-100 w-32 ml-3 text-left' : 'opacity-0 w-0 ml-0'">{{ __('Logout') }}</span>
             </button>
         </div>
     </aside>
@@ -370,7 +408,7 @@
                                         @php
                                             $diffDays = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($notifApar->tgl_kedaluwarsa)->startOfDay(), false);
                                             $isExpired = $diffDays < 0;
-                                            $statusText = $isExpired ? 'Sudah Kedaluwarsa!' : ($diffDays == 0 ? 'Kedaluwarsa Hari Ini!' : 'H-' . $diffDays . ' Kedaluwarsa');
+                                            $statusText = $isExpired ? __('Expired!') : ($diffDays == 0 ? __('Expiring Today!') : __('Expires in') . ' ' . $diffDays . ' ' . __('Days'));
                                             $statusColor = $isExpired ? 'text-red-600 bg-red-50' : 'text-amber-600 bg-amber-50';
                                             $iconColor = $isExpired ? 'text-red-500' : 'text-amber-500';
                                         @endphp
@@ -417,7 +455,7 @@
         </header>
 
         <!-- Page Content -->
-        <div class="p-8 overflow-y-auto flex-1 print:overflow-visible print:h-auto print:p-0">
+        <div class="p-4 overflow-y-auto flex-1 print:overflow-visible print:h-auto print:p-0">
             <div class="w-full max-w-[1400px] mx-auto">
                 @yield('content')
             </div>
@@ -444,8 +482,8 @@
                         <i class="ph-bold ph-key text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800 text-lg">Ganti Kata Sandi</h3>
-                        <p class="text-xs font-semibold text-slate-500">Perbarui kata sandi akun Anda</p>
+                        <h3 class="font-bold text-slate-800 text-lg">{{ __('Change Password') }}</h3>
+                        <p class="text-xs font-semibold text-slate-500">{{ __('Update your account password') }}</p>
                     </div>
                 </div>
                 <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors">
@@ -457,7 +495,7 @@
                 @csrf
                 <div class="p-6 space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sandi Saat Ini</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Current Password') }}</label>
                         <div class="relative" x-data="{ show: false }">
                             <input :type="show ? 'text' : 'password'" name="current_password" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-4 pr-12 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                             <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
@@ -466,7 +504,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sandi Baru (Min. 8)</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('New Password (Min. 8)') }}</label>
                         <div class="relative" x-data="{ show: false }">
                             <input :type="show ? 'text' : 'password'" name="new_password" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-4 pr-12 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                             <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
@@ -475,7 +513,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi Sandi Baru</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Confirm New Password') }}</label>
                         <div class="relative" x-data="{ show: false }">
                             <input :type="show ? 'text' : 'password'" name="new_password_confirmation" required minlength="8" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-4 pr-12 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                             <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
@@ -485,7 +523,7 @@
                     </div>
                 </div>
                 <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
-                    <button type="submit" class="bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-teal-500/30 transition-all text-sm">Simpan Sandi Baru</button>
+                    <button type="submit" class="bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-teal-500/30 transition-all text-sm">{{ __('Save New Password') }}</button>
                 </div>
             </form>
         </div>
@@ -501,8 +539,8 @@
                         <i class="ph-bold ph-password text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800 text-lg">Ganti PIN</h3>
-                        <p class="text-xs font-semibold text-slate-500">Perbarui PIN 4-digit Anda</p>
+                        <h3 class="font-bold text-slate-800 text-lg">{{ __('Change PIN') }}</h3>
+                        <p class="text-xs font-semibold text-slate-500">{{ __('Update your 4-digit PIN') }}</p>
                     </div>
                 </div>
                 <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors">
@@ -514,7 +552,7 @@
                 @csrf
                 <div class="p-6 space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Saat Ini</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Current PIN') }}</label>
                         <div class="relative" x-data="{ show: false }">
                             <input :type="show ? 'text' : 'password'" name="current_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
                             <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
@@ -523,7 +561,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PIN Baru (4 Digit Angka)</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('New PIN (4 Digits)') }}</label>
                         <div class="relative" x-data="{ show: false }">
                             <input :type="show ? 'text' : 'password'" name="new_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
                             <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
@@ -532,7 +570,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi PIN Baru</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Confirm New PIN') }}</label>
                         <div class="relative" x-data="{ show: false }">
                             <input :type="show ? 'text' : 'password'" name="new_pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-center text-lg font-mono tracking-widest text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none" placeholder="••••">
                             <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-[#009B77] transition-colors focus:outline-none">
@@ -542,7 +580,7 @@
                     </div>
                 </div>
                 <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
-                    <button type="submit" class="bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-teal-500/30 transition-all text-sm">Simpan PIN Baru</button>
+                    <button type="submit" class="bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-teal-500/30 transition-all text-sm">{{ __('Save New PIN') }}</button>
                 </div>
             </form>
         </div>
@@ -565,8 +603,8 @@
                             <i class="ph-fill ph-user-circle text-xl"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-slate-800 text-lg">Profil Saya</h3>
-                            <p class="text-xs font-semibold text-slate-500">Informasi akun dan PIC APAR</p>
+                            <h3 class="font-bold text-slate-800 text-lg">{{ __('My Profile') }}</h3>
+                            <p class="text-xs font-semibold text-slate-500">{{ __('Account and PFE PIC information') }}</p>
                         </div>
                     </div>
                     <button @click="show = false" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors">
@@ -599,7 +637,7 @@
                     <!-- PIC Info -->
                     <div>
                         <h5 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <i class="ph-bold ph-buildings"></i> Tanggung Jawab Utama Gedung
+                            <i class="ph-bold ph-buildings"></i> {{ __('Main Building Responsibility') }}
                         </h5>
                         @php
                             $user = auth()->user();
@@ -611,14 +649,14 @@
                                     <i class="ph-fill ph-buildings text-xl"></i>
                                 </div>
                                 <div>
-                                    <h6 class="font-bold text-slate-800">Semua Gedung (Admin)</h6>
-                                    <p class="text-xs font-medium text-slate-500 mt-0.5">Memiliki akses pantau penuh ke semua area.</p>
+                                    <h6 class="font-bold text-slate-800">{{ __('All Buildings (Admin)') }}</h6>
+                                    <p class="text-xs font-medium text-slate-500 mt-0.5">{{ __('Has full monitoring access to all areas.') }}</p>
                                 </div>
                             </div>
                         @else
                             @if($user->gedungs->isEmpty())
                                 <div class="p-4 bg-slate-50 border border-slate-100 border-dashed rounded-xl text-center text-sm font-medium text-slate-500">
-                                    Anda belum ditugaskan sebagai PIC untuk gedung manapun.
+                                    {{ __('You have not been assigned as a PIC for any building.') }}
                                 </div>
                             @else
                                 <div class="space-y-3 mb-4">
@@ -640,8 +678,8 @@
                                 <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-3">
                                     <i class="ph-fill ph-calendar-blank text-amber-500 text-lg mt-0.5"></i>
                                     <div>
-                                        <h6 class="text-sm font-bold text-slate-800">Jadwal Inspeksi Rutin</h6>
-                                        <p class="text-xs font-medium text-slate-600 mt-0.5">Setiap tanggal <strong>{{ $user->jadwal_rutin_tanggal }}</strong> setiap bulannya.</p>
+                                        <h6 class="text-sm font-bold text-slate-800">{{ __('Inspection Schedule') }} Rutin</h6>
+                                        <p class="text-xs font-medium text-slate-600 mt-0.5">{{ __('Every') }} <strong>{{ $user->jadwal_rutin_tanggal }}</strong> {{ __('of the month.') }}</p>
                                     </div>
                                 </div>
                                 @endif
@@ -652,7 +690,7 @@
                     <!-- Actions -->
                     <div>
                         <h5 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <i class="ph-bold ph-shield-check"></i> Keamanan Akun
+                            <i class="ph-bold ph-shield-check"></i> {{ __('Account Security') }}
                         </h5>
                         <div class="flex flex-col gap-2">
                             <button type="button" @click="$dispatch('open-change-password'); show = false" class="w-full text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-[#009B77] hover:bg-[#009B77]/5 transition-all flex items-center justify-between group">
@@ -660,7 +698,7 @@
                                     <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-[#009B77] flex items-center justify-center transition-colors">
                                         <i class="ph-bold ph-key"></i>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-700 group-hover:text-[#009B77] transition-colors">Ganti Kata Sandi</span>
+                                    <span class="text-sm font-bold text-slate-700 group-hover:text-[#009B77] transition-colors">{{ __('Change Password') }}</span>
                                 </div>
                                 <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-[#009B77] transition-colors"></i>
                             </button>
@@ -669,7 +707,7 @@
                                     <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-[#009B77] flex items-center justify-center transition-colors">
                                         <i class="ph-bold ph-password"></i>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-700 group-hover:text-[#009B77] transition-colors">Ganti PIN</span>
+                                    <span class="text-sm font-bold text-slate-700 group-hover:text-[#009B77] transition-colors">{{ __('Change PIN') }}</span>
                                 </div>
                                 <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-[#009B77] transition-colors"></i>
                             </button>
@@ -680,7 +718,7 @@
                 <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end rounded-b-2xl">
                     <button type="button" @click="$dispatch('open-logout-modal'); show = false" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-rose-500 hover:text-white border-2 border-rose-500 hover:bg-rose-500 transition-all text-sm">
                         <i class="ph-bold ph-sign-out text-lg"></i>
-                        Keluar dari Sistem
+                        {{ __('Logout from System') }}
                     </button>
                 </div>
             </div>
@@ -693,17 +731,18 @@
                 <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-4 border border-rose-100">
                     <i class="ph-bold ph-sign-out text-3xl"></i>
                 </div>
-                <h3 class="font-black text-slate-800 text-xl tracking-tight">Keluar Sistem?</h3>
-                <p class="text-sm text-slate-500 font-medium">Apakah Anda yakin ingin keluar dari aplikasi APAR Monitoring System?</p>
+                <h3 class="font-black text-slate-800 text-xl tracking-tight">{{ __('Logout from System?') }}</h3>
+                <p class="text-sm text-slate-500 font-medium">{{ __('Are you sure you want to logout from the PFE Monitoring Control System application?') }}</p>
             </div>
             <div class="px-6 py-5 bg-slate-50 border-t border-slate-100 flex gap-3">
-                <button type="button" @click="open = false" class="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-600 bg-white border-2 border-slate-200 hover:bg-slate-50 transition-colors text-sm">Batal</button>
+                <button type="button" @click="open = false" class="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-600 bg-white border-2 border-slate-200 hover:bg-slate-50 transition-colors text-sm">{{ __('Cancel') }}</button>
                 <form action="{{ route('logout') }}" method="POST" class="flex-1 flex">
                     @csrf
-                    <button type="submit" class="w-full px-4 py-2.5 rounded-xl font-bold text-white bg-rose-500 hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/30 text-sm">Ya, Keluar</button>
+                    <button type="submit" class="w-full px-4 py-2.5 rounded-xl font-bold text-white bg-rose-500 hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/30 text-sm">{{ __('Yes, Logout') }}</button>
                 </form>
             </div>
         </div>
     </div>
 </body>
 </html>
+

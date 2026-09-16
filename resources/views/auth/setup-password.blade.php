@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup Password - APAR Monitoring System</title>
+    <title>Setup Password - PFE Monitoring Control System</title>
     <!-- Tailwind CSS (CDN for simplicity in this file, though you might have it locally) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -182,7 +182,7 @@
             <!-- Footer -->
             <div class="mt-10 pt-6 border-t border-gray-100 flex justify-center items-center gap-1.5">
                 <i class="ph-fill ph-shield-check text-[#009B77] text-sm"></i>
-                <p class="text-[11px] text-gray-400 font-medium">APAR Monitoring System v1.0 &copy; 2026 B. Braun</p>
+                <p class="text-[11px] text-gray-400 font-medium">PFE Monitoring Control System v1.0 &copy; 2026 B. Braun</p>
             </div>
         </div>
     </div>

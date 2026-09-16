@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Buat Jadwal Inspeksi - APAR Monitoring System')
+@section('title', 'Buat Jadwal Inspeksi - PFE Monitoring Control System')
 
 @section('content')
 <div class="space-y-6 max-w-4xl mx-auto">

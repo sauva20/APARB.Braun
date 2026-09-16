@@ -29,8 +29,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     <i class="ph-bold ph-list-dashes text-xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-base font-bold text-slate-800 leading-tight">Master Data APAR</h2>
-                    <p class="text-xs font-semibold text-slate-500 mt-0.5">Kelola seluruh data APAR dalam sistem</p>
+                    <h2 class="text-base font-bold text-slate-800 leading-tight">{{ __('PFE Master Data') }}</h2>
+                    <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('Manage all PFE data in the system') }}</p>
                 </div>
             </div>
 
@@ -39,30 +39,30 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 <div x-data="{ openExport: false }" class="relative z-50">
                     <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                         <i class="ph-bold ph-download-simple text-lg"></i>
-                        <span class="hidden sm:inline">Export Data</span>
+                        <span class="hidden sm:inline">{{ __('Export Data') }}</span>
                         <i class="ph-bold ph-caret-down text-slate-400 ml-1 transition-transform" :class="openExport ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="openExport" 
                          x-transition.opacity.duration.200ms
                          class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-100 py-2" x-cloak style="display: none;">
                         <a href="{{ route('master-data.export-pdf', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors">
-                            <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> Export ke PDF
+                            <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> {{ __('Export to PDF') }}
                         </a>
                         <a href="{{ route('master-data.export-excel', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-green-50 hover:text-green-600 flex items-center gap-2 transition-colors">
-                            <i class="ph-bold ph-file-csv text-lg text-green-500"></i> Export ke Excel (CSV)
+                            <i class="ph-bold ph-file-csv text-lg text-green-500"></i> {{ __('Export to Excel (CSV)') }}
                         </a>
                     </div>
                 </div>
                 @if(auth()->user()->role !== 'Staff')
                 <a href="/master-data/apar/print-all-qr" target="_blank" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-printer text-lg text-[#009B77]"></i>
-                    <span class="hidden sm:inline">Cetak Semua QR</span>
+                    <span class="hidden sm:inline">{{ __('Print All QR') }}</span>
                 </a>
                 @endif
                 @if(auth()->user()->role !== 'Staff')
                 <button @click="showModalApar = true" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-plus text-lg"></i>
-                    <span>Tambah Data APAR</span>
+                    <span>{{ __('Add PFE Data') }}</span>
                 </button>
                 @endif
             </div>
@@ -106,7 +106,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     :class="activeTab === 'referensi' ? 'text-[#009B77]' : 'text-slate-500 hover:text-slate-700'" 
                     class="px-5 py-2 rounded-lg font-bold text-sm transition-colors duration-300 flex items-center gap-2">
                 <i class="ph-bold ph-database text-lg"></i>
-                Pengaturan Referensi
+                Reference Setting
             </button>
             @endif
         </div>
@@ -123,10 +123,10 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     <form method="GET" action="/master-data" class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5 space-y-4">
         <!-- Row 1: Search Input (Full Width) -->
         <div>
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Cari ID atau Lokasi</label>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('SEARCH ID OR LOCATION') }}</label>
             <div class="relative">
                 <i class="ph-bold ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#009B77] text-base"></i>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Masukkan kata kunci..."
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Enter keyword...') }}"
                        class="w-full bg-white border-2 border-[#009B77] rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#009B77]/15 transition-all placeholder:text-slate-400 font-medium"
                        onchange="this.form.submit()">
             </div>
@@ -136,8 +136,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Filter Gedung -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gedung</label>
-                <div x-data="{ open: false, selected: '{{ request('gedung_id') ? addslashes($gedungs->firstWhere('id', request('gedung_id'))->nama ?? 'Semua Gedung') : 'Semua Gedung' }}' }" class="relative">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('BUILDING') }}</label>
+                <div x-data="{ open: false, selected: '{{ request('gedung_id') ? addslashes($gedungs->firstWhere('id', request('gedung_id'))->nama ?? __('All Buildings')) : __('All Buildings') }}' }" class="relative">
                     <input type="hidden" name="gedung_id" value="{{ request('gedung_id') }}" x-ref="gedung_input">
                     <button type="button" @click="open = !open" @click.away="open = false" class="w-full flex items-center justify-between py-2.5 px-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all cursor-pointer hover:border-slate-300">
                         <span x-text="selected" class="truncate"></span>
@@ -153,9 +153,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                          style="display: none;" 
                          class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top" x-cloak>
                          
-                        <button type="button" @click="selected = 'Semua Gedung'; open = false; $refs.gedung_input.value = ''; $refs.gedung_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === 'Semua Gedung' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                            <span>Semua Gedung</span>
-                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === 'Semua Gedung'" x-cloak></i>
+                        <button type="button" @click="selected = '{{ __('All Buildings') }}'; open = false; $refs.gedung_input.value = ''; $refs.gedung_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === '{{ __('All Buildings') }}' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                            <span>{{ __('All Buildings') }}</span>
+                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === '{{ __('All Buildings') }}'" x-cloak></i>
                         </button>
                         
                         @foreach($gedungs as $ged)
@@ -170,8 +170,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Filter Lokasi -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi</label>
-                <div x-data="{ open: false, selected: '{{ request('lokasi_id') ? addslashes($lokasis->firstWhere('id', request('lokasi_id'))->nama ?? 'Semua Lokasi') : 'Semua Lokasi' }}' }" class="relative">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('LOCATION') }}</label>
+                <div x-data="{ open: false, selected: '{{ request('lokasi_id') ? addslashes($lokasis->firstWhere('id', request('lokasi_id'))->nama ?? __('All Locations')) : __('All Locations') }}' }" class="relative">
                     <input type="hidden" name="lokasi_id" value="{{ request('lokasi_id') }}" x-ref="lokasi_input">
                     <button type="button" @click="open = !open" @click.away="open = false" class="w-full flex items-center justify-between py-2.5 px-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all cursor-pointer hover:border-slate-300">
                         <span x-text="selected" class="truncate"></span>
@@ -187,9 +187,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                          style="display: none;" 
                          class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top" x-cloak>
                          
-                        <button type="button" @click="selected = 'Semua Lokasi'; open = false; $refs.lokasi_input.value = ''; $refs.lokasi_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === 'Semua Lokasi' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                            <span>Semua Lokasi</span>
-                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === 'Semua Lokasi'" x-cloak></i>
+                        <button type="button" @click="selected = '{{ __('All Locations') }}'; open = false; $refs.lokasi_input.value = ''; $refs.lokasi_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === '{{ __('All Locations') }}' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                            <span>{{ __('All Locations') }}</span>
+                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === '{{ __('All Locations') }}'" x-cloak></i>
                         </button>
                         
                         @foreach($lokasis as $lok)
@@ -204,8 +204,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Filter Jenis -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis</label>
-                <div x-data="{ open: false, selected: '{{ request('jenis_id') ? addslashes($jenisApars->firstWhere('id', request('jenis_id'))->nama ?? 'Semua Jenis') : 'Semua Jenis' }}' }" class="relative">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }}</label>
+                <div x-data="{ open: false, selected: '{{ request('jenis_id') ? addslashes($jenisApars->firstWhere('id', request('jenis_id'))->nama ?? __('All Types')) : __('All Types') }}' }" class="relative">
                     <input type="hidden" name="jenis_id" value="{{ request('jenis_id') }}" x-ref="jenis_input">
                     <button type="button" @click="open = !open" @click.away="open = false" class="w-full flex items-center justify-between py-2.5 px-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all cursor-pointer hover:border-slate-300">
                         <span x-text="selected" class="truncate"></span>
@@ -221,9 +221,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                          style="display: none;" 
                          class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top" x-cloak>
                          
-                        <button type="button" @click="selected = 'Semua Jenis'; open = false; $refs.jenis_input.value = ''; $refs.jenis_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === 'Semua Jenis' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                            <span>Semua Jenis</span>
-                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === 'Semua Jenis'" x-cloak></i>
+                        <button type="button" @click="selected = '{{ __('All Types') }}'; open = false; $refs.jenis_input.value = ''; $refs.jenis_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === '{{ __('All Types') }}' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                            <span>{{ __('All Types') }}</span>
+                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === '{{ __('All Types') }}'" x-cloak></i>
                         </button>
                         
                         @foreach($jenisApars as $jen)
@@ -238,8 +238,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Filter Kapasitas -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas</label>
-                <div x-data="{ open: false, selected: '{{ request('kapasitas_id') ? addslashes($kapasitasApars->firstWhere('id', request('kapasitas_id'))->ukuran ?? 'Semua Kapasitas') : 'Semua Kapasitas' }}' }" class="relative">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
+                <div x-data="{ open: false, selected: '{{ request('kapasitas_id') ? addslashes($kapasitasApars->firstWhere('id', request('kapasitas_id'))->ukuran ?? __('All Capacities')) : __('All Capacities') }}' }" class="relative">
                     <input type="hidden" name="kapasitas_id" value="{{ request('kapasitas_id') }}" x-ref="kapasitas_input">
                     <button type="button" @click="open = !open" @click.away="open = false" class="w-full flex items-center justify-between py-2.5 px-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all cursor-pointer hover:border-slate-300">
                         <span x-text="selected" class="truncate"></span>
@@ -255,9 +255,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                          style="display: none;" 
                          class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top" x-cloak>
                          
-                        <button type="button" @click="selected = 'Semua Kapasitas'; open = false; $refs.kapasitas_input.value = ''; $refs.kapasitas_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === 'Semua Kapasitas' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                            <span>Semua Kapasitas</span>
-                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === 'Semua Kapasitas'" x-cloak></i>
+                        <button type="button" @click="selected = '{{ __('All Capacities') }}'; open = false; $refs.kapasitas_input.value = ''; $refs.kapasitas_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="selected === '{{ __('All Capacities') }}' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                            <span>{{ __('All Capacities') }}</span>
+                            <i class="ph-bold ph-check text-[#009B77]" x-show="selected === '{{ __('All Capacities') }}'" x-cloak></i>
                         </button>
                         
                         @foreach($kapasitasApars as $kap)
@@ -279,17 +279,17 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 <thead>
                     <tr class="bg-[#009B77] text-white divide-x divide-white/20 text-center">
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider w-12">No</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">ID APAR</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Lokasi</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Gedung</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Jenis</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Kapasitas</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('PFE ID') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('LOCATION') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('BUILDING') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Type') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Capacity') }}</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Fire Class</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Expired Date</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">Qty</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">PIC</th>
                         @if(auth()->user()->role !== 'Staff')
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Aksi</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('ACTIONS') }}</th>
                         @endif
                     </tr>
                 </thead>
@@ -329,7 +329,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </td>
                         <td class="py-4 px-5 text-center font-bold text-slate-800">
                             @if($apar->qty <= 0)
-                                <span class="text-[10px] font-bold tracking-wider py-1 px-2.5 rounded-lg bg-red-50 text-red-600 border border-red-100 whitespace-nowrap">STOK HABIS</span>
+                                <span class="text-[10px] font-bold tracking-wider py-1 px-2.5 rounded-lg bg-red-50 text-red-600 border border-red-100 whitespace-nowrap">{{ __('OUT OF STOCK') }}</span>
                             @else
                                 {{ $apar->qty }}
                             @endif
@@ -362,7 +362,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 <button type="button" @click="editApar = { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}', nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '', gedung_id: '{{ $apar->lokasi->gedung_id ?? '' }}', lokasi: '{{ addslashes($apar->lokasi->nama ?? '') }}', jenis_id: '{{ $apar->jenis_id }}', kapasitas_id: '{{ $apar->kapasitas_id }}', vendor: '{{ addslashes($apar->vendor) }}', qty: {{ $apar->qty }}, tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}' }; showModalEditApar = true" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
                                     <i class="ph-bold ph-pencil-simple text-lg"></i>
                                 </button>
-                                <form action="/master-data/apar/{{ $apar->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'Yakin ingin menghapus APAR ini?');">
+                                <form action="/master-data/apar/{{ $apar->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, '{{ __('Are you sure you want to delete this PFE?') }}');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus">
@@ -398,7 +398,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <!-- Pagination -->
         <div class="px-6 py-4 border-t border-slate-100">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-sm font-semibold text-slate-500">Menampilkan <span class="font-bold text-slate-800">{{ $apars->firstItem() ?? 0 }}-{{ $apars->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-800">{{ $apars->total() }}</span> data</p>
+                <p class="text-sm font-semibold text-slate-500" >{{ __('Showing') }} <span class="font-bold text-slate-800">{{ $apars->firstItem() ?? 0 }}-{{ $apars->lastItem() ?? 0 }}</span> {{ __('of') }} <span class="font-bold text-slate-800">{{ $apars->total() }}</span> {{ __('data') }}</p>
                 <div class="w-full sm:w-auto flex items-center gap-2">
                     @if ($apars->onFirstPage())
                         <span class="w-8 h-8 flex items-center justify-center bg-slate-100 border border-slate-200 text-slate-400 rounded-lg cursor-not-allowed text-sm font-medium"><i class="ph-bold ph-caret-left"></i></span>
@@ -477,7 +477,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-[#009B77] text-white flex items-center justify-center shadow-lg shadow-teal-500/30 mb-3">
                                 <i class="ph-fill ph-map-pin text-2xl"></i>
                             </div>
-                            <h3 class="font-black text-slate-800 text-lg tracking-wide uppercase">Lokasi</h3>
+                            <h3 class="font-black text-slate-800 text-lg tracking-wide uppercase">{{ __('LOCATION') }}</h3>
                             <p class="text-xs font-semibold text-slate-500">Daftar Penempatan</p>
                         </div>
                         <div class="flex flex-col gap-2 2xl:flex-row">
@@ -507,7 +507,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                     </div>
                                     <div class="flex items-center gap-1 opacity-0 group-hover/gedung:opacity-100 transition-opacity">
                                         <button @click.stop="editGedung = { id: {{ $gedung->id }}, nama: '{{ addslashes($gedung->nama) }}' }; showEditGedung = true" class="w-7 h-7 rounded bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors" title="Edit Gedung"><i class="ph-bold ph-pencil-simple text-sm"></i></button>
-                                        <form action="/master-data/gedung/{{ $gedung->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'Yakin hapus gedung ini? Semua lokasi di dalamnya juga akan terhapus!');">
+                                        <form action="/master-data/gedung/{{ $gedung->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'Yakin hapus gedung ini? {{ __('All Locations') }} di dalamnya juga akan terhapus!');">
                                             @csrf @method('DELETE')
                                             <button @click.stop type="submit" class="w-7 h-7 rounded bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors" title="Hapus Gedung"><i class="ph-bold ph-trash text-sm"></i></button>
                                         </form>
@@ -568,12 +568,12 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 mb-3">
                                 <i class="ph-fill ph-fire-extinguisher text-2xl"></i>
                             </div>
-                            <h3 class="font-black text-slate-800 text-lg tracking-wide uppercase">Jenis APAR</h3>
+                            <h3 class="font-black text-slate-800 text-lg tracking-wide uppercase">{{ __('Type') }} APAR</h3>
                             <p class="text-xs font-semibold text-slate-500">Tipe Serbuk/Gas</p>
                         </div>
                         <button @click="showModalJenis = true" class="bg-white/80 backdrop-blur border border-amber-200 text-amber-600 hover:bg-amber-500 hover:text-white hover:border-amber-500 rounded-xl px-3 py-2 flex items-center gap-1.5 transition-all shadow-sm">
                             <i class="ph-bold ph-plus text-base"></i>
-                            <span class="text-xs font-bold whitespace-nowrap">Tambah Jenis</span>
+                            <span class="text-xs font-bold whitespace-nowrap">{{ __('Add Type') }}</span>
                         </button>
                     </div>
                 </div>
@@ -606,12 +606,12 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 mb-3">
                                 <i class="ph-fill ph-scales text-2xl"></i>
                             </div>
-                            <h3 class="font-black text-slate-800 text-lg tracking-wide uppercase">Kapasitas</h3>
+                            <h3 class="font-black text-slate-800 text-lg tracking-wide uppercase">{{ __('Capacity') }}</h3>
                             <p class="text-xs font-semibold text-slate-500">Ukuran Berat/Volume</p>
                         </div>
                         <button @click="showModalKapasitas = true" class="bg-white/80 backdrop-blur border border-purple-200 text-purple-600 hover:bg-purple-500 hover:text-white hover:border-purple-500 rounded-xl px-3 py-2 flex items-center gap-1.5 transition-all shadow-sm">
                             <i class="ph-bold ph-plus text-base"></i>
-                            <span class="text-xs font-bold whitespace-nowrap">Tambah Kapasitas</span>
+                            <span class="text-xs font-bold whitespace-nowrap">{{ __('Add Capacity') }}</span>
                         </button>
                     </div>
                 </div>
@@ -689,7 +689,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                             <div x-data="{ 
                                     open: false, 
                                     selectedId: '', 
-                                    selectedName: 'Pilih Gedung',
+                                    selectedName: '{{ __('Select Building') }}',
                                     options: [
                                         @foreach($gedungs as $ged)
                                         { id: '{{ $ged->id }}', name: '{{ addslashes($ged->nama) }}' },
@@ -698,7 +698,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 }" 
                                 class="relative">
                                 
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Gedung</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Select Building') }}</label>
                                 
                                 <!-- Hidden input for form submission -->
                                 <input type="hidden" name="gedung_id" :value="selectedId" required x-effect="gedung_id = selectedId">
@@ -740,7 +740,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     
                     <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                         <button type="submit" :disabled="isDuplicate || nama.trim() === ''" :class="isDuplicate || nama.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#008264]'" class="inline-flex w-full justify-center rounded-xl bg-[#009B77] px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-[#009B77]/20">Simpan</button>
-                        <button type="button" @click="showModalLokasi = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                        <button type="button" @click="showModalLokasi = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                     </div></form>
                 </div>
             </div>
@@ -797,7 +797,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     
                     <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                         <button type="submit" :disabled="isDuplicate || nama.trim() === ''" :class="isDuplicate || nama.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'" class="inline-flex w-full justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-indigo-600/20">Simpan</button>
-                        <button type="button" @click="showModalGedung = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                        <button type="button" @click="showModalGedung = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                     </div></form>
                 </div>
             </div>
@@ -843,7 +843,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         
                         <div class="space-y-5">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Jenis</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type Name') }}</label>
                                 <input type="text" name="nama" x-model="nama" @keydown.enter="if(isDuplicate || nama.trim() === '') { $event.preventDefault(); showModalJenis = false; }" required placeholder="Contoh: ABC Powder" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                                 <p x-show="isDuplicate" x-cloak class="text-xs text-red-500 font-medium mt-2"><i class="ph-bold ph-warning-circle mr-1"></i>Jenis APAR ini sudah terdaftar.</p>
                             </div>
@@ -852,7 +852,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     
                     <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                         <button type="submit" :disabled="isDuplicate || nama.trim() === ''" :class="isDuplicate || nama.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-600'" class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">Simpan</button>
-                        <button type="button" @click="showModalJenis = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                        <button type="button" @click="showModalJenis = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                     </div></form>
                 </div>
             </div>
@@ -890,7 +890,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
                                     <i class="ph-fill ph-scales text-xl"></i>
                                 </div>
-                                <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">Tambah Kapasitas</h3>
+                                <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">{{ __('Add Capacity') }}</h3>
                             </div>
                             <button @click="showModalKapasitas = false" class="text-slate-400 hover:text-slate-500 transition-colors">
                                 <i class="ph-bold ph-x text-xl"></i>
@@ -899,7 +899,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         
                         <div class="space-y-5">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
                                 <div class="relative flex items-center">
                                     <input type="number" step="any" name="ukuran" x-model="ukuran" @keydown="['e', 'E', '+', '-'].includes($event.key) && $event.preventDefault()" @keydown.enter="if(isDuplicate || ukuran.trim() === '') { $event.preventDefault(); showModalKapasitas = false; }" required placeholder="Contoh: 3" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-4 pr-12 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                                     <span class="absolute right-4 font-bold text-slate-400">Kg</span>
@@ -911,7 +911,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     
                     <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                         <button type="submit" :disabled="isDuplicate || ukuran.trim() === ''" :class="isDuplicate || ukuran.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-700'" class="inline-flex w-full justify-center rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-purple-600/20">Simpan</button>
-                        <button type="button" @click="showModalKapasitas = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                        <button type="button" @click="showModalKapasitas = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                     </div></form>
                 </div>
             </div>
@@ -951,7 +951,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                     <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 text-[#009B77] flex items-center justify-center">
                                         <i class="ph-bold ph-fire-extinguisher text-xl"></i>
                                     </div>
-                                    <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">Tambah Data APAR</h3>
+                                    <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">{{ __('Add PFE Data') }}</h3>
                                 </div>
                                 <button type="button" @click="showModalApar = false" class="text-slate-400 hover:text-slate-500 transition-colors">
                                     <i class="ph-bold ph-x text-xl"></i>
@@ -971,12 +971,12 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                     return this.lokasiOptions.filter(l => l.gedung_id == this.gedungId);
                                 }
                             }">
-            <!-- Nomor APAR -->
+            <!-- {{ __('PFE NUMBER') }} -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" style="white-space: nowrap;">Nomor APAR <span class="text-[10px] text-slate-400 font-medium normal-case">(Huruf ID Otomatis)</span></label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" style="white-space: nowrap;">{{ __('PFE NUMBER') }} <span class="text-[10px] text-slate-400 font-medium normal-case">{{ __('Auto ID Letters') }}</span></label>
                 <div class="relative">
                     <i class="ph-bold ph-hash absolute left-3.5 top-1/2 -translate-y-1/2 text-[#009B77] text-lg"></i>
-                    <input type="number" name="nomor_apar" placeholder="Masukkan nomor (Misal: 12)" required value="{{ old('nomor_apar') }}" class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all">
+                    <input type="number" name="nomor_apar" placeholder="{{ __('Enter number (e.g. 12)') }}" required value="{{ old('nomor_apar') }}" class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all">
                 </div>
                 @error('nomor_apar') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
@@ -992,14 +992,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 ],
                 get selectedName() {
                     let sel = this.options.find(o => o.id == gedungId);
-                    return sel ? sel.name : 'Pilih Gedung';
+                    return sel ? sel.name : '{{ __('Select Building') }}';
                 },
                 get filteredOptions() {
                     if (this.search === '') return this.options;
                     return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
                 }
             }">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gedung</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('BUILDING') }}</label>
                 <div class="relative">
                     <input type="hidden" name="gedung_id" :value="gedungId" required>
                     <i class="ph-bold ph-buildings absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
@@ -1052,11 +1052,11 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     this.$watch('lokasiName', val => this.search = val);
                 }
             }">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi <span class="text-[10px] text-slate-400 font-medium normal-case">(Pilih / Ketik Baru)</span></label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('LOCATION') }}<span class="text-[10px] text-slate-400 font-medium normal-case">({{ __('Select / Type New') }})</span></label>
                 <div class="relative">
                     <input type="hidden" name="lokasi" :value="lokasiName">
                     <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
-                    <input type="text" x-model="lokasiName" @focus="open = true" @click.away="open = false" placeholder="Contoh: Corridor" required 
+                    <input type="text" x-model="lokasiName" @focus="open = true" @click.away="open = false" placeholder="{{ __('Example: Corridor') }}" required 
                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none"
                            :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
                     <div x-show="open && filteredLokasi.length > 0" x-cloak
@@ -1085,7 +1085,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Jenis APAR -->
                         <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }} APAR</label>
                 <div x-data="{
                         open: false,
                         search: '',
@@ -1097,7 +1097,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         ],
                         get selectedName() {
                             let sel = this.options.find(o => o.id == this.selectedId);
-                            return sel ? sel.name : 'Pilih Jenis';
+                            return sel ? sel.name : '{{ __('Select Type') }}';
                         },
                         get filteredOptions() {
                             if (this.search === '') return this.options;
@@ -1149,7 +1149,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Kapasitas -->
                         <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
                 <div x-data="{
                         open: false,
                         search: '',
@@ -1161,7 +1161,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         ],
                         get selectedName() {
                             let sel = this.options.find(o => o.id == this.selectedId);
-                            return sel ? sel.name : 'Pilih Kapasitas';
+                            return sel ? sel.name : '{{ __('Select Capacity') }}';
                         },
                         get filteredOptions() {
                             if (this.search === '') return this.options;
@@ -1222,12 +1222,12 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 @error('qty') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Tanggal Kedaluwarsa -->
+            <!-- {{ __('EXPIRED DATE') }} -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Kedaluwarsa</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('EXPIRED DATE') }}</label>
                 <div class="relative">
                     <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
-                    <input type="text" name="tgl_kedaluwarsa" placeholder="Pilih Tanggal..." value="{{ old('tgl_kedaluwarsa') }}"
+                    <input type="text" name="tgl_kedaluwarsa" placeholder="{{ __('Select Date...') }}" value="{{ old('tgl_kedaluwarsa') }}"
                            class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
                     <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                 </div>
@@ -1237,8 +1237,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                         
                         <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
-                            <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-[#009B77] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#008264] sm:ml-3 sm:w-auto transition-colors shadow-[#009B77]/20">Simpan Data</button>
-                            <button type="button" @click="showModalApar = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                            <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-[#009B77] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#008264] sm:ml-3 sm:w-auto transition-colors shadow-[#009B77]/20">{{ __('Save Data') }}</button>
+                            <button type="button" @click="showModalApar = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                         </div>
                     </form>
                 </div>
@@ -1296,12 +1296,12 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                     return this.lokasiOptions.filter(l => l.gedung_id == editApar.gedung_id);
                                 }
                             }">
-            <!-- Nomor APAR -->
+            <!-- {{ __('PFE NUMBER') }} -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" style="white-space: nowrap;">Nomor APAR <span class="text-[10px] text-slate-400 font-medium normal-case">(Huruf ID Otomatis)</span></label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" style="white-space: nowrap;">{{ __('PFE NUMBER') }} <span class="text-[10px] text-slate-400 font-medium normal-case">{{ __('Auto ID Letters') }}</span></label>
                 <div class="relative">
                     <i class="ph-bold ph-hash absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-500 text-lg"></i>
-                    <input type="number" name="nomor_apar" placeholder="Masukkan nomor urut..." required x-model="editApar.nomor_apar" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none">
+                    <input type="number" name="nomor_apar" placeholder="{{ __('Enter sequence number...') }}" required x-model="editApar.nomor_apar" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none">
                 </div>
                 @error('nomor_apar') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
@@ -1317,14 +1317,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 ],
                 get selectedName() {
                     let sel = this.options.find(o => o.id == editApar.gedung_id);
-                    return sel ? sel.name : 'Pilih Gedung';
+                    return sel ? sel.name : '{{ __('Select Building') }}';
                 },
                 get filteredOptions() {
                     if (this.search === '') return this.options;
                     return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
                 }
             }">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gedung</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('BUILDING') }}</label>
                 <div class="relative">
                     <input type="hidden" name="gedung_id" :value="editApar.gedung_id" required>
                     <i class="ph-bold ph-buildings absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-amber-500' : 'peer-focus:text-amber-500'"></i>
@@ -1377,11 +1377,11 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     this.$watch('editApar.lokasi', val => this.search = val || '');
                 }
             }">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi <span class="text-[10px] text-slate-400 font-medium normal-case">(Pilih / Ketik Baru)</span></label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('LOCATION') }}<span class="text-[10px] text-slate-400 font-medium normal-case">({{ __('Select / Type New') }})</span></label>
                 <div class="relative">
                     <input type="hidden" name="lokasi" :value="editApar.lokasi">
                     <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-amber-500' : 'peer-focus:text-amber-500'"></i>
-                    <input type="text" x-model="editApar.lokasi" @focus="open = true" @click.away="open = false" placeholder="Contoh: Corridor" required 
+                    <input type="text" x-model="editApar.lokasi" @focus="open = true" @click.away="open = false" placeholder="{{ __('Example: Corridor') }}" required 
                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none"
                            :class="open ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : ''">
                     <div x-show="open && filteredLokasi.length > 0" x-cloak
@@ -1410,7 +1410,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Jenis APAR -->
                         <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis APAR</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }} APAR</label>
                 <div x-data="{
                         open: false,
                         search: '',
@@ -1422,7 +1422,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         ],
                         get selectedName() {
                             let sel = this.options.find(o => o.id == this.editApar.jenis_id);
-                            return sel ? sel.name : 'Pilih Jenis';
+                            return sel ? sel.name : '{{ __('Select Type') }}';
                         },
                         get filteredOptions() {
                             if (this.search === '') return this.options;
@@ -1474,7 +1474,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Kapasitas -->
                         <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
                 <div x-data="{
                         open: false,
                         search: '',
@@ -1486,7 +1486,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         ],
                         get selectedName() {
                             let sel = this.options.find(o => o.id == this.editApar.kapasitas_id);
-                            return sel ? sel.name : 'Pilih Kapasitas';
+                            return sel ? sel.name : '{{ __('Select Capacity') }}';
                         },
                         get filteredOptions() {
                             if (this.search === '') return this.options;
@@ -1547,12 +1547,12 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 @error('qty') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Tanggal Kedaluwarsa -->
+            <!-- {{ __('EXPIRED DATE') }} -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Kedaluwarsa</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('EXPIRED DATE') }}</label>
                 <div class="relative">
                     <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
-                    <input type="text" name="tgl_kedaluwarsa" placeholder="Pilih Tanggal..." x-model="editApar.tgl_kedaluwarsa" required
+                    <input type="text" name="tgl_kedaluwarsa" placeholder="{{ __('Select Date...') }}" x-model="editApar.tgl_kedaluwarsa" required
                            class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
                     <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                 </div>
@@ -1563,7 +1563,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         
                         <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                             <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">Simpan Perubahan</button>
-                            <button type="button" @click="showModalEditApar = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                            <button type="button" @click="showModalEditApar = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                         </div>
                     </form>
                 </div>
@@ -1609,7 +1609,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                         <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                             <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">Simpan Perubahan</button>
-                            <button type="button" @click="showEditGedung = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                            <button type="button" @click="showEditGedung = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                         </div>
                     </form>
                 </div>
@@ -1661,7 +1661,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                         ],
                                         get selectedName() {
                                             let sel = this.options.find(o => o.id == editLokasi.gedung_id);
-                                            return sel ? sel.name : 'Pilih Gedung';
+                                            return sel ? sel.name : '{{ __('Select Building') }}';
                                         },
                                         get filteredOptions() {
                                             if (this.search === '') return this.options;
@@ -1670,7 +1670,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                     }" 
                                     class="relative">
                                     
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Gedung</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Select Building') }}</label>
                                     
                                     <!-- Hidden input for form submission -->
                                     <input type="hidden" name="gedung_id" :value="editLokasi.gedung_id" required>
@@ -1723,7 +1723,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                         <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                             <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">Simpan Perubahan</button>
-                            <button type="button" @click="showEditLokasi = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                            <button type="button" @click="showEditLokasi = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                         </div>
                     </form>
                 </div>
@@ -1761,7 +1761,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                             </div>
                             <div class="space-y-5">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Jenis</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type Name') }}</label>
                                     <input type="text" name="nama" x-model="editJenis.nama" required class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none">
                                     @if(old('form_type') == 'edit_jenis') @error('nama') <p class="text-xs text-red-500 font-medium mt-2"><i class="ph-bold ph-warning-circle mr-1"></i>{{ $message }}</p> @enderror @endif
                                 </div>
@@ -1769,7 +1769,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                         <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                             <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">Simpan Perubahan</button>
-                            <button type="button" @click="showEditJenis = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                            <button type="button" @click="showEditJenis = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                         </div>
                     </form>
                 </div>
@@ -1807,7 +1807,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                             </div>
                             <div class="space-y-5">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kapasitas</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
                                     <div class="relative flex items-center">
                                         <!-- Remove ' Kg' from the model value for display, but keep the input name as ukuran. 
                                              We use a computed property or just x-effect to strip Kg when modal opens, but easier is just allowing Alpine to display the raw value, 
@@ -1823,7 +1823,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         </div>
                         <div class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
                             <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">Simpan Perubahan</button>
-                            <button type="button" @click="showEditKapasitas = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                            <button type="button" @click="showEditKapasitas = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                         </div>
                     </form>
                 </div>
@@ -1858,7 +1858,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <p class="text-sm font-semibold text-slate-500 text-center mb-2">Gunakan kamera ponsel Anda untuk menscan QR Code ini.</p>
                         
                         <div class="w-full grid grid-cols-3 gap-2 mt-4">
-                            <button @click="showQrModal = false" class="py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors text-xs flex items-center justify-center">Tutup</button>
+                            <button @click="showQrModal = false" class="py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors text-xs flex items-center justify-center">{{ __('Close') }}</button>
                             <a :href="'/master-data/apar/' + qrData.id + '/download-qr'" target="_blank" class="py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-colors text-xs flex items-center justify-center gap-1.5 shadow-sm">
                                 <i class="ph-bold ph-download-simple text-sm text-[#009B77]"></i> Simpan
                             </a>
@@ -1906,8 +1906,8 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                             <i class="ph-bold ph-clock-counter-clockwise text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-black text-slate-800 tracking-tight">Riwayat Perubahan Data</h3>
-                            <p class="text-sm font-semibold text-slate-500 mt-0.5">Timeline aktivitas untuk APAR <span class="text-indigo-600 font-bold" x-text="aparKode"></span></p>
+                            <h3 class="text-xl font-black text-slate-800 tracking-tight">{{ __('Data Change History') }}</h3>
+                            <p class="text-sm font-semibold text-slate-500 mt-0.5">{{ __('Activity timeline for PFE') }} <span class="text-indigo-600 font-bold" x-text="aparKode"></span></p>
                         </div>
                     </div>
                     <button @click="show = false" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl">
@@ -1916,7 +1916,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 </div>
 
                 <div x-show="loading" class="py-16 flex flex-col justify-center items-center gap-3">
-                    <p class="text-sm font-bold text-slate-500">Memuat riwayat data...</p>
+                    <p class="text-sm font-bold text-slate-500">{{ __('Loading data history...') }}</p>
                 </div>
                 
                 <div x-show="!loading" x-html="htmlContent" class="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
@@ -1924,7 +1924,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
                 <div class="mt-6 flex justify-end pt-5 border-t border-slate-100">
                     <button @click="show = false" class="px-6 py-2.5 text-sm font-bold text-slate-600 bg-white border-2 border-slate-200/60 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 rounded-xl shadow-sm">
-                        Tutup
+                        {{ __('Close') }}
                     </button>
                 </div>
             </div>

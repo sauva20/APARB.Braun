@@ -8,7 +8,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-extrabold text-slate-800 tracking-wide">{{ strtoupper($activity->event) }}</p>
-                        <p class="text-xs font-semibold text-slate-500 mt-0.5">Oleh: {{ $activity->causer->name ?? 'Sistem / Guest' }}</p>
+                        <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('By:') }} {{ $activity->causer->name ?? __('System / Guest') }}</p>
                     </div>
                 </div>
                 <div class="text-right">
@@ -22,14 +22,14 @@
                     <table class="w-full text-left text-sm border-collapse">
                         <thead>
                             <tr class="bg-slate-50/80 text-slate-500">
-                                <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-1/3">Data</th>
+                                <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-1/3">{{ __('Data') }}</th>
                                 @if($activity->event === 'updated')
-                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-1/3 text-red-500 border-l border-slate-100">Before</th>
-                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-1/3 text-[#009B77] border-l border-slate-100">After</th>
+                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-1/3 text-red-500 border-l border-slate-100">{{ __('Before') }}</th>
+                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-1/3 text-[#009B77] border-l border-slate-100">{{ __('After') }}</th>
                                 @elseif($activity->event === 'created')
-                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-2/3 text-[#009B77] border-l border-slate-100">Data Masuk (Baru)</th>
+                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-2/3 text-[#009B77] border-l border-slate-100">{{ __('New Data Entered') }}</th>
                                 @elseif($activity->event === 'deleted')
-                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-2/3 text-red-500 border-l border-slate-100">Data Dihapus</th>
+                                    <th class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider w-2/3 text-red-500 border-l border-slate-100">{{ __('Deleted Data') }}</th>
                                 @endif
                             </tr>
                         </thead>
@@ -42,15 +42,15 @@
                                 
                                 function formatHistoryLabel($key) {
                                     $map = [
-                                        'jenis_id' => 'Jenis APAR',
-                                        'lokasi_id' => 'Lokasi',
-                                        'kapasitas_id' => 'Kapasitas',
-                                        'pic_id' => 'PIC',
-                                        'tgl_kedaluwarsa' => 'Tgl Kedaluwarsa',
-                                        'kode' => 'ID APAR',
-                                        'qty' => 'Qty',
-                                        'vendor' => 'Vendor',
-                                        'foto' => 'Foto'
+                                        'jenis_id' => __('PFE Type'),
+                                        'lokasi_id' => __('Location'),
+                                        'kapasitas_id' => __('Capacity'),
+                                        'pic_id' => __('PIC'),
+                                        'tgl_kedaluwarsa' => __('Expired Date'),
+                                        'kode' => __('PFE ID'),
+                                        'qty' => __('Qty'),
+                                        'vendor' => __('Vendor'),
+                                        'foto' => __('Photo')
                                     ];
                                     return $map[$key] ?? ucwords(str_replace('_', ' ', $key));
                                 }
@@ -79,7 +79,7 @@
                                         }
                                     }
                                     if ($key === 'foto') {
-                                        return '(File Gambar Diperbarui)';
+                                        return __('(Image File Updated)');
                                     }
                                     return $value;
                                 }
@@ -125,7 +125,7 @@
                     </table>
                 </div>
             @else
-                <p class="text-xs font-semibold text-slate-400 italic bg-slate-50 p-3 rounded-lg border border-slate-100/50 text-center">Detail data yang direkam tidak tersedia.</p>
+                <p class="text-xs font-semibold text-slate-400 italic bg-slate-50 p-3 rounded-lg border border-slate-100/50 text-center">{{ __('Recorded data details are not available.') }}</p>
             @endif
         </div>
     @empty
@@ -133,8 +133,8 @@
             <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mx-auto mb-3">
                 <i class="ph-duotone ph-clock text-3xl text-slate-400"></i>
             </div>
-            <h3 class="font-bold text-slate-700 text-sm mb-1">Belum Ada Riwayat</h3>
-            <p class="text-xs text-slate-500 font-medium max-w-[200px] mx-auto">APAR ini belum memiliki catatan aktivitas atau perubahan data.</p>
+            <h3 class="font-bold text-slate-700 text-sm mb-1">{{ __('No History Yet') }}</h3>
+            <p class="text-xs text-slate-500 font-medium max-w-[200px] mx-auto">{{ __('This PFE has no activity records or data changes yet.') }}</p>
         </div>
     @endforelse
 </div>

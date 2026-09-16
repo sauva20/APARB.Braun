@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Pendaftaran Akun APAR Monitoring System</title>
+    <title>Pendaftaran Akun PFE Monitoring Control System</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f8fafc; color: #334155; line-height: 1.6; margin: 0; padding: 20px;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
         
         <h2 style="color: #0f172a; margin-top: 0;">Halo, {{ $user->name }}</h2>
         
-        <p>Anda telah didaftarkan ke dalam <strong>APAR Monitoring System</strong> sebagai <strong>{{ $user->role }}</strong>.</p>
+        <p>Anda telah didaftarkan ke dalam <strong>PFE Monitoring Control System</strong> sebagai <strong>{{ $user->role }}</strong>.</p>
         
         <p>Berikut adalah <strong>PIN Inspeksi (6 digit)</strong> Anda. PIN ini akan digunakan sebagai verifikasi saat mengatur kata sandi dan juga saat melakukan inspeksi APAR.</p>
         
@@ -30,7 +30,7 @@
         
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
         
-        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 0;">Terima kasih,<br>Tim Administrator APAR Monitoring System</p>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 0;">Terima kasih,<br>Tim Administrator PFE Monitoring Control System</p>
     </div>
 </body>
 </html>

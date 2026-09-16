@@ -52,7 +52,7 @@
 
         <div style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
             <p style="color: #999999; font-size: 12px; margin: 0;">
-                Email ini dikirim secara otomatis oleh APAR Monitoring System B. Braun.<br>
+                Email ini dikirim secara otomatis oleh PFE Monitoring Control System B. Braun.<br>
                 Mohon tidak membalas email ini.
             </p>
         </div>

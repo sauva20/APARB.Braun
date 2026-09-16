@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen User - APAR Monitoring System')
+@section('title', 'Manajemen User - PFE Monitoring Control System')
 
 @section('content')
 <div class="space-y-6" x-data="{ 
@@ -20,14 +20,14 @@
 
     <!-- Header Area -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
-        <!-- Left: Page Context -->
+            <!-- Left: Page Context -->
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
+            <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 border border-[#009B77]/20 shadow-sm flex items-center justify-center text-[#009B77]">
                 <i class="ph-bold ph-users text-xl"></i>
             </div>
             <div>
-                <h2 class="text-base font-bold text-slate-800 leading-tight">Manajemen User</h2>
-                <p class="text-xs font-semibold text-slate-500 mt-0.5">Kelola hak akses dan data pengguna</p>
+                <h2 class="text-base font-bold text-[#007A5E] leading-tight">{{ __('User Management') }}</h2>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('Manage access rights and user data') }}</p>
             </div>
         </div>
 
@@ -36,23 +36,23 @@
             <div x-data="{ openExport: false }" class="relative z-50">
                 <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-download-simple text-lg"></i>
-                    <span class="hidden sm:inline">Export Data</span>
+                    <span class="hidden sm:inline">{{ __('Export Data') }}</span>
                     <i class="ph-bold ph-caret-down text-slate-400 ml-1 transition-transform" :class="openExport ? 'rotate-180' : ''"></i>
                 </button>
                 <div x-show="openExport" 
                      x-transition.opacity.duration.200ms
                      class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-100 py-2" x-cloak style="display: none;">
-                    <a href="{{ route('users.export-pdf', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors">
-                        <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> Export ke PDF
+                    <a href="{{ route('users.export-pdf', request()->all()) }}" target="_blank" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors">
+                        <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> {{ __('Export to PDF') }}
                     </a>
                     <a href="{{ route('users.export-excel', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-green-50 hover:text-green-600 flex items-center gap-2 transition-colors">
-                        <i class="ph-bold ph-file-csv text-lg text-green-500"></i> Export ke Excel (CSV)
+                        <i class="ph-bold ph-file-csv text-lg text-green-500"></i> {{ __('Export to Excel (CSV)') }}
                     </a>
                 </div>
             </div>
             <button @click="showModalUser = true" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                 <i class="ph-bold ph-plus text-lg"></i>
-                <span>Tambah User</span>
+                <span>{{ __('Add User') }}</span>
             </button>
         </div>
     </div>
@@ -65,7 +65,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <i class="ph-bold ph-magnifying-glass text-slate-400 text-lg"></i>
                 </div>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email user..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all shadow-sm">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search user name or email...') }}" class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all shadow-sm">
                 @if(request('search'))
                 <a href="/users?role={{ request('role') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
                     <i class="ph-bold ph-x-circle text-lg"></i>
@@ -76,7 +76,7 @@
 
         <!-- Filter Role -->
         <div>
-            <div x-data="{ open: false, selected: '{{ request('role') ? addslashes(request('role')) : 'Semua Role' }}' }" class="relative">
+            <div x-data="{ open: false, selected: '{{ request('role') ? addslashes(request('role')) : __('All Roles') }}' }" class="relative">
                 <input type="hidden" name="role" value="{{ request('role') }}" x-ref="role_input">
                 <button type="button" @click="open = !open" @click.away="open = false" class="w-full flex items-center justify-between py-2.5 px-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all cursor-pointer hover:border-slate-300 shadow-sm">
                     <div class="flex items-center gap-2 truncate">
@@ -95,9 +95,9 @@
                      style="display: none;" 
                      class="absolute right-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top" x-cloak>
                      
-                    <button type="button" @click="selected = 'Semua Role'; open = false; $refs.role_input.value = ''; $refs.role_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between" :class="selected === 'Semua Role' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                        <span>Semua Role</span>
-                        <i class="ph-bold ph-check text-[#009B77]" x-show="selected === 'Semua Role'" x-cloak></i>
+                    <button type="button" @click="selected = '{{ __('All Roles') }}'; open = false; $refs.role_input.value = ''; $refs.role_input.form.submit();" class="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between" :class="selected === '{{ __('All Roles') }}' ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                        <span>{{ __('All Roles') }}</span>
+                        <i class="ph-bold ph-check text-[#009B77]" x-show="selected === '{{ __('All Roles') }}'" x-cloak></i>
                     </button>
                     
                     @foreach($roles as $role)
@@ -119,11 +119,11 @@
                     <tr class="bg-[#009B77] text-white divide-x divide-white/20 text-center">
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider w-12">No</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">User ID</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Nama</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Name') }}</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Email</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">PIC Gedung</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('PIC BUILDING') }}</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Role</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Aksi</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100">
@@ -137,7 +137,7 @@
                         <td class="py-4 px-5 text-slate-600">{{ $user->email }}</td>
                         <td class="py-4 px-5 text-slate-600">
                             @if($user->role === 'EHSS')
-                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">Semua Gedung</span>
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">{{ __('All Buildings') }}</span>
                             @elseif($user->gedungs->count() > 0)
                                 <div class="flex flex-wrap gap-1">
                                 @foreach($user->gedungs as $gedung)
@@ -185,7 +185,7 @@
         @endif
     </div>
 
-    <!-- Modal Tambah User -->
+    <!-- Modal {{ __('Add User') }} -->
     <div x-show="showModalUser" class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40" @click="showModalUser = false"></div>
@@ -194,8 +194,8 @@
                 
                 <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800">Tambah User Baru</h3>
-                        <p class="text-xs font-semibold text-slate-500 mt-0.5">Daftarkan akun baru ke sistem</p>
+                        <h3 class="text-lg font-bold text-slate-800">{{ __('Add New User') }}</h3>
+                        <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('Register a new account to the system') }}</p>
                     </div>
                     <button @click="showModalUser = false" class="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-lg">
                         <i class="ph-bold ph-x text-lg"></i>
@@ -208,13 +208,13 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID / NIK <span class="text-red-500">*</span></label>
-                        <input type="text" name="employee_id" value="{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}" required placeholder="Contoh: 123456" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="employee_id" value="{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}" required placeholder="{{ __('Example: 123456') }}" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" value="{{ old('form_type') == 'tambah_user' ? old('name') : '' }}" required placeholder="Masukkan nama lengkap" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Full Name') }} <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" value="{{ old('form_type') == 'tambah_user' ? old('name') : '' }}" required placeholder="{{ __('Enter full name') }}" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('name') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
@@ -225,12 +225,12 @@
                     </div>
 
                     <div x-data="{ open: false }" class="relative">
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Role / Position') }} <span class="text-red-500">*</span></label>
                         <!-- Hidden input to submit the value -->
                         <input type="hidden" name="role" x-model="formRoleTambah" required>
                         
                         <button type="button" @click="open = !open" @click.away="open = false" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] p-2.5 transition-colors font-medium flex items-center justify-between">
-                            <span x-text="formRoleTambah === '' ? 'Pilih Role' : formRoleTambah" :class="formRoleTambah === '' ? 'text-slate-500' : 'text-slate-800'"></span>
+                            <span x-text="formRoleTambah === '' ? '{{ __('Select Role') }}' : formRoleTambah" :class="formRoleTambah === '' ? 'text-slate-500' : 'text-slate-800'"></span>
                             <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         
@@ -250,13 +250,13 @@
                     <!-- Pilihan Gedung dan Jadwal Rutin (Khusus Staff) -->
                     <div x-show="formRoleTambah === 'Staff'" x-cloak class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Jadwal Rutin Inspeksi Bulanan (Opsional)</label>
-                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" value="{{ old('form_type') == 'tambah_user' ? old('jadwal_rutin_tanggal') : '' }}" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
-                            <p class="mt-1 text-[11px] text-slate-500">Angka 1-31. Email H-3 akan dikirim otomatis.</p>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Monthly Inspection Routine Schedule Date (Optional)') }}</label>
+                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" value="{{ old('form_type') == 'tambah_user' ? old('jadwal_rutin_tanggal') : '' }}" placeholder="{{ __('Example: 15 (inspected every 15th)') }}" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <p class="mt-1 text-[11px] text-slate-500">{{ __('Numbers 1-31. H-3 email will be sent automatically.') }}</p>
                             @if(old('form_type') == 'tambah_user') @error('jadwal_rutin_tanggal') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Gedung Tanggung Jawab Utama</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">{{ __('Select Main Responsibility Building') }}</label>
                             <div class="grid grid-cols-2 gap-2">
                                 @foreach($gedungs as $g)
                                 <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
@@ -272,16 +272,16 @@
                     <div class="bg-blue-50 text-blue-800 p-3 rounded-xl border border-blue-100 flex items-start gap-3 mt-4">
                         <i class="ph-bold ph-info text-xl flex-shrink-0 mt-0.5"></i>
                         <p class="text-xs leading-relaxed font-medium">
-                            PIN dan instruksi pembuatan kata sandi (password) akan dikirimkan ke email user secara otomatis setelah akun dibuat.
+                            {{ __('PIN and password creation instructions will be sent automatically to the user\'s email after the account is created.') }}
                         </p>
                     </div>
 
                     <div class="mt-6 flex gap-3 justify-end pt-4 border-t border-slate-100">
                         <button type="button" @click="showModalUser = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200/60 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors">
-                            Batal
+                            {{ __('Cancel') }}
                         </button>
                         <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-[#009B77] hover:bg-[#008264] rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all hover:-translate-y-0.5">
-                            Simpan User
+                            {{ __('Save User') }}
                         </button>
                     </div>
                 </form>
@@ -298,8 +298,8 @@
                 
                 <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800">Edit User</h3>
-                        <p class="text-xs font-semibold text-slate-500 mt-0.5">Ubah data pengguna</p>
+                        <h3 class="text-lg font-bold text-slate-800">{{ __('Edit User') }}</h3>
+                        <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('Edit user data') }}</p>
                     </div>
                     <button @click="showEditUser = false" class="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-lg">
                         <i class="ph-bold ph-x text-lg"></i>
@@ -319,8 +319,8 @@
                     </div>
                     
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" x-model="editUser.name" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Full Name') }} <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" x-model="editUser.name" required placeholder="{{ __('Enter full name') }}" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('name') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
@@ -331,12 +331,12 @@
                     </div>
 
                     <div x-data="{ open: false }" class="relative">
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Role / Jabatan <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Role / Position') }} <span class="text-red-500">*</span></label>
                         <!-- Hidden input to submit the value -->
                         <input type="hidden" name="role" x-model="editUser.role" required>
                         
                         <button type="button" @click="open = !open" @click.away="open = false" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] p-2.5 transition-colors font-medium flex items-center justify-between">
-                            <span x-text="editUser.role === '' ? 'Pilih Role' : editUser.role" :class="editUser.role === '' ? 'text-slate-500' : 'text-slate-800'"></span>
+                            <span x-text="editUser.role === '' ? '{{ __('Select Role') }}' : editUser.role" :class="editUser.role === '' ? 'text-slate-500' : 'text-slate-800'"></span>
                             <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         
@@ -356,13 +356,13 @@
                     <!-- Pilihan Gedung dan Jadwal Rutin (Khusus Staff) -->
                     <div x-show="editUser.role === 'Staff'" x-cloak class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Jadwal Rutin Inspeksi Bulanan (Opsional)</label>
-                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" x-model="editUser.jadwal_rutin_tanggal" placeholder="Contoh: 15 (diinspeksi setiap tanggal 15)" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
-                            <p class="mt-1 text-[11px] text-slate-500">Angka 1-31. Email H-3 akan dikirim otomatis.</p>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Monthly Inspection Routine Schedule Date (Optional)') }}</label>
+                            <input type="number" name="jadwal_rutin_tanggal" min="1" max="31" x-model="editUser.jadwal_rutin_tanggal" placeholder="{{ __('Example: 15 (inspected every 15th)') }}" class="w-full bg-white border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                            <p class="mt-1 text-[11px] text-slate-500">{{ __('Numbers 1-31. H-3 email will be sent automatically.') }}</p>
                             @if(old('form_type') == 'edit_user') @error('jadwal_rutin_tanggal') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Gedung Tanggung Jawab Utama</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">{{ __('Select Main Responsibility Building') }}</label>
                             <div class="grid grid-cols-2 gap-2">
                                 @foreach($gedungs as $g)
                                 <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
@@ -375,18 +375,18 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Ubah PIN Inspeksi</label>
-                        <input type="text" name="pin" minlength="4" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="4 digit angka (Biarkan kosong jika tidak mengubah PIN)" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Change Inspection PIN') }}</label>
+                        <input type="text" name="pin" minlength="4" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="{{ __('4 digits (Leave blank if not changing PIN)') }}" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('pin') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
 
                     <div class="mt-6 flex gap-3 justify-end pt-4 border-t border-slate-100">
                         <button type="button" @click="showEditUser = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200/60 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors">
-                            Batal
+                            {{ __('Cancel') }}
                         </button>
                         <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-[#009B77] hover:bg-[#008264] rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all hover:-translate-y-0.5">
-                            Simpan Perubahan
+                            {{ __('Save Changes') }}
                         </button>
                     </div>
                 </form>
@@ -396,3 +396,5 @@
 
 </div>
 @endsection
+
+

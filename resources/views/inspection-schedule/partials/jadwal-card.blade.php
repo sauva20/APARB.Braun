@@ -1,5 +1,20 @@
+@php
+    $apars = collect();
+    if ($jadwal->tipe_area === 'gedung' && $jadwal->gedung) {
+        foreach($jadwal->gedung->lokasi as $l) {
+            foreach($l->apar as $a) {
+                $apars->push($a);
+            }
+        }
+    } elseif ($jadwal->tipe_area === 'lokasi' && $jadwal->lokasi) {
+        foreach($jadwal->lokasi->apar as $a) {
+            $apars->push($a);
+        }
+    }
+    $hasMultipleApars = $apars->count() > 1;
+@endphp
 <div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md {{ $isTerlewat ? 'ring-1 ring-red-100' : '' }}">
-    <div class="p-5 flex items-start justify-between gap-4 cursor-pointer" @click="expanded = !expanded">
+    <div class="p-5 flex items-start justify-between gap-4 {{ $hasMultipleApars ? 'cursor-pointer' : '' }}" @click="{{ $hasMultipleApars ? 'expanded = !expanded' : '' }}">
         <div class="flex gap-4">
             <div class="w-12 h-12 rounded-xl {{ $isTerlewat ? 'bg-red-50 border-red-200 text-red-500' : 'bg-[#009B77]/5 border-[#009B77]/20 text-[#009B77]' }} border flex items-center justify-center flex-shrink-0">
                 @if($jadwal->tipe_area === 'gedung')
@@ -41,8 +56,16 @@
                         {{ $jadwal->lokasi->nama ?? 'Lokasi Terhapus' }} <span class="text-xs font-semibold text-slate-400 ml-1">({{ $jadwal->gedung->nama ?? 'n/a' }})</span>
                     @endif
                 </h3>
-                <p class="text-[13px] font-medium text-slate-500 mt-1 flex items-center gap-1.5">
-                    <i class="ph-bold ph-user-circle text-slate-400"></i> Petugas: {{ $jadwal->user ? $jadwal->user->name : 'Bebas / Siapa Saja' }}
+                <p class="text-[13px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 flex-wrap">
+                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-user-circle text-slate-400"></i> Petugas: {{ $jadwal->user ? $jadwal->user->name : 'Bebas / Siapa Saja' }}</span>
+                    <span class="text-slate-300 mx-1">|</span>
+                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-fire-extinguisher text-slate-400"></i> 
+                    @if($apars->count() === 1)
+                        APAR: <span class="font-bold text-slate-600">{{ $apars->first()->kode }}</span>
+                    @else
+                        {{ $apars->count() }} APAR
+                    @endif
+                    </span>
                 </p>
                 @if($jadwal->catatan_tambahan)
                 <div class="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-start gap-2">
@@ -94,26 +117,20 @@
                 </form>
                 @endif
             @endif
+            
+            @if($hasMultipleApars)
             <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 transition-transform duration-300 ml-1" :class="expanded ? 'rotate-180' : ''">
                 <i class="ph-bold ph-caret-down text-sm"></i>
             </div>
+            @endif
         </div>
     </div>
 
+    @if($hasMultipleApars)
     <!-- Dropdown List APAR -->
-    <div x-show="expanded" x-collapse>
+    <div x-show="expanded" x-collapse style="display: none;">
         <div class="px-5 pb-5 border-t border-slate-100 pt-4 space-y-2.5">
             @php
-                $apars = collect();
-                if ($jadwal->tipe_area === 'gedung' && $jadwal->gedung) {
-                    foreach($jadwal->gedung->lokasi as $l) {
-                        foreach($l->apar as $a) {
-                            $apars->push($a);
-                        }
-                    }
-                } elseif ($jadwal->lokasi) {
-                    $apars = $jadwal->lokasi->apar;
-                }
                 $jadwalMonth = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->month;
                 $jadwalYear = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->year;
             @endphp
@@ -149,4 +166,5 @@
             @endif
         </div>
     </div>
+    @endif
 </div>

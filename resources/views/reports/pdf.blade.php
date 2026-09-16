@@ -40,11 +40,12 @@
             text-align: left;
         }
         th {
-            background-color: #f8f9fa;
+            background-color: #e8f5f3;
             color: #009B77;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 9px;
+            text-align: center;
         }
         .text-center { text-align: center; }
         .badge {
@@ -68,8 +69,32 @@
 
     <div class="header">
         <h1>Laporan Inspeksi APAR Bulan {{ $monthName }}</h1>
-        <p>Tanggal Cetak: {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }} | Gedung: {{ $gedungName }}</p>
+        <p>Identification of Inspection Portable Fire Extinguisher</p>
     </div>
+
+    @php
+        $activeFilters = [];
+        if (!empty($monthName)) $activeFilters[] = $monthName;
+        if (!empty($gedungName) && $gedungName !== 'Semua Gedung') $activeFilters[] = $gedungName;
+        if (!empty($status) && $status !== 'all') {
+            if ($status === 'sudah') $activeFilters[] = 'Sudah Diinspeksi';
+            elseif ($status === 'belum') $activeFilters[] = 'Belum Diinspeksi';
+            else $activeFilters[] = $status;
+        }
+    @endphp
+
+    <table style="width: 100%; margin-bottom: 8px; border: none;">
+        <tr>
+            <td style="text-align: left; font-size: 11px; border: none !important; padding: 0 !important; background: transparent;">
+                Identification Date: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i:s') }}
+            </td>
+            <td style="text-align: right; font-size: 11px; border: none !important; padding: 0 !important; background: transparent;">
+                @if(count($activeFilters) > 0)
+                    {{ implode(' | ', $activeFilters) }}
+                @endif
+            </td>
+        </tr>
+    </table>
 
     <table>
         <thead>
@@ -114,9 +139,9 @@
                     <td>
                         @if($inspeksi)
                             @if($inspeksi->status == 'layak')
-                                <span style="color: #009B77; font-weight: bold;">LAYAK</span>
+                                <span style="color: #009B77; font-weight: bold; font-size: 8px;">LAYAK</span>
                             @else
-                                <span style="color: #EF4444; font-weight: bold;">PERBAIKAN</span>
+                                <span style="color: #EF4444; font-weight: bold; font-size: 8px;">PERBAIKAN</span>
                             @endif
                         @else
                             n/a

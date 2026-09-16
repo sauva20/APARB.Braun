@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo(function (Request $request) {
             session()->flash('auth_error', 'Anda harus login untuk mengakses sistem ini.');

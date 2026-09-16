@@ -6,11 +6,11 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
         <!-- Left: Page Context -->
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
+            <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 border border-[#009B77]/20 shadow-sm flex items-center justify-center text-[#009B77]">
                 <i class="ph-bold ph-file-text text-xl"></i>
             </div>
             <div>
-                <h2 class="text-base font-bold text-slate-800 leading-tight">Laporan Inspeksi APAR</h2>
+                <h2 class="text-base font-bold text-[#007A5E] leading-tight">Laporan Inspeksi APAR</h2>
                 <p class="text-xs font-semibold text-slate-500 mt-0.5">Rekapitulasi data inspeksi bulanan</p>
             </div>
         </div>
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <!-- Filters -->
+    <!-- Filter Section -->
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60">
         <form action="{{ route('reports.index') }}" method="GET" class="flex flex-wrap gap-4 items-end">
             <!-- Bulan -->

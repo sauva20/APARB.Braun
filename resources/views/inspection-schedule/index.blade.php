@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Jadwal Inspeksi - APAR Monitoring System')
+@section('title', 'Jadwal Inspeksi - PFE Monitoring Control System')
 
 @section('content')
 <!-- We inject pertanyaan into a JS variable so Alpine can reference it -->
 <script>
     window.pertanyaanApar = @json($pertanyaan);
-    window.jadwalsData = @json($jadwals->map(function($j) { return ['tanggal' => \Carbon\Carbon::parse($j->tanggal_inspeksi)->format('Y-m-d'), 'status' => $j->status, 'area_id' => $j->tipe_area == 'gedung' ? 'g_'.$j->gedung_id : 'l_'.$j->lokasi_id]; })->groupBy('tanggal'));
+    window.jadwalsData = @json($jadwals->map(function($j) { return ['tanggal' => \Carbon\Carbon::parse($j->tanggal_inspeksi)->format('Y-m-d'), '{{ __('Status') }}' => $j->{{ __('Status') }}, 'area_id' => $j->tipe_area == 'gedung' ? 'g_'.$j->gedung_id : 'l_'.$j->lokasi_id]; })->groupBy('tanggal'));
 </script>
 
 <style>
@@ -16,13 +16,13 @@
 
 <div x-data="{ showPanelHasil: false, showPanelDetail: false, showModalBuatJadwal: false, showModalEditJadwal: false, editData: null, selectedInspeksi: null }">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 mb-6 flex-shrink-0">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 flex-shrink-0">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-[#009B77]">
+            <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 border border-[#009B77]/20 shadow-sm flex items-center justify-center text-[#009B77]">
                 <i class="ph-bold ph-calendar-check text-xl"></i>
             </div>
             <div>
-                <h2 class="text-base font-bold text-slate-800 leading-tight">Jadwal Inspeksi</h2>
+                <h2 class="text-base font-bold text-[#007A5E] leading-tight">Jadwal Inspeksi</h2>
                 <p class="text-xs font-semibold text-slate-500 mt-0.5">Kelola dan pantau rutinitas pengecekan APAR</p>
             </div>
         </div>
@@ -46,7 +46,7 @@
                 <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full border-4 border-white/10"></div>
                 <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-white/10 blur-xl"></div>
                 
-                <h3 class="text-sm font-bold text-white/80 uppercase tracking-wider mb-1 relative z-10">Total Inspeksi Bulan {{ strtoupper(\Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F')) }}</h3>
+                <h3 class="text-sm font-bold text-white/80 uppercase tracking-wider mb-1 relative z-10">Total Inspeksi {{ __('Month') }} {{ strtoupper(\Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F')) }}</h3>
                 <h2 class="text-4xl font-extrabold text-white mb-4 relative z-10">{{ $totalApar }}</h2>
                 <div class="flex flex-col gap-2 relative z-10">
                     <div class="flex justify-between items-center text-sm">
@@ -85,10 +85,10 @@
                             let dateString = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                             let j = this.jadwals[dateString] || [];
                             let hasJadwal = j.length > 0;
-                            let allSelesai = hasJadwal && j.every(x => x.status === 'selesai');
+                            let allSelesai = hasJadwal && j.every(x => x.{{ __('Status') }} === 'selesai');
                             let isPast = dateString < '{{ now()->format('Y-m-d') }}';
                             let isTerlewat = hasJadwal && !allSelesai && isPast;
-                            let hasProses = hasJadwal && j.some(x => x.status === 'proses');
+                            let hasProses = hasJadwal && j.some(x => x.{{ __('Status') }} === 'proses');
                             days.push({ 
                                 empty: false, 
                                 date: d.getDate(), 
@@ -175,10 +175,10 @@
         <!-- Right Column: Inspection List -->
         <div class="lg:col-span-2 flex flex-col space-y-4 lg:overflow-y-auto lg:pr-3 pb-8 custom-scrollbar">
             
-            <!-- Section: Hari Ini / Bulan Ini -->
+            <!-- Section: Hari Ini / {{ __('Month') }} Ini -->
             <div class="flex-shrink-0">
                 <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2 sticky top-0 bg-[#F8FAFC] z-10 py-2">
-                    <i class="ph-bold ph-chart-line-up text-slate-500"></i> Progress Inspeksi Bulan {{ \Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F') }}
+                    <i class="ph-bold ph-chart-line-up text-slate-500"></i> Progress Inspeksi {{ __('Month') }} {{ \Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F') }}
                 </h2>
                 <div class="space-y-4">
                     
@@ -277,7 +277,7 @@
                                                 'waktu' => $inspeksi->created_at->format('d M Y, H:i'),
                                                 'petugas' => ucwords(strtolower($inspeksi->user->name ?? 'User')),
                                                 'is_pic' => $isPic,
-                                                'status' => $inspeksi->status,
+                                                '{{ __('Status') }}' => $inspeksi->{{ __('Status') }},
                                                 'catatan' => $inspeksi->catatan_tambahan,
                                                 'checklist' => is_string($inspeksi->checklist) ? json_decode($inspeksi->checklist, true) : $inspeksi->checklist,
                                                 'foto' => $apar->foto
@@ -314,7 +314,7 @@
                     $today = \Carbon\Carbon::today();
 
                     foreach($jadwals as $jadwal) {
-                        if ($jadwal->status === 'selesai') {
+                        if ($jadwal->{{ __('Status') }} === 'selesai') {
                             $jadwalSelesai->push($jadwal);
                             continue;
                         }
@@ -427,15 +427,15 @@
                                             </div>
                                         </div>
 
-                                        <!-- Status Akhir -->
+                                        <!-- {{ __('Status') }} Akhir -->
                                         <div class="flex flex-col gap-3 p-4 rounded-xl border"
-                                             :class="selectedInspeksi.status === 'layak' ? 'border-[#009B77]/20 bg-[#009B77]/5' : 'border-red-200 bg-red-50'">
+                                             :class="selectedInspeksi.{{ __('Status') }} === 'layak' ? 'border-[#009B77]/20 bg-[#009B77]/5' : 'border-red-200 bg-red-50'">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center gap-3">
-                                                    <i class="text-2xl" :class="selectedInspeksi.status === 'layak' ? 'ph-fill ph-shield-check text-[#009B77]' : 'ph-fill ph-warning-circle text-red-500'"></i>
+                                                    <i class="text-2xl" :class="selectedInspeksi.{{ __('Status') }} === 'layak' ? 'ph-fill ph-shield-check text-[#009B77]' : 'ph-fill ph-warning-circle text-red-500'"></i>
                                                     <div>
-                                                        <span class="block text-[10px] font-bold uppercase tracking-wider" :class="selectedInspeksi.status === 'layak' ? 'text-[#009B77]' : 'text-red-500'">Status Akhir</span>
-                                                        <span class="font-bold text-slate-800 text-sm capitalize" x-text="selectedInspeksi.status.replace('_', ' ')"></span>
+                                                        <span class="block text-[10px] font-bold uppercase tracking-wider" :class="selectedInspeksi.{{ __('Status') }} === 'layak' ? 'text-[#009B77]' : 'text-red-500'">{{ __('Status') }} Akhir</span>
+                                                        <span class="font-bold text-slate-800 text-sm capitalize" x-text="selectedInspeksi.{{ __('Status') }}.replace('_', ' ')"></span>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
@@ -579,7 +579,7 @@
                     <!-- Jenis Jadwal -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Jenis Jadwal</label>
-                        <div x-data="{ open: false, options: ['Inspeksi Rutin Bulanan', 'Inspeksi Khusus / Temuan'] }" class="relative">
+                        <div x-data="{ open: false, options: ['Inspeksi Rutin {{ __('Month') }}an', 'Inspeksi Khusus / Temuan'] }" class="relative">
                             <input type="hidden" name="jenis_jadwal" :value="formJenis">
                             <i class="ph-bold ph-calendar-star absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false" 
@@ -622,7 +622,10 @@
                         options: [
                             @foreach($gedungs as $gedung)
                                 @foreach($gedung->lokasi as $lokasi)
-                                { id: 'l_{{ $lokasi->id }}', nama: '{{ addslashes($lokasi->nama) }} ({{ addslashes($gedung->nama) }})' },
+                                @php
+                                    $aparCodes = $lokasi->apar->pluck('kode')->implode(', ');
+                                @endphp
+                                { id: 'l_{{ $lokasi->id }}', nama: '{{ addslashes($lokasi->nama) }}', gedung_nama: '{{ addslashes($gedung->nama) }}', apars: '{{ addslashes($aparCodes) }}', text_search: '{{ addslashes($lokasi->nama . ' ' . $gedung->nama . ' ' . $aparCodes) }}' },
                                 @endforeach
                             @endforeach
                         ],
@@ -657,19 +660,34 @@
                                 </div>
                                 <div class="overflow-y-auto">
                                     <template x-for="option in options" :key="option.id">
-                                        <button type="button" x-show="option.nama.toLowerCase().includes(search.toLowerCase())" 
+                                        <button type="button" x-show="option.text_search.toLowerCase().includes(search.toLowerCase())" 
                                                 @click="if(!isAreaScheduledOnDate(option.id)) toggleArea(option.id)" 
-                                                class="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between" 
+                                                class="w-full text-left px-4 py-2.5 transition-colors flex items-start justify-between" 
                                                 :class="[
                                                     formAreas.includes(option.id) ? 'bg-[#009B77]/5' : 'hover:bg-slate-50',
                                                     isAreaScheduledOnDate(option.id) ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''
                                                 ]"
                                                 :disabled="isAreaScheduledOnDate(option.id)">
-                                            <div class="flex items-center">
-                                                <span class="font-medium" :class="formAreas.includes(option.id) ? 'text-[#009B77] font-bold' : 'text-slate-700'" x-text="option.nama"></span>
-                                                <span x-show="isAreaScheduledOnDate(option.id)" class="text-[9px] font-bold text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded ml-2 uppercase">Terjadwal</span>
+                                            <div class="flex flex-col pr-3 py-0.5">
+                                                <div class="flex items-center mb-1">
+                                                    <span class="text-sm transition-colors" :class="formAreas.includes(option.id) ? 'text-[#009B77] font-bold' : 'text-slate-700 font-medium'" x-text="option.nama"></span>
+                                                    <span x-show="isAreaScheduledOnDate(option.id)" class="text-[9px] font-bold text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded ml-2 uppercase tracking-wide">Terjadwal</span>
+                                                </div>
+                                                <div class="flex flex-wrap items-center gap-1.5">
+                                                    <div class="flex items-center gap-1 text-[10px] text-slate-500 font-medium bg-slate-100 px-1.5 py-0.5 rounded">
+                                                        <i class="ph-fill ph-buildings"></i>
+                                                        <span x-text="option.gedung_nama"></span>
+                                                    </div>
+                                                    <template x-if="option.apars">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            <template x-for="apar in option.apars.split(', ')" :key="apar">
+                                                                <span class="text-[9px] font-medium text-slate-500 border border-slate-200 bg-white px-1.5 py-0.5 rounded shadow-sm" x-text="apar"></span>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                </div>
                                             </div>
-                                            <div class="w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0 ml-3" :class="formAreas.includes(option.id) ? 'bg-[#009B77] border-[#009B77]' : 'border-slate-300 bg-white'">
+                                            <div class="w-4 h-4 rounded border flex items-center justify-center transition-all flex-shrink-0 ml-3 mt-1" :class="formAreas.includes(option.id) ? 'bg-[#009B77] border-[#009B77] shadow-sm' : 'border-slate-300 bg-white'">
                                                 <i class="ph-bold ph-check text-white text-[10px]" x-show="formAreas.includes(option.id)"></i>
                                             </div>
                                         </button>
@@ -818,7 +836,7 @@
                     <!-- Jenis Jadwal -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Jenis Jadwal</label>
-                        <div x-data="{ open: false, options: ['Inspeksi Rutin Bulanan', 'Inspeksi Khusus / Temuan'], get selected() { return formJenis }, set selected(val) { formJenis = val } }" class="relative">
+                        <div x-data="{ open: false, options: ['Inspeksi Rutin {{ __('Month') }}an', 'Inspeksi Khusus / Temuan'], get selected() { return formJenis }, set selected(val) { formJenis = val } }" class="relative">
                             <input type="hidden" name="jenis_jadwal" :value="formJenis">
                             <i class="ph-bold ph-calendar-star absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false" 
@@ -859,7 +877,10 @@
                         optionsLokasi: [
                             @foreach($gedungs as $gedung)
                                 @foreach($gedung->lokasi as $lokasi)
-                                { id: {{ $lokasi->id }}, nama: '{{ addslashes($lokasi->nama) }}', gedung_nama: '{{ addslashes($gedung->nama) }}', gedung_id: {{ $gedung->id }} },
+                                @php
+                                    $aparCodesEdit = $lokasi->apar->pluck('kode')->implode(', ');
+                                @endphp
+                                { id: {{ $lokasi->id }}, nama: '{{ addslashes($lokasi->nama) }}', gedung_nama: '{{ addslashes($gedung->nama) }}', gedung_id: {{ $gedung->id }}, apars: '{{ addslashes($aparCodesEdit) }}', text_search: '{{ addslashes($lokasi->nama . ' ' . $gedung->nama . ' ' . $aparCodesEdit) }}' },
                                 @endforeach
                             @endforeach
                         ],
@@ -943,12 +964,24 @@
                                         <div class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Belum ada lokasi.</div>
                                     </template>
                                     <template x-for="option in optionsLokasi" :key="option.id">
-                                        <button type="button" x-show="option.nama.toLowerCase().includes(search.toLowerCase()) || option.gedung_nama.toLowerCase().includes(search.toLowerCase())" @click="formLokasiId = option.id; open = false; search = ''" class="w-full text-left px-4 py-2.5 transition-colors flex items-center justify-between" :class="formLokasiId === option.id ? 'bg-[#009B77]/5' : 'hover:bg-slate-50'">
-                                            <div class="flex flex-col">
-                                                <span class="text-sm font-semibold" :class="formLokasiId === option.id ? 'text-[#009B77]' : 'text-slate-700'" x-text="option.nama"></span>
-                                                <span class="text-[11px] font-medium text-slate-400 mt-0.5" x-text="option.gedung_nama"></span>
+                                        <button type="button" x-show="option.text_search.toLowerCase().includes(search.toLowerCase())" @click="formLokasiId = option.id; open = false; search = ''" class="w-full text-left px-4 py-2.5 transition-colors flex items-start justify-between" :class="formLokasiId === option.id ? 'bg-[#009B77]/5' : 'hover:bg-slate-50'">
+                                            <div class="flex flex-col pr-3 py-0.5">
+                                                <span class="text-sm transition-colors mb-1" :class="formLokasiId === option.id ? 'text-[#009B77] font-bold' : 'text-slate-700 font-medium'" x-text="option.nama"></span>
+                                                <div class="flex flex-wrap items-center gap-1.5">
+                                                    <div class="flex items-center gap-1 text-[10px] text-slate-500 font-medium bg-slate-100 px-1.5 py-0.5 rounded">
+                                                        <i class="ph-fill ph-buildings"></i>
+                                                        <span x-text="option.gedung_nama"></span>
+                                                    </div>
+                                                    <template x-if="option.apars">
+                                                        <div class="flex flex-wrap gap-1">
+                                                            <template x-for="apar in option.apars.split(', ')" :key="apar">
+                                                                <span class="text-[9px] font-medium text-slate-500 border border-slate-200 bg-white px-1.5 py-0.5 rounded shadow-sm" x-text="apar"></span>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                </div>
                                             </div>
-                                            <i class="ph-bold ph-check text-[#009B77]" x-show="formLokasiId === option.id"></i>
+                                            <i class="ph-bold ph-check text-[#009B77] mt-1" x-show="formLokasiId === option.id"></i>
                                         </button>
                                     </template>
                                     <div x-show="optionsLokasi.length > 0 && optionsLokasi.filter(o => o.nama.toLowerCase().includes(search.toLowerCase()) || o.gedung_nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
@@ -1027,3 +1060,4 @@
     </div>
 </div>
 @endsection
+

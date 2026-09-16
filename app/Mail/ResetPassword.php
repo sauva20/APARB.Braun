@@ -32,7 +32,7 @@ class ResetPassword extends Mailable
      */
     public function build()
     {
-        return $this->subject('Reset Kata Sandi - APAR Monitoring System')
+        return $this->subject('Reset Kata Sandi - PFE Monitoring Control System')
                     ->view('emails.reset-password');
     }
 }

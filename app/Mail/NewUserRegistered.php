@@ -33,7 +33,7 @@ class NewUserRegistered extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pendaftaran Akun APAR Monitoring System',
+            subject: 'Pendaftaran Akun PFE Monitoring Control System',
         );
     }
 

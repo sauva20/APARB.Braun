@@ -81,8 +81,7 @@
                 <i class="ph-bold ph-calendar-blank text-lg"></i>
             </div>
             <div>
-                <h2 class="text-base font-bold text-slate-800 leading-tight">Statistik Hari Ini</h2>
-                <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ \Carbon\Carbon::now()->locale(app()->getLocale())->translatedFormat('l, d F Y') }}</p>
             </div>
         </div>
 
@@ -96,17 +95,26 @@
                     <input type="hidden" name="month" :value="val">
                     <button type="button" @click="open = !open" class="flex items-center justify-between gap-2 w-36 bg-white border border-slate-200/60 rounded-xl py-2 px-3 text-sm font-bold text-slate-700 shadow-sm hover:border-[#009B77]/50 focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 outline-none transition-all">
                         <span class="truncate text-left flex-1" x-text="
-                            @foreach(range(1, 12) as $m)
-                                val == '{{ $m }}' ? '{{ \Carbon\Carbon::create()->month($m)->locale('id')->translatedFormat('F') }}' :
+                            @foreach([
+                                1 => __('January'), 2 => __('February'), 3 => __('March'), 
+                                4 => __('April'), 5 => __('May'), 6 => __('June'), 
+                                7 => __('July'), 8 => __('August'), 9 => __('September'), 
+                                10 => __('October'), 11 => __('November'), 12 => __('December')
+                            ] as $m => $monthName)
+                                val == '{{ $m }}' ? '{{ $monthName }}' :
                             @endforeach ''
                         "></span>
                         <i class="ph-bold ph-caret-down text-slate-400"></i>
                     </button>
                     
                     <div x-show="open" style="display: none;" class="absolute top-full left-0 mt-1.5 w-full bg-white border border-slate-100 rounded-xl shadow-xl z-50 py-1.5 max-h-60 overflow-y-auto custom-scrollbar">
-                        @foreach(range(1, 12) as $m)
+                        @foreach([
+                            1 => __('January'), 2 => __('February'), 3 => __('March'), 
+                            4 => __('April'), 5 => __('May'), 6 => __('June'), 
+                            7 => __('July'), 8 => __('August'), 9 => __('September'), 
+                            10 => __('October'), 11 => __('November'), 12 => __('December')
+                        ] as $m => $monthName)
                             @php 
-                                $monthName = \Carbon\Carbon::create()->month($m)->locale('id')->translatedFormat('F'); 
                                 $isDisabled = ($selectedYear == now()->year && $m > now()->month);
                             @endphp
                             @if($isDisabled)
@@ -152,11 +160,11 @@
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
         
-        <!-- Card 1: Total APAR -->
+        <!-- Card 1: {{ __('TOTAL PFE') }} -->
         <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-[#009B77]/5 rounded-full blur-2xl group-hover:bg-[#009B77]/10 transition-colors"></div>
             <div class="flex items-center justify-between mb-3 relative z-10">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total APAR</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('TOTAL PFE') }}</h3>
                 <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 group-hover:bg-[#009B77]/20 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-[#009B77]">
                     <i class="ph-fill ph-fire-extinguisher text-lg"></i>
                 </div>
@@ -166,11 +174,11 @@
             </div>
         </div>
 
-        <!-- Card 2: Kondisi Baik -->
+        <!-- Card 2: {{ __('GOOD CONDITION') }} -->
         <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-teal-500/5 rounded-full blur-2xl group-hover:bg-teal-500/10 transition-colors"></div>
             <div class="flex items-center justify-between mb-3 relative z-10">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kondisi Baik</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('GOOD CONDITION') }}</h3>
                 <div class="w-8 h-8 rounded-lg bg-teal-50 group-hover:bg-teal-100 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-teal-600">
                     <i class="ph-bold ph-check-circle text-lg"></i>
                 </div>
@@ -186,11 +194,11 @@
             </div>
         </div>
 
-        <!-- Card 3: Rusak / Servis -->
+        <!-- Card 3: {{ __('BROKEN / SERVICE') }} -->
         <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full blur-2xl group-hover:bg-red-500/10 transition-colors"></div>
             <div class="flex items-center justify-between mb-3 relative z-10">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Rusak / Servis</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('BROKEN / SERVICE') }}</h3>
                 <div class="w-8 h-8 rounded-lg bg-red-50 group-hover:bg-red-100 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-red-500">
                     <i class="ph-fill ph-wrench text-lg"></i>
                 </div>
@@ -205,11 +213,11 @@
             </div>
         </div>
 
-        <!-- Card 4: Akan Kedaluwarsa -->
+        <!-- Card 4: {{ __('EXPIRING SOON') }} -->
         <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors"></div>
             <div class="flex items-center justify-between mb-3 relative z-10">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Akan Kedaluwarsa</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('EXPIRING SOON') }}</h3>
                 <div class="w-8 h-8 rounded-lg bg-amber-50 group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-amber-500">
                     <i class="ph-bold ph-hourglass-high text-lg"></i>
                 </div>
@@ -224,11 +232,11 @@
             </div>
         </div>
 
-        <!-- Card 5: Sudah Kedaluwarsa -->
+        <!-- Card 5: Sudah {{ __('EXPIRED') }} -->
         <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-600/5 rounded-full blur-2xl group-hover:bg-red-600/10 transition-colors"></div>
             <div class="flex items-center justify-between mb-3 relative z-10">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kedaluwarsa</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('EXPIRED') }}</h3>
                 <div class="w-8 h-8 rounded-lg bg-red-50 group-hover:bg-red-100 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-red-600">
                     <i class="ph-bold ph-x-circle text-lg"></i>
                 </div>
@@ -243,11 +251,11 @@
             </div>
         </div>
 
-        <!-- Card 6: APAR Kosong -->
+        <!-- Card 6: {{ __('EMPTY PFE') }} -->
         <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-colors"></div>
             <div class="flex items-center justify-between mb-3 relative z-10">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">APAR Kosong</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('EMPTY PFE') }}</h3>
                 <div class="w-8 h-8 rounded-lg bg-rose-50 group-hover:bg-rose-100 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-rose-500">
                     <i class="ph-bold ph-warning-octagon text-lg"></i>
                 </div>
@@ -276,8 +284,8 @@
             <div class="md:col-span-6 lg:col-span-6">
                 <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
                     <div>
-                        <h3 class="text-lg font-extrabold text-white mb-0.5">Progres Inspeksi Bulan {{ \Carbon\Carbon::createFromDate($selectedYear, $selectedMonth, 1)->locale('id')->translatedFormat('F Y') }}</h3>
-                        <p class="text-[13px] font-medium text-emerald-100">Pantau penyelesaian tugas inspeksi bulanan</p>
+                        <h3 class="text-lg font-extrabold text-white mb-0.5">{{ __('Inspection Progress for') }} {{ __(\Carbon\Carbon::createFromDate($selectedYear, $selectedMonth, 1)->format('F')) }} {{ $selectedYear }}</h3>
+                        <p class="text-[13px] font-medium text-emerald-100">{{ __('Monitor monthly inspection task completion') }}</p>
                     </div>
                 </div>
 
@@ -287,7 +295,7 @@
                             <i class="ph-bold ph-check-circle text-lg"></i>
                         </div>
                         <div>
-                            <p class="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">Sudah Diinspeksi</p>
+                            <p class="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">{{ __('INSPECTED') }}</p>
                             <p class="text-lg font-extrabold text-white">{{ $sudahDiinspeksiBulanIni }} <span class="text-xs font-semibold text-emerald-100">APAR</span></p>
                         </div>
                     </div>
@@ -297,7 +305,7 @@
                             <i class="ph-bold ph-clock text-lg"></i>
                         </div>
                         <div>
-                            <p class="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">Belum Diinspeksi</p>
+                            <p class="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">{{ __('UNINSPECTED') }}</p>
                             <p class="text-lg font-extrabold text-white">{{ $belumDiinspeksiBulanIni }} <span class="text-xs font-semibold text-emerald-100">APAR</span></p>
                         </div>
                     </div>
@@ -306,11 +314,11 @@
                 <!-- Tabs -->
                 <div class="flex space-x-2 w-full max-w-sm print:hidden">
                     <button @click="tab = tab === 'belum' ? null : 'belum'" :class="tab === 'belum' ? 'bg-white text-[#009B77] shadow-md' : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'" class="flex-1 py-2 px-3 text-xs font-bold rounded-xl transition-all outline-none flex items-center justify-center gap-2">
-                        Daftar Belum
+                        {{ __('Uninspected List') }}
                         <i class="ph-bold transition-transform duration-300" :class="tab === 'belum' ? 'ph-caret-up' : 'ph-caret-down'"></i>
                     </button>
                     <button @click="tab = tab === 'sudah' ? null : 'sudah'" :class="tab === 'sudah' ? 'bg-white text-[#009B77] shadow-md' : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'" class="flex-1 py-2 px-3 text-xs font-bold rounded-xl transition-all outline-none flex items-center justify-center gap-2">
-                        Daftar Sudah
+                        {{ __('Inspected List') }}
                         <i class="ph-bold transition-transform duration-300" :class="tab === 'sudah' ? 'ph-caret-up' : 'ph-caret-down'"></i>
                     </button>
                 </div>
@@ -334,7 +342,7 @@
                 
                 <div class="bg-transparent rounded-2xl p-5 border-2 border-white/50 w-full min-h-[140px] flex flex-col justify-center relative overflow-hidden transition-colors duration-300 hover:bg-white/5">
                     <div class="flex items-center justify-between mb-3 relative z-10">
-                        <h3 class="text-[11px] font-bold text-emerald-100 uppercase tracking-wider">Batas Inspeksi Bulanan</h3>
+                        <h3 class="text-[11px] font-bold text-emerald-100 uppercase tracking-wider">{{ __('MONTHLY INSPECTION DEADLINE') }}</h3>
                         <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
                             <i class="ph-bold ph-hourglass-high text-xl"></i>
                         </div>
@@ -344,10 +352,10 @@
                         @if($isCurrentMonth && $daysLeft > 0)
                             <div class="flex items-baseline gap-1">
                                 <span class="text-5xl font-extrabold text-white tracking-tight">{{ $daysLeft }}</span>
-                                <span class="text-sm font-semibold text-emerald-100">Hari</span>
+                                <span class="text-sm font-semibold text-emerald-100">{{ __('Days') }}</span>
                             </div>
                         @elseif($isCurrentMonth && $daysLeft === 0)
-                            <span class="text-2xl font-extrabold text-rose-200">Hari Terakhir!</span>
+                            <span class="text-2xl font-extrabold text-rose-200">{{ __('Days') }} Terakhir!</span>
                         @elseif($endOfMonth->isPast())
                             <span class="text-xl font-extrabold text-emerald-100">Bulan Berakhir</span>
                         @else
@@ -360,17 +368,17 @@
 
         <div class="p-4 md:p-6 bg-slate-50 print:hidden" x-show="tab !== null" x-cloak>
 
-        <!-- Table Belum Diinspeksi -->
+        <!-- Table {{ __('UNINSPECTED') }} -->
         <div x-show="tab === 'belum'" class="overflow-x-auto bg-white rounded-xl border border-slate-200 mb-4">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500">
                         <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider w-12 text-center">No</th>
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">ID APAR</th>
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">Lokasi</th>
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">Gedung</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">{{ __('PFE ID') }}</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Location') }}</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Building') }}</th>
                         @if(auth()->user()->role !== 'Staff')
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider text-center">Aksi</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Action') }}</th>
                         @endif
                     </tr>
                 </thead>
@@ -384,30 +392,30 @@
                         @if(auth()->user()->role !== 'Staff')
                         <td class="py-3 px-5 text-center">
                             <a href="/scan/{{ $apar->kode }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#009B77] bg-[#009B77]/10 hover:bg-[#009B77]/20 px-3 py-1.5 rounded-lg transition-colors">
-                                <i class="ph-bold ph-scan"></i> Scan
+                                <i class="ph-bold ph-scan"></i> {{ __('Scan') }}
                             </a>
                         </td>
                         @endif
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ auth()->user()->role !== 'Staff' ? '5' : '4' }}" class="py-8 text-center text-slate-500 font-semibold">Semua APAR telah diinspeksi bulan ini! 🎉</td>
+                        <td colspan="{{ auth()->user()->role !== 'Staff' ? '5' : '4' }}" class="py-8 text-center text-slate-500 font-semibold">{{ __('All PFE have been inspected this month! 🎉') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        <!-- Table Sudah Diinspeksi -->
+        <!-- Table {{ __('INSPECTED') }} -->
         <div x-show="tab === 'sudah'" class="overflow-x-auto bg-white rounded-xl border border-slate-200 mb-4">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200 text-[#009B77]">
                         <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider w-12 text-center">No</th>
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">ID APAR</th>
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">Lokasi</th>
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">Gedung</th>
-                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider text-center">Status</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">{{ __('PFE ID') }}</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Location') }}</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Building') }}</th>
+                        <th class="py-3 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Status') }}</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100">
@@ -419,13 +427,13 @@
                         <td class="py-3 px-5 font-medium text-slate-600">{{ $apar->lokasi->gedung->nama ?? 'n/a' }}</td>
                         <td class="py-3 px-5 text-center">
                             <span class="inline-flex items-center gap-1 text-xs font-bold text-[#009B77] bg-[#009B77]/10 px-2.5 py-1 rounded-md">
-                                <i class="ph-bold ph-check-circle"></i> Selesai
+                                <i class="ph-bold ph-check-circle"></i> {{ __('Finished') }}
                             </span>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-8 text-center text-slate-500 font-semibold">Belum ada APAR yang diinspeksi bulan ini.</td>
+                        <td colspan="5" class="py-8 text-center text-slate-500 font-semibold">{{ __('No PFE inspected this month yet.') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -440,8 +448,8 @@
         <div class="lg:col-span-2 print-col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 flex flex-col h-full chart-container">
             <div class="flex items-center justify-between mb-3">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800">Tren Inspeksi Tahun {{ $selectedYear }}</h3>
-                    <p class="text-xs font-semibold text-slate-500">Perbandingan APAR yang sudah dan belum diinspeksi setiap bulannya</p>
+                    <h3 class="text-lg font-bold text-slate-800">{{ __('Inspection Trend Year') }} {{ $selectedYear }}</h3>
+                    <p class="text-xs text-slate-500 mt-1">{{ __('Comparison of INSPECTED and UNINSPECTED PFE every month') }}</p>
                 </div>
                 <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
                     <i class="ph-bold ph-chart-bar text-lg"></i>
@@ -456,8 +464,8 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 flex flex-col h-full chart-container">
             <div class="flex items-center justify-between mb-3">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800">Sebaran Jenis APAR</h3>
-                    <p class="text-xs font-semibold text-slate-500">Berdasarkan media / bahan</p>
+                    <h3 class="text-lg font-bold text-slate-800">{{ __('PFE Type Distribution') }}</h3>
+                    <p class="text-xs font-semibold text-slate-500">{{ __('Based on media / agent') }}</p>
                 </div>
                 <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500">
                     <i class="ph-bold ph-chart-pie-slice text-lg"></i>
@@ -477,8 +485,8 @@
                     <i class="ph-bold ph-clipboard-text text-lg"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold">Inspeksi Terakhir</h3>
-                    <p class="text-xs font-medium text-white/80">Riwayat 5 inspeksi paling baru</p>
+                    <h3 class="text-lg font-bold">{{ __('Recent Inspections') }}</h3>
+                    <p class="text-xs font-medium text-white/80 mt-1">{{ __('History of the 5 most recent inspections') }}</p>
                 </div>
             </div>
         </div>
@@ -492,10 +500,10 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50 text-slate-500 border-b border-slate-200">
-                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider">APAR & Lokasi</th>
-                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider">Waktu</th>
-                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider">Inspektor</th>
-                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider text-center">Status</th>
+                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider">{{ __('PFE & Location') }}</th>
+                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider">{{ __('Time') }}</th>
+                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider">{{ __('Inspector') }}</th>
+                        <th class="py-3 px-6 text-xs font-bold uppercase tracking-wider text-center">{{ __('Status') }}</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100">
@@ -524,7 +532,7 @@
                         <td class="py-4 px-6 text-center">
                             @if($inspeksi->status === 'layak')
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-teal-50 text-teal-600 border border-teal-100 uppercase tracking-wider">
-                                    <i class="ph-fill ph-check-circle"></i> Layak
+                                    <i class="ph-fill ph-check-circle"></i> {{ __('Pass') }}
                                 </span>
                             @elseif($inspeksi->status === 'perbaikan' || $inspeksi->status === 'rusak')
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-red-50 text-red-600 border border-red-100 uppercase tracking-wider">
@@ -560,10 +568,10 @@
 
         const monthlyOptions = {
             series: [{
-                name: 'Sudah Diinspeksi',
+                name: '{{ __('INSPECTED') }}',
                 data: monthSudah
             }, {
-                name: 'Belum Diinspeksi',
+                name: '{{ __('UNINSPECTED') }}',
                 data: monthBelum
             }],
             chart: {
@@ -729,7 +737,7 @@
                     }
                 }
             },
-            labels: ['Sudah Diinspeksi', 'Belum Diinspeksi'],
+            labels: ['{{ __('INSPECTED') }}', '{{ __('UNINSPECTED') }}'],
             colors: ['#ffffff', '#a7f3d0'],
             plotOptions: {
                 pie: {
@@ -793,3 +801,4 @@
     });
 </script>
 @endsection
+
