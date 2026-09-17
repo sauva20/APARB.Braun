@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    private function getDashboardData(Request $request)
     {
         $now = Carbon::now();
         
@@ -121,7 +121,7 @@ class DashboardController extends Controller
             ->whereNotIn('id', $inspeksiBulanIniAparIds)
             ->get();
 
-        return view('dashboard.index', compact(
+        return compact(
             'totalApar',
             'kondisiBaik',
             'rusakServis',
@@ -138,6 +138,18 @@ class DashboardController extends Controller
             'belumDiinspeksiApars',
             'selectedMonth',
             'selectedYear'
-        ));
+        );
+    }
+
+    public function index(Request $request)
+    {
+        $data = $this->getDashboardData($request);
+        return view('dashboard.index', $data);
+    }
+
+    public function displayReport(Request $request)
+    {
+        $data = $this->getDashboardData($request);
+        return view('dashboard.display-report', $data);
     }
 }

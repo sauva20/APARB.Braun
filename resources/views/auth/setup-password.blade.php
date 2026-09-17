@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup Password - PFE Monitoring Control System</title>
+    <link rel="icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml">
     <!-- Tailwind CSS (CDN for simplicity in this file, though you might have it locally) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ __('Login - PFE Monitoring Control System') }}</title>
+    <link rel="icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml">
 
     <!-- Tailwind CSS (via Vite) -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -159,6 +160,13 @@
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
                         <span>{{ __('Login') }}</span>
                     </button>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <a href="{{ url('/display-report') }}" class="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-gray-500 hover:text-[#009B77] transition-colors">
+                        <i class="ph-bold ph-monitor-play text-sm"></i>
+                        {{ __('Open Display Report (Kiosk Mode)') }}
+                    </a>
                 </div>
             </form>
 

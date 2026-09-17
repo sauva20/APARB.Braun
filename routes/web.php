@@ -11,6 +11,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/locale/{lang}', [App\Http\Controllers\LocaleController::class, 'setLocale'])->name('set-locale');
+Route::get('/favicon.ico', function () {
+    return response()->file(public_path('favicon.svg'), ['Content-Type' => 'image/svg+xml']);
+});
 
 Route::get('/', function () {
     return view('index');
@@ -28,6 +31,8 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkReques
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{user}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset')->middleware('signed');
 Route::post('/reset-password/{user}', [ForgotPasswordController::class, 'reset'])->name('password.update')->middleware('signed');
+
+Route::get('/display-report', [\App\Http\Controllers\DashboardController::class, 'displayReport'])->name('display-report');
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change-password');

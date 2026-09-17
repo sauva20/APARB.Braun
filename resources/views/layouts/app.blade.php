@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'PFE Monitoring Control System')</title>
-    <link rel="icon" href="{{ asset('favicon.png') }}?v=4" type="image/png">
+    <link rel="icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml">
     
     <!-- Tailwind CSS (via Vite or CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -692,6 +692,27 @@
                                 @endif
                             @endif
                         @endif
+                    </div>
+
+                    <!-- Display Mode / Kiosk -->
+                    <div>
+                        <h5 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="ph-bold ph-monitor-play"></i> {{ __('Display Mode') }}
+                        </h5>
+                        <div class="flex flex-col gap-2 mb-6">
+                            <a href="{{ url('/display-report') }}" target="_blank" class="w-full text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all flex items-center justify-between group">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-indigo-500 flex items-center justify-center transition-colors shadow-sm">
+                                        <i class="ph-bold ph-presentation-chart text-lg"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">{{ __('Open Display Report') }}</span>
+                                        <span class="text-[10px] font-semibold text-slate-500 mt-0.5">{{ __('View dashboard without login (Kiosk mode)') }}</span>
+                                    </div>
+                                </div>
+                                <i class="ph-bold ph-arrow-square-out text-slate-400 group-hover:text-indigo-500 transition-colors"></i>
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Actions -->
