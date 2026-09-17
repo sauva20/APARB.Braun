@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inspeksi Selesai</title>
+    <title>{{ __('Inspection Completed') }}</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -68,11 +68,11 @@
                 <i class="ph-fill ph-check-circle text-5xl text-[#009B77]"></i>
             </div>
             
-            <h1 class="text-2xl font-bold text-slate-800 mb-2">Inspeksi Selesai!</h1>
-            <p class="text-sm font-medium text-slate-500 mb-8">Data inspeksi untuk APAR <span class="font-bold text-slate-800">{{ $apar->kode }}</span> telah berhasil disimpan.</p>
+            <h1 class="text-2xl font-bold text-slate-800 mb-2">{{ __('Inspection Completed!') }}</h1>
+            <p class="text-sm font-medium text-slate-500 mb-8">{{ __('Inspection data for PFE') }} <span class="font-bold text-slate-800">{{ $apar->kode }}</span> {{ __('has been successfully saved.') }}</p>
             
             <button @click="startScanner()" class="w-full py-4 bg-[#009B77] hover:bg-[#008264] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#009B77]/30 transition-all flex items-center justify-center gap-2">
-                <i class="ph-bold ph-scan text-xl"></i> Scan APAR Lain
+                <i class="ph-bold ph-scan text-xl"></i> {{ __('Scan Another PFE') }}
             </button>
             
 
@@ -90,7 +90,7 @@
             <!-- Header Overlay -->
             <div class="absolute top-0 inset-x-0 z-20 p-6 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent">
                 <h2 class="font-bold text-white text-lg flex items-center gap-2 drop-shadow-md">
-                    <i class="ph-bold ph-scan"></i> Scan QR Code
+                    <i class="ph-bold ph-scan"></i> {{ __('Scan QR Code') }}
                 </h2>
                 <button @click="stopScanner()" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-white/30 transition-all">
                     <i class="ph-bold ph-x text-lg"></i>
@@ -118,7 +118,7 @@
                         <div class="absolute top-0 inset-x-0 h-0.5 bg-[#009B77] shadow-[0_0_15px_3px_rgba(0,155,119,0.7)] w-full animate-[scan_2s_ease-in-out_infinite]"></div>
                     </div>
                     
-                    <p class="text-white font-medium text-sm mt-8 drop-shadow-md z-20">Arahkan kamera ke QR Code APAR</p>
+                    <p class="text-white font-medium text-sm mt-8 drop-shadow-md z-20">{{ __('Point camera at PFE QR Code') }}</p>
                 </div>
             </div>
         </div>
@@ -157,17 +157,26 @@
                             config,
                             (decodedText, decodedResult) => {
                                 // Jika berhasil, hentikan kamera dan redirect
+                                let targetUrl = decodedText;
+                                try {
+                                    let url = new URL(decodedText);
+                                    url.searchParams.set('source', 'system');
+                                    targetUrl = url.toString();
+                                } catch (e) {
+                                    // if decodedText is not a valid URL
+                                }
+
                                 this.html5QrcodeScanner.stop().then(() => {
-                                    window.location.href = decodedText;
+                                    window.location.href = targetUrl;
                                 }).catch((err) => {
-                                    window.location.href = decodedText;
+                                    window.location.href = targetUrl;
                                 });
                             },
                             (errorMessage) => {
                                 // ignore error
                             }
                         ).catch((err) => {
-                            alert("Kamera tidak dapat diakses atau diblokir. Pastikan memberi izin kamera.");
+                            alert("{{ __('Camera cannot be accessed or is blocked. Make sure to grant camera permissions.') }}");
                             this.scanning = false;
                         });
                     }, 300);

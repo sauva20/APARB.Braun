@@ -13,14 +13,18 @@
             </div>
             <div>
                 <h2 class="text-base font-bold text-[#007A5E] leading-tight">Audit Trail</h2>
-                <p class="text-xs font-semibold text-slate-500 mt-0.5">Riwayat tindakan pengguna dalam sistem</p>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('History of user actions in the system') }}</p>
             </div>
         </div>
         
         <div class="flex items-center gap-2">
             <a href="{{ route('activity-log.export-pdf', request()->all()) }}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 text-sm bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl transition-colors">
                 <i class="ph-bold ph-file-pdf text-lg"></i>
-                Export PDF
+                {{ __('Export PDF') }}
+            </a>
+            <a href="#" @click.prevent="$dispatch('open-excel-preview', { previewUrl: '{{ route('activity-log.export-excel-preview', request()->all()) }}', downloadUrl: '{{ route('activity-log.export-excel', request()->all()) }}' })" class="flex items-center gap-2 px-4 py-2.5 text-sm bg-emerald-50 text-emerald-600 hover:bg-emerald-100 font-bold rounded-xl transition-colors">
+                <i class="ph-bold ph-file-csv text-lg"></i>
+                {{ __('Export Excel') }}
             </a>
         </div>
     </div>
@@ -31,11 +35,11 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-[#009B77] text-white divide-x divide-white/20">
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Waktu</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Pengguna</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">Aksi</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Modul</th>
-                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Keterangan</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Time') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('User') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Action') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Module') }}</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Description') }}</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-slate-100">
@@ -50,7 +54,7 @@
                                 <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
                                     <i class="ph-fill ph-user"></i>
                                 </div>
-                                <span class="text-sm font-bold text-slate-700">{{ $activity->causer->name ?? 'Sistem / Guest' }}</span>
+                                <span class="text-sm font-bold text-slate-700">{{ $activity->causer->name ?? __('System / Guest') }}</span>
                             </div>
                         </td>
                         <td class="py-4 px-5 text-center">
@@ -66,18 +70,18 @@
                         </td>
                         <td class="py-4 px-5">
                             <span class="text-sm font-semibold text-slate-600">
-                                {{ preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type)) }}
+                                {{ __(preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type))) }}
                             </span>
                         </td>
                         <td class="py-4 px-5">
                             <p class="text-sm text-slate-600 font-medium line-clamp-2 max-w-sm">
-                                {{ $activity->description }}
+                                {{ __($activity->description) }}
                             </p>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-8 text-center text-slate-500 font-semibold">Belum ada riwayat aktivitas.</td>
+                        <td colspan="5" class="py-8 text-center text-slate-500 font-semibold">{{ __('No activity history yet.') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -90,4 +94,5 @@
         </div>
     </div>
 </div>
+    <x-excel-preview-modal />
 @endsection

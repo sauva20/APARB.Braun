@@ -96,8 +96,9 @@ class ReportController extends Controller
         $reportParams = $this->getReportData($request);
         $reportData = $reportParams['data'];
         
-        $monthName = Carbon::createFromDate($reportParams['selectedYear'], $reportParams['selectedMonth'], 1)->locale('id')->translatedFormat('F Y');
-        $gedungName = $reportParams['selectedGedung'] ? Gedung::find($reportParams['selectedGedung'])->nama ?? 'Semua Gedung' : 'Semua Gedung';
+        $month = Carbon::createFromDate($reportParams['selectedYear'], $reportParams['selectedMonth'], 1);
+        $monthName = __($month->format('F')) . ' ' . $month->format('Y');
+        $gedungName = $reportParams['selectedGedung'] ? Gedung::find($reportParams['selectedGedung'])->nama ?? __('All Buildings') : __('All Buildings');
 
         $pdf = Pdf::loadView('reports.pdf', [
             'reportData' => $reportData,
@@ -113,7 +114,8 @@ class ReportController extends Controller
     {
         $reportParams = $this->getReportData($request);
         $reportData = $reportParams['data'];
-        $monthName = Carbon::createFromDate($reportParams['selectedYear'], $reportParams['selectedMonth'], 1)->locale('id')->translatedFormat('F Y');
+        $month = Carbon::createFromDate($reportParams['selectedYear'], $reportParams['selectedMonth'], 1);
+        $monthName = __($month->format('F')) . ' ' . $month->format('Y');
 
         $filename = "Laporan_Inspeksi_" . date('Ymd_His') . ".csv";
 
@@ -125,7 +127,7 @@ class ReportController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['No', 'ID APAR', 'Gedung', 'Lokasi', 'Jenis', 'Kapasitas', 'Status Inspeksi', 'Tanggal Inspeksi', 'Inspektor', 'Kondisi', 'Catatan Tambahan'];
+        $columns = [__('No'), __('PFE ID'), __('Building'), __('Location'), __('Type'), __('Capacity'), __('Inspection Status'), __('Inspection Date'), __('Inspector'), __('Condition'), __('Additional Notes')];
 
         $callback = function() use($reportData, $columns) {
             $file = fopen('php://output', 'w');
@@ -156,5 +158,62 @@ class ReportController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function previewExcel(Request $request)
+    {
+        $bulan = $request->bulan ?? date('m');
+        $tahun = $request->tahun ?? date('Y');
+
+        $apars = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas', 'inspeksis' => function($q) use($bulan, $tahun) {
+            $q->whereYear('created_at', $tahun)
+              ->whereMonth('created_at', $bulan);
+        }])->get();
+
+        $reportData = collect();
+        foreach ($apars as $apar) {
+            $inspeksiThisMonth = $apar->inspeksis->first();
+            $reportData->push([
+                'apar' => $apar,
+                'status' => $inspeksiThisMonth ? 'Sudah Diinspeksi' : 'Belum Diinspeksi',
+                'inspeksi' => $inspeksiThisMonth
+            ]);
+        }
+
+        if ($request->filled('status')) {
+            $statusFilter = $request->status;
+            $reportData = $reportData->filter(function ($item) use ($statusFilter) {
+                return $item['status'] === $statusFilter;
+            });
+        }
+        
+        $columns = [__('No'), __('PFE ID'), __('Building'), __('Location'), __('Type'), __('Capacity'), __('Inspection Status'), __('Inspection Date'), __('Inspector'), __('Condition'), __('Additional Notes')];
+        $rows = [];
+
+        $no = 1;
+        foreach ($reportData as $row) {
+            $apar = $row['apar'];
+            $inspeksi = $row['inspeksi'];
+            $isInspected = $row['status'] === 'Sudah Diinspeksi';
+            
+            $rows[] = [
+                $no++,
+                $apar->kode,
+                $apar->lokasi->gedung->nama ?? 'n/a',
+                $apar->lokasi->nama ?? 'n/a',
+                $apar->jenis->nama ?? 'n/a',
+                $apar->kapasitas->ukuran ?? 'n/a',
+                $isInspected ? 'Sudah Diinspeksi' : 'Belum Diinspeksi',
+                $inspeksi ? Carbon::parse($inspeksi->created_at)->format('d M Y H:i') : 'n/a',
+                $inspeksi?->user?->name ?? 'n/a',
+                $inspeksi?->status ?? 'n/a',
+                $inspeksi?->catatan_tambahan ?? 'n/a'
+            ];
+        }
+
+        return response()->json([
+            'headers' => $columns,
+            'rows' => $rows
+        ]);
     }
 }

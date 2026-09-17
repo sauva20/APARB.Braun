@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lupa Kata Sandi - PFE Monitoring Control System</title>
+    <title>{{ __('Forgot Password') }} - PFE Monitoring Control System</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -47,7 +47,7 @@
             <!-- Back Button -->
             <a href="{{ route('login') }}" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#009B77] transition-colors mb-6 font-bold">
                 <i class="ph-bold ph-arrow-left"></i>
-                Kembali ke Login
+                {{ __('Back to Login') }}
             </a>
 
             <!-- Titles -->
@@ -57,9 +57,9 @@
                         <i class="ph-duotone ph-envelope-open text-4xl text-[#009B77]"></i>
                     </div>
                 </div>
-                <h1 class="text-xl sm:text-xl font-bold text-[#1A1A1A] tracking-tight mb-2">RESET PASSWORD</h1>
+                <h1 class="text-xl sm:text-xl font-bold text-[#1A1A1A] tracking-tight mb-2">{{ __('RESET PASSWORD') }}</h1>
                 <p class="text-sm text-gray-500 leading-relaxed px-2">
-                    Masukkan email Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi.
+                    {{ __('Enter your email and we will send a link to reset your password.') }}
                 </p>
             </div>
 
@@ -71,7 +71,7 @@
                 <div class="bg-teal-50 border border-teal-100 rounded-xl p-3 mb-2 flex items-start gap-3">
                     <i class="ph-fill ph-check-circle text-teal-600 text-lg mt-0.5"></i>
                     <div>
-                        <p class="text-xs text-teal-800 font-bold mb-0.5">Email Terkirim</p>
+                        <p class="text-xs text-teal-800 font-bold mb-0.5">{{ __('Email Sent') }}</p>
                         <p class="text-[11px] text-teal-600 font-medium">{{ session('status') }}</p>
                     </div>
                 </div>
@@ -86,12 +86,12 @@
 
                 <!-- Email -->
                 <div>
-                    <label for="email" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Email Terdaftar</label>
+                    <label for="email" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">{{ __('Registered Email') }}</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-envelope text-lg"></i>
                         </div>
-                        <input type="email" id="email" name="email" placeholder="Contoh: user@bbraun.com" value="{{ old('email') }}"
+                        <input type="email" id="email" name="email" placeholder="{{ __('Example: user@bbraun.com') }}" value="{{ old('email') }}"
                             class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm font-medium placeholder:font-normal" required autofocus>
                     </div>
                 </div>
@@ -99,7 +99,7 @@
                 <!-- Submit Button -->
                 <div class="pt-2">
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-medium bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
-                        <span>Kirim Link Reset</span>
+                        <span>{{ __('Send Reset Link') }}</span>
                         <i class="ph-bold ph-paper-plane-right"></i>
                     </button>
                 </div>

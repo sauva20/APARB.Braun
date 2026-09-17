@@ -23,7 +23,6 @@
     <!-- Flatpickr (Datepicker) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -32,14 +31,14 @@
             event.preventDefault();
             const form = event.target;
             Swal.fire({
-                title: 'Apakah Anda Yakin?',
-                text: message || "Data ini akan dihapus secara permanen!",
+                title: '{{ __('Are you sure?') }}',
+                text: message || "{{ __('This data will be permanently deleted!') }}",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#94a3b8',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal',
+                confirmButtonText: '{{ __('Yes, Delete!') }}',
+                cancelButtonText: '{{ __('Cancel') }}',
                 customClass: {
                     popup: 'rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100',
                     title: 'text-slate-800 font-bold',
@@ -129,6 +128,13 @@
             transform: scale(0.95);
         }
     </style>
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 antialiased min-h-screen flex" x-data="{ sidebarOpen: false }">
     <!-- Global Toast Notification -->
@@ -152,7 +158,7 @@
             </div>
             
             <div class="flex flex-col">
-                <span class="text-sm font-bold text-slate-800" x-text="type === 'success' ? 'Berhasil!' : 'Oops, Terjadi Kesalahan!'"></span>
+                <span class="text-sm font-bold text-slate-800" x-text="type === 'success' ? '{{ __('Success!') }}' : '{{ __('Oops, An Error Occurred!') }}'"></span>
                 <span class="text-xs font-medium text-slate-500 mt-0.5" x-text="message"></span>
             </div>
             
@@ -282,7 +288,7 @@
                                 </div>
                                 <div>
                                     <span class="block text-sm font-bold text-slate-800">{{ __('My Profile') }}</span>
-                                    <span class="block text-xs text-slate-500">Lihat profil Anda</span>
+                                    <span class="block text-xs text-slate-500">{{ __('View your profile') }}</span>
                                 </div>
                             </button>
                         </li>
@@ -292,8 +298,8 @@
                                     <i class="ph-fill ph-key text-lg"></i>
                                 </div>
                                 <div>
-                                    <span class="block text-sm font-bold text-slate-800">Ganti Sandi</span>
-                                    <span class="block text-xs text-slate-500">Perbarui kata sandi</span>
+                                    <span class="block text-sm font-bold text-slate-800">{{ __('Change Password') }}</span>
+                                    <span class="block text-xs text-slate-500">{{ __('Update password') }}</span>
                                 </div>
                             </button>
                         </li>
@@ -303,7 +309,7 @@
                                     <i class="ph-fill ph-password text-lg"></i>
                                 </div>
                                 <div>
-                                    <span class="block text-sm font-bold text-slate-800">Ganti PIN</span>
+                                    <span class="block text-sm font-bold text-slate-800">{{ __('Change PIN') }}</span>
                                     <span class="block text-xs text-slate-500">{{ __('Change PIN') }} 4-digit</span>
                                 </div>
                             </button>
@@ -331,7 +337,7 @@
                 </div>
                 <div class="flex flex-col justify-center">
                     <h1 class="text-[15px] font-extrabold text-slate-800 tracking-tight leading-none uppercase">
-                        APAR <span class="text-[#009B77]">Monitoring</span>
+                        {{ __('PFE') }} <span class="text-[#009B77]">MONITORING</span>
                     </h1>
                     <span class="text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase mt-0.5">Control System</span>
                 </div>
@@ -342,7 +348,7 @@
             <div class="flex-1 flex justify-center">
                 <div class="relative w-full max-w-md hidden sm:block">
                     <i class="ph-bold ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#009B77] text-lg"></i>
-                    <input type="text" placeholder="Cari ID APAR, lokasi, atau status..." 
+                    <input type="text" placeholder="{{ __('Search PFE ID, location, or status...') }}" 
                            class="w-full bg-white border-2 border-[#009B77] rounded-xl py-2.5 pl-11 pr-4 text-sm text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#009B77]/20 transition-all placeholder:text-slate-400 font-medium">
                 </div>
             </div>
@@ -400,7 +406,7 @@
                             @if($importantNotifications->isEmpty())
                                 <div class="px-4 py-6 text-center text-sm text-slate-500">
                                     <i class="ph-duotone ph-check-circle text-3xl text-emerald-500 mb-2"></i>
-                                    <p>Tidak ada notifikasi penting.</p>
+                                    <p>{{ __('No important notifications.') }}</p>
                                 </div>
                             @else
                                 <ul class="divide-y divide-slate-100">
@@ -463,12 +469,13 @@
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            flatpickr(".datepicker", {
-                dateFormat: "Y-m-d",
-                locale: "id",
-                allowInput: true,
-                static: true
-            });
+            if(document.querySelector('.datepicker')) {
+                flatpickr(".datepicker", {
+                    dateFormat: "Y-m-d",
+                    allowInput: true,
+                    static: true
+                });
+            }
         });
     </script>
 

@@ -50,7 +50,7 @@
             </div>
             
             <div class="flex flex-col">
-                <span class="text-sm font-bold text-slate-800" x-text="type === 'success' ? 'Berhasil!' : 'Oops, Terjadi Kesalahan!'"></span>
+                <span class="text-sm font-bold text-slate-800" x-text="type === 'success' ? '{{ __('Success!') }}' : '{{ __('Oops, an error occurred!') }}'"></span>
                 <span class="text-xs font-medium text-slate-500 mt-0.5" x-text="message"></span>
             </div>
             
@@ -100,7 +100,7 @@
 
             <!-- Titles -->
             <div class="text-center mb-10">
-                <h1 class="text-xl sm:text-xl font-extrabold text-[#1A1A1A] tracking-tight mb-1.5">{{ __('SISTEM MONITORING APAR') }}</h1>
+                <h1 class="text-xl sm:text-xl font-extrabold text-[#1A1A1A] tracking-tight mb-1.5">{{ __('PFE MONITORING CONTROL SYSTEM') }}</h1>
                 <p class="text-sm text-[#009B77] font-bold">
                     PT B | BRAUN PHARMACEUTICAL INDONESIA
                 </p>
@@ -131,7 +131,7 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-envelope text-lg"></i>
                         </div>
-                        <input type="email" id="email" name="email" placeholder="{{ __('Masukkan email Anda') }}" value="{{ old('email') }}"
+                        <input type="email" id="email" name="email" placeholder="{{ __('Enter your email') }}" value="{{ old('email') }}"
                             class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm font-medium placeholder:font-normal" required>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-2">
                         <label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Password</label>
-                            <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">{{ __('Lupa Password?') }}</a>
+                            <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#8A4B9F] hover:text-[#009B77] transition-colors">{{ __('Forgot Password?') }}</a>
                     </div>
                     <div class="relative group" x-data="{ show: false }">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
@@ -157,7 +157,7 @@
                 <!-- Submit Button -->
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
-                        <span>{{ __('Masuk') }}</span>
+                        <span>{{ __('Login') }}</span>
                     </button>
                 </div>
             </form>

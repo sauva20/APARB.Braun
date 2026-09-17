@@ -6,7 +6,12 @@
 <!-- We inject pertanyaan into a JS variable so Alpine can reference it -->
 <script>
     window.pertanyaanApar = @json($pertanyaan);
-    window.jadwalsData = @json($jadwals->map(function($j) { return ['tanggal' => \Carbon\Carbon::parse($j->tanggal_inspeksi)->format('Y-m-d'), '{{ __('Status') }}' => $j->{{ __('Status') }}, 'area_id' => $j->tipe_area == 'gedung' ? 'g_'.$j->gedung_id : 'l_'.$j->lokasi_id]; })->groupBy('tanggal'));
+    window.jadwalsData = @json($jadwals->map(function($j) { return ['tanggal' => \Carbon\Carbon::parse($j->tanggal_inspeksi)->format('Y-m-d'), 'status' => $j->status, 'area_id' => $j->tipe_area == 'gedung' ? 'g_'.$j->gedung_id : 'l_'.$j->lokasi_id]; })->groupBy('tanggal'));
+    window.statusTranslations = {
+        'layak': '{{ __('Good Condition') }}',
+        'perbaikan': '{{ __('Needs Maintenance') }}',
+        'tidak_layak': '{{ __('Bad Condition') }}'
+    };
 </script>
 
 <style>
@@ -22,15 +27,15 @@
                 <i class="ph-bold ph-calendar-check text-xl"></i>
             </div>
             <div>
-                <h2 class="text-base font-bold text-[#007A5E] leading-tight">Jadwal Inspeksi</h2>
-                <p class="text-xs font-semibold text-slate-500 mt-0.5">Kelola dan pantau rutinitas pengecekan APAR</p>
+                <h2 class="text-base font-bold text-[#007A5E] leading-tight">{{ __('Inspection Schedule') }}</h2>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('Manage and monitor PFE checking routines') }}</p>
             </div>
         </div>
         <div class="flex items-center gap-3">
             @if(auth()->user()->role !== 'Staff')
             <button @click="showModalBuatJadwal = true" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-5 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                 <i class="ph-bold ph-calendar-plus text-lg"></i>
-                <span class="hidden sm:inline">Buat Jadwal</span>
+                <span class="hidden sm:inline">{{ __('Create Schedule') }}</span>
             </button>
             @endif
         </div>
@@ -46,18 +51,18 @@
                 <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full border-4 border-white/10"></div>
                 <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-white/10 blur-xl"></div>
                 
-                <h3 class="text-sm font-bold text-white/80 uppercase tracking-wider mb-1 relative z-10">Total Inspeksi {{ __('Month') }} {{ strtoupper(\Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F')) }}</h3>
+                <h3 class="text-sm font-bold text-white/80 uppercase tracking-wider mb-1 relative z-10">{{ __('Total Inspections') }} {{ __('Month') }} {{ strtoupper(\Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F')) }}</h3>
                 <h2 class="text-4xl font-extrabold text-white mb-4 relative z-10">{{ $totalApar }}</h2>
                 <div class="flex flex-col gap-2 relative z-10">
                     <div class="flex justify-between items-center text-sm">
-                        <span class="font-semibold text-white/90">Selesai</span>
+                        <span class="font-semibold text-white/90">{{ __('Completed') }}</span>
                         <span class="font-bold">{{ $selesai }}</span>
                     </div>
                     <div class="w-full bg-white/20 rounded-full h-1.5">
                         <div class="bg-white h-1.5 rounded-full" style="width: {{ $totalApar > 0 ? ($selesai/$totalApar)*100 : 0 }}%"></div>
                     </div>
                     <div class="flex justify-between items-center text-sm mt-1">
-                        <span class="font-semibold text-white/90">Menunggu</span>
+                        <span class="font-semibold text-white/90">{{ __('Waiting') }}</span>
                         <span class="font-bold">{{ $menunggu }}</span>
                     </div>
                 </div>
@@ -85,10 +90,10 @@
                             let dateString = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                             let j = this.jadwals[dateString] || [];
                             let hasJadwal = j.length > 0;
-                            let allSelesai = hasJadwal && j.every(x => x.{{ __('Status') }} === 'selesai');
+                            let allSelesai = hasJadwal && j.every(x => x.status?.toLowerCase() === 'selesai');
                             let isPast = dateString < '{{ now()->format('Y-m-d') }}';
                             let isTerlewat = hasJadwal && !allSelesai && isPast;
-                            let hasProses = hasJadwal && j.some(x => x.{{ __('Status') }} === 'proses');
+                            let hasProses = hasJadwal && j.some(x => x.status?.toLowerCase() === 'proses');
                             days.push({ 
                                 empty: false, 
                                 date: d.getDate(), 
@@ -125,7 +130,7 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">
-                    <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+                    <div>{{ __('SUN') }}</div><div>{{ __('MON') }}</div><div>{{ __('TUE') }}</div><div>{{ __('WED') }}</div><div>{{ __('THU') }}</div><div>{{ __('FRI') }}</div><div>{{ __('SAT') }}</div>
                 </div>
                 <div class="grid grid-cols-7 gap-1 text-center text-sm">
                     <template x-for="(day, index) in daysInMonth" :key="index">
@@ -154,19 +159,19 @@
                 <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-center gap-3 text-[10px] font-medium text-slate-500">
                     <div class="flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-[#009B77]"></span>
-                        <span>Selesai</span>
+                        <span>{{ __('Completed') }}</span>
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                        <span>Proses</span>
+                        <span>{{ __('Process') }}</span>
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                        <span>Menunggu</span>
+                        <span>{{ __('Waiting') }}</span>
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                        <span>Terlewat</span>
+                        <span>{{ __('Missed') }}</span>
                     </div>
                 </div>
             </div>
@@ -178,7 +183,7 @@
             <!-- Section: Hari Ini / {{ __('Month') }} Ini -->
             <div class="flex-shrink-0">
                 <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2 sticky top-0 bg-[#F8FAFC] z-10 py-2">
-                    <i class="ph-bold ph-chart-line-up text-slate-500"></i> Progress Inspeksi {{ __('Month') }} {{ \Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F') }}
+                    <i class="ph-bold ph-chart-line-up text-slate-500"></i> {{ __('Inspection Progress') }} {{ __('Month') }} {{ \Carbon\Carbon::create()->month($currentMonth)->translatedFormat('F') }}
                 </h2>
                 <div class="space-y-4">
                     
@@ -208,7 +213,7 @@
                                     </div>
                                     <div class="flex items-center gap-3 text-xs font-semibold text-slate-500">
                                         <span class="flex items-center gap-1"><i class="ph-bold ph-fire-extinguisher text-slate-400"></i> {{ $countTotal }} APAR</span>
-                                        <span class="flex items-center gap-1"><i class="ph-bold ph-check-circle text-[#009B77]"></i> {{ $countSelesai }}/{{ $countTotal }} Selesai</span>
+                                        <span class="flex items-center gap-1"><i class="ph-bold ph-check-circle text-[#009B77]"></i> {{ $countSelesai }}/{{ $countTotal }} {{ __('Completed') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -233,13 +238,13 @@
                                             <div>
                                                 <h5 class="font-bold text-slate-800 text-sm">{{ $apar->kode }}</h5>
                                                 <p class="text-xs font-semibold text-slate-500 mb-1">{{ $apar->lokasi->nama ?? 'n/a' }}</p>
-                                                <p class="text-[10px] font-bold text-slate-400 flex items-center gap-1"><i class="ph-bold ph-user"></i> Ditugaskan ke: Siapa Saja</p>
+                                                <p class="text-[10px] font-bold text-slate-400 flex items-center gap-1"><i class="ph-bold ph-user"></i> {{ __('Assigned to:') }} {{ __('Anyone') }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2 w-full sm:w-auto">
-                                            <span class="hidden sm:inline-flex px-2 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-500 border border-amber-100">Menunggu</span>
+                                            <span class="hidden sm:inline-flex px-2 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-500 border border-amber-100">{{ __('Waiting') }}</span>
                                             <a href="{{ route('inspeksi.mulai', $apar->id) }}" class="w-full sm:w-auto text-center bg-white border-2 border-slate-200 hover:border-[#009B77] text-slate-600 hover:text-[#009B77] font-bold py-1.5 px-4 rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                                                Mulai <i class="ph-bold ph-arrow-right"></i>
+                                                {{ __('Start') }} <i class="ph-bold ph-arrow-right"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -258,9 +263,9 @@
                                                 <h5 class="font-bold text-slate-800 text-sm">{{ $apar->kode }}</h5>
                                                 <p class="text-xs font-semibold text-slate-500 mb-1">{{ $apar->lokasi->nama ?? 'n/a' }}</p>
                                                 <p class="text-[10px] font-bold text-[#009B77] flex items-center gap-1">
-                                                    <i class="ph-bold ph-check-circle"></i> Selesai oleh 
+                                                    <i class="ph-bold ph-check-circle"></i> {{ __('Completed by') }} 
                                                     @if(!$isPic)
-                                                        <span class="text-amber-500 flex items-center gap-0.5" title="Bukan PIC Utama Area Ini">
+                                                        <span class="text-amber-500 flex items-center gap-0.5" title="{{ __('Not Main PIC for this Area') }}">
                                                             {{ ucwords(strtolower($inspeksi->user->name ?? 'User')) }} <i class="ph-fill ph-warning-circle text-[10px]"></i>
                                                         </span>
                                                     @else
@@ -277,7 +282,7 @@
                                                 'waktu' => $inspeksi->created_at->format('d M Y, H:i'),
                                                 'petugas' => ucwords(strtolower($inspeksi->user->name ?? 'User')),
                                                 'is_pic' => $isPic,
-                                                '{{ __('Status') }}' => $inspeksi->{{ __('Status') }},
+                                                'status' => $inspeksi->status,
                                                 'catatan' => $inspeksi->catatan_tambahan,
                                                 'checklist' => is_string($inspeksi->checklist) ? json_decode($inspeksi->checklist, true) : $inspeksi->checklist,
                                                 'foto' => $apar->foto
@@ -286,7 +291,7 @@
                                         @endphp
                                         <div class="flex items-center gap-2 w-full sm:w-auto">
                                             <button @click='selectedInspeksi = @json($inspeksiData); showPanelHasil = true' class="w-full sm:w-auto text-center bg-white border border-slate-200 hover:border-slate-300 text-slate-600 font-bold py-1.5 px-4 rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                                                Lihat Hasil
+                                                {{ __('View Results') }}
                                             </button>
                                         </div>
                                     </div>
@@ -299,7 +304,7 @@
                     @empty
                     <div class="p-8 text-center bg-white rounded-2xl border border-slate-200 border-dashed text-slate-500 flex-shrink-0">
                         <i class="ph-duotone ph-buildings text-4xl mb-3"></i>
-                        <p class="font-bold">Belum ada data APAR atau Gedung.</p>
+                        <p class="font-bold">{{ __('No PFE or Building data yet.') }}</p>
                     </div>
                     @endforelse
                 </div>
@@ -314,7 +319,7 @@
                     $today = \Carbon\Carbon::today();
 
                     foreach($jadwals as $jadwal) {
-                        if ($jadwal->{{ __('Status') }} === 'selesai') {
+                        if ($jadwal->status === 'selesai') {
                             $jadwalSelesai->push($jadwal);
                             continue;
                         }
@@ -333,7 +338,7 @@
 
                 @if($jadwalTerlewat->isNotEmpty())
                 <div class="mt-10">
-                    <h2 class="text-[11px] font-bold text-red-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-warning-circle"></i> Jadwal Terlewat</h2>
+                    <h2 class="text-[11px] font-bold text-red-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-warning-circle"></i> {{ __('Missed Schedule') }}</h2>
                     
                     <div class="space-y-4">
                         @foreach($jadwalTerlewat as $jadwal)
@@ -348,7 +353,7 @@
 
                 @if($jadwalHariIni->isNotEmpty())
                 <div class="mt-10">
-                    <h2 class="text-[11px] font-bold text-blue-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-calendar-star"></i> Jadwal Hari Ini</h2>
+                    <h2 class="text-[11px] font-bold text-blue-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-calendar-star"></i> {{ __('Today\'s Schedule') }}</h2>
                     
                     <div class="space-y-4">
                         @foreach($jadwalHariIni as $jadwal)
@@ -362,7 +367,7 @@
                 @endif
 
                 <div class="mt-10">
-                    <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-calendar-check"></i> Daftar Jadwal Mendatang</h2>
+                    <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-calendar-check"></i> {{ __('Upcoming Schedule List') }}</h2>
                     
                     <div class="space-y-4">
                         @forelse($jadwalMendatang as $jadwal)
@@ -373,7 +378,7 @@
                         @empty
                         <div class="p-8 text-center bg-white rounded-2xl border border-slate-200 border-dashed text-slate-400 flex-shrink-0">
                             <i class="ph-duotone ph-calendar-x text-4xl mb-3 text-slate-300"></i>
-                            <p class="font-bold text-sm">Belum ada jadwal inspeksi mendatang.</p>
+                            <p class="font-bold text-sm">{{ __('No upcoming inspection schedule yet.') }}</p>
                         </div>
                         @endforelse
                     </div>
@@ -381,7 +386,7 @@
 
                 @if($jadwalSelesai->isNotEmpty())
                 <div class="mt-10">
-                    <h2 class="text-[11px] font-bold text-[#009B77] uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-check-circle"></i> Jadwal Selesai</h2>
+                    <h2 class="text-[11px] font-bold text-[#009B77] uppercase tracking-wider flex items-center gap-2 mb-4"><i class="ph-bold ph-check-circle"></i> {{ __('Completed Schedule') }}</h2>
                     
                     <div class="space-y-4 opacity-80 hover:opacity-100 transition-opacity">
                         @foreach($jadwalSelesai as $jadwal)
@@ -408,8 +413,8 @@
                                 <div>
                                     <div class="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white/90 backdrop-blur-md z-10">
                                         <div>
-                                            <h2 class="text-lg font-extrabold text-slate-800" id="slide-over-title">Hasil Inspeksi APAR</h2>
-                                            <p class="text-xs font-semibold text-[#009B77] mt-0.5"><i class="ph-bold ph-check-circle mr-1"></i>Selesai pada <span x-text="selectedInspeksi.waktu"></span></p>
+                                            <h2 class="text-lg font-extrabold text-slate-800" id="slide-over-title">{{ __('PFE Inspection Results') }}</h2>
+                                            <p class="text-xs font-semibold text-[#009B77] mt-0.5"><i class="ph-bold ph-check-circle mr-1"></i>{{ __('Completed on') }} <span x-text="selectedInspeksi.waktu"></span></p>
                                         </div>
                                         <button type="button" @click="showPanelHasil = false" class="relative rounded-xl w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
                                             <i class="ph-bold ph-x text-lg"></i>
@@ -427,58 +432,114 @@
                                             </div>
                                         </div>
 
-                                        <!-- {{ __('Status') }} Akhir -->
+                                        <!-- Final Status -->
                                         <div class="flex flex-col gap-3 p-4 rounded-xl border"
-                                             :class="selectedInspeksi.{{ __('Status') }} === 'layak' ? 'border-[#009B77]/20 bg-[#009B77]/5' : 'border-red-200 bg-red-50'">
+                                             :class="selectedInspeksi.status?.toLowerCase() === 'layak' ? 'border-[#009B77]/20 bg-[#009B77]/5' : 'border-red-200 bg-red-50'">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center gap-3">
-                                                    <i class="text-2xl" :class="selectedInspeksi.{{ __('Status') }} === 'layak' ? 'ph-fill ph-shield-check text-[#009B77]' : 'ph-fill ph-warning-circle text-red-500'"></i>
+                                                    <i class="text-2xl" :class="selectedInspeksi.status?.toLowerCase() === 'layak' ? 'ph-fill ph-shield-check text-[#009B77]' : 'ph-fill ph-warning-circle text-red-500'"></i>
                                                     <div>
-                                                        <span class="block text-[10px] font-bold uppercase tracking-wider" :class="selectedInspeksi.{{ __('Status') }} === 'layak' ? 'text-[#009B77]' : 'text-red-500'">{{ __('Status') }} Akhir</span>
-                                                        <span class="font-bold text-slate-800 text-sm capitalize" x-text="selectedInspeksi.{{ __('Status') }}.replace('_', ' ')"></span>
+                                                        <span class="block text-[10px] font-bold uppercase tracking-wider" :class="selectedInspeksi.status?.toLowerCase() === 'layak' ? 'text-[#009B77]' : 'text-red-500'">{{ __('FINAL STATUS') }}</span>
+                                                        <span class="font-bold text-slate-800 text-sm capitalize" x-text="window.statusTranslations[selectedInspeksi.status?.toLowerCase()] || selectedInspeksi.status?.replace('_', ' ')"></span>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Diinspeksi Oleh</span>
+                                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('Inspected By') }}</span>
                                                     <div class="flex items-center justify-end gap-1">
                                                         <span class="font-bold text-sm" :class="selectedInspeksi.is_pic === false ? 'text-amber-500' : 'text-slate-800'" x-text="selectedInspeksi.petugas"></span>
                                                         <template x-if="selectedInspeksi.is_pic === false">
-                                                            <i class="ph-fill ph-warning-circle text-amber-500 text-xs" title="Bukan PIC Utama Area Ini"></i>
+                                                            <i class="ph-fill ph-warning-circle text-amber-500 text-xs" title="{{ __('Not Main PIC for this Area') }}"></i>
                                                         </template>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- Foto Inspeksi -->
+                                        <!-- {{ __('Inspection Photo') }} -->
                                         <template x-if="selectedInspeksi.foto">
                                             <div class="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-slate-900 flex items-center justify-center">
-                                                <img :src="'/storage/' + selectedInspeksi.foto" alt="Foto Inspeksi" class="w-full h-auto max-h-80 object-contain">
+                                                <img :src="'/storage/' + selectedInspeksi.foto" alt="{{ __('Inspection Photo') }}" class="w-full h-auto max-h-80 object-contain">
                                             </div>
                                         </template>
                                         
                                         <!-- Tabs -->
                                         <div class="flex gap-2 p-1 bg-slate-100 rounded-xl">
-                                            <button @click="tabs = 'checklist'" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all" :class="tabs === 'checklist' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">Checklist</button>
-                                            <button @click="tabs = 'catatan'" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all" :class="tabs === 'catatan' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">Catatan & Petugas</button>
+                                            <button @click="tabs = 'checklist'" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all" :class="tabs === 'checklist' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">{{ __('Checklist') }}</button>
+                                            <button @click="tabs = 'catatan'" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all" :class="tabs === 'catatan' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">{{ __('Notes & Officer') }}</button>
                                         </div>
 
                                         <!-- Checklist Results -->
                                         <div x-show="tabs === 'checklist'">
-                                            <div class="space-y-3">
-                                                <template x-for="(item, index) in selectedInspeksi.checklist" :key="index">
-                                                    <div class="flex items-start gap-3 p-3 rounded-xl border" :class="item.jawaban === 'ya' ? 'border-slate-100 bg-white' : 'border-red-200 bg-red-50'">
-                                                        <i class="text-xl mt-0.5 flex-shrink-0" :class="item.jawaban === 'ya' ? 'ph-fill ph-check-circle text-[#009B77]' : 'ph-fill ph-x-circle text-red-500'"></i>
-                                                        <div>
-                                                            <p class="font-bold text-slate-800 text-xs leading-relaxed" x-text="window.pertanyaanApar[index]"></p>
-                                                            <template x-if="item.jawaban === 'tidak'">
-                                                                <p class="text-xs font-bold text-red-600 mt-1.5 bg-white px-2 py-1 rounded border border-red-100 inline-block">
-                                                                    Kendala: <span class="font-medium" x-text="item.keterangan || '-'"></span>
-                                                                </p>
+                                            <div class="space-y-6">
+                                                
+                                                <!-- Step 1: Pemeriksaan Fisik (Indices 15-24) -->
+                                                <div>
+                                                    <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider mb-3">{{ __('Physical Inspection') }}</h4>
+                                                    <div class="space-y-3">
+                                                        <template x-for="(item, index) in selectedInspeksi.checklist" :key="index">
+                                                            <template x-if="parseInt(index) >= 15">
+                                                                <div class="flex items-start gap-3 p-3 rounded-xl border" 
+                                                                    x-data="{ 
+                                                                        isExpected() { 
+                                                                            if (parseInt(index) === 20 || parseInt(index) === 21) return item.jawaban === 'tidak ada';
+                                                                            return item.jawaban === 'ada';
+                                                                        },
+                                                                        translatedAnswer() {
+                                                                            const dict = { 'ya': '{{ __('Yes') }}', 'tidak': '{{ __('No') }}', 'ada': '{{ __('Yes') }}', 'tidak ada': '{{ __('No') }}' };
+                                                                            return dict[item.jawaban] || item.jawaban;
+                                                                        }
+                                                                    }"
+                                                                    :class="isExpected() ? 'border-slate-100 bg-white' : 'border-red-200 bg-red-50'">
+                                                                    <i class="text-xl mt-0.5 flex-shrink-0" :class="isExpected() ? 'ph-fill ph-check-circle text-[#009B77]' : 'ph-fill ph-x-circle text-red-500'"></i>
+                                                                    <div class="w-full">
+                                                                        <div class="flex justify-between items-start gap-2">
+                                                                            <p class="font-bold text-slate-800 text-xs leading-relaxed" x-text="window.pertanyaanApar[index]"></p>
+                                                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex-shrink-0" :class="isExpected() ? 'bg-teal-50 text-teal-600' : 'bg-red-100 text-red-600'" x-text="translatedAnswer()"></span>
+                                                                        </div>
+                                                                        <template x-if="item.keterangan && item.keterangan.trim() !== ''">
+                                                                            <p class="text-xs font-bold mt-1.5 bg-white px-2 py-1 rounded border inline-block" :class="isExpected() ? 'text-slate-600 border-slate-100' : 'text-red-600 border-red-100'">
+                                                                                {{ __('Notes:') }} <span class="font-medium" x-text="item.keterangan"></span>
+                                                                            </p>
+                                                                        </template>
+                                                                    </div>
+                                                                </div>
                                                             </template>
-                                                        </div>
+                                                        </template>
                                                     </div>
-                                                </template>
+                                                </div>
+
+                                                <!-- Step 2: Pemeriksaan Fungsi (Indices 0-14) -->
+                                                <div>
+                                                    <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider mb-3">{{ __('Function Check') }}</h4>
+                                                    <div class="space-y-3">
+                                                        <template x-for="(item, index) in selectedInspeksi.checklist" :key="index">
+                                                            <template x-if="parseInt(index) < 15">
+                                                                <div class="flex items-start gap-3 p-3 rounded-xl border" 
+                                                                    x-data="{ 
+                                                                        translatedAnswer() {
+                                                                            const dict = { 'ya': '{{ __('Yes') }}', 'tidak': '{{ __('No') }}', 'ada': '{{ __('Yes') }}', 'tidak ada': '{{ __('No') }}' };
+                                                                            return dict[item.jawaban] || item.jawaban;
+                                                                        }
+                                                                    }"
+                                                                    :class="item.jawaban === 'ya' ? 'border-slate-100 bg-white' : 'border-red-200 bg-red-50'">
+                                                                    <i class="text-xl mt-0.5 flex-shrink-0" :class="item.jawaban === 'ya' ? 'ph-fill ph-check-circle text-[#009B77]' : 'ph-fill ph-x-circle text-red-500'"></i>
+                                                                    <div class="w-full">
+                                                                        <div class="flex justify-between items-start gap-2">
+                                                                            <p class="font-bold text-slate-800 text-xs leading-relaxed" x-text="window.pertanyaanApar[index]"></p>
+                                                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex-shrink-0" :class="item.jawaban === 'ya' ? 'bg-teal-50 text-teal-600' : 'bg-red-100 text-red-600'" x-text="translatedAnswer()"></span>
+                                                                        </div>
+                                                                        <template x-if="item.keterangan && item.keterangan.trim() !== ''">
+                                                                            <p class="text-xs font-bold mt-1.5 bg-white px-2 py-1 rounded border inline-block" :class="item.jawaban === 'ya' ? 'text-slate-600 border-slate-100' : 'text-red-600 border-red-100'">
+                                                                                {{ __('Notes:') }} <span class="font-medium" x-text="item.keterangan"></span>
+                                                                            </p>
+                                                                        </template>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                        </template>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
 
@@ -491,12 +552,12 @@
                                                     </div>
                                                     <div>
                                                         <p class="font-bold text-slate-800 text-sm" x-text="selectedInspeksi.petugas"></p>
-                                                        <p class="text-xs font-medium text-slate-500">Petugas Pemeriksa</p>
+                                                        <p class="text-xs font-medium text-slate-500">{{ __('Checking Officer') }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="border-t border-slate-100 pt-4">
-                                                    <p class="text-xs font-bold text-slate-500 mb-2">Catatan Tambahan:</p>
-                                                    <p class="text-sm font-medium text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100" x-text="selectedInspeksi.catatan || 'Tidak ada catatan khusus.'"></p>
+                                                    <p class="text-xs font-bold text-slate-500 mb-2">{{ __('Additional Notes:') }}</p>
+                                                    <p class="text-sm font-medium text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100" x-text="selectedInspeksi.catatan || '{{ __('No specific notes.') }}'"></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -544,8 +605,8 @@
                         <i class="ph-bold ph-calendar-plus text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight">Buat Jadwal Inspeksi</h3>
-                        <p class="text-xs font-semibold text-slate-500">Tentukan area, tanggal, dan petugas inspeksi.</p>
+                        <h3 class="text-lg font-bold text-slate-800 leading-tight">{{ __('Create Inspection Schedule') }}</h3>
+                        <p class="text-xs font-semibold text-slate-500">{{ __('Determine area, date, and inspection officer.') }}</p>
                     </div>
                 </div>
                 <button @click="showModalBuatJadwal = false" class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
@@ -578,14 +639,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                     <!-- Jenis Jadwal -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Jenis Jadwal</label>
-                        <div x-data="{ open: false, options: ['Inspeksi Rutin {{ __('Month') }}an', 'Inspeksi Khusus / Temuan'] }" class="relative">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Schedule Type') }}</label>
+                        <div x-data="{ open: false, options: ['{{ __('Routine Inspection') }}', '{{ __('Special Inspection / Findings') }}'] }" class="relative">
                             <input type="hidden" name="jenis_jadwal" :value="formJenis">
                             <i class="ph-bold ph-calendar-star absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="formJenis || 'Pilih Jenis'" :class="!formJenis ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="formJenis || '{{ __('Select Type') }}'" :class="!formJenis ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <!-- Dropdown -->
@@ -602,10 +663,10 @@
 
                     <!-- Tanggal Inspeksi -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tanggal Inspeksi</label>
-                        <div class="relative" x-data x-init="flatpickr($refs.dateInput, { dateFormat: 'Y-m-d', minDate: 'today', locale: 'id', onChange: (s, d) => { formTanggal = d; formAreas = formAreas.filter(a => !isAreaScheduledOnDate(a)); } })">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Inspection Date') }}</label>
+                        <div class="relative" x-data x-init="flatpickr($refs.dateInput, { dateFormat: 'Y-m-d', minDate: 'today', onChange: (s, d) => { formTanggal = d; formAreas = formAreas.filter(a => !isAreaScheduledOnDate(a)); } })">
                             <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors peer-focus:text-[#009B77] z-10"></i>
-                            <input x-ref="dateInput" name="tanggal" type="text" placeholder="Pilih Tanggal" required
+                            <input x-ref="dateInput" name="tanggal" type="text" placeholder="{{ __('Select Date') }}" required
                                    class="peer w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium appearance-none cursor-pointer">
                         </div>
                     </div>
@@ -640,14 +701,14 @@
                             return formAreas.filter(id => id.startsWith('l_')).length;
                         }
                     }">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pilih Lokasi</label>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Select Location') }}</label>
                         
                         <div class="relative" @click.away="open = false; search = ''">
                             <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="countSelected > 0 ? countSelected + ' lokasi terpilih' : 'Pilih Lokasi'" :class="countSelected === 0 ? 'text-slate-400 font-medium' : 'font-medium text-slate-800'" class="truncate block"></span>
+                                <span x-text="countSelected > 0 ? countSelected + ' ' + '{{ __('selected locations') }}' : '{{ __('Select Location') }}'" :class="countSelected === 0 ? 'text-slate-400 font-medium' : 'font-medium text-slate-800'" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             
@@ -655,7 +716,7 @@
                                 <div class="px-2 pb-1.5 mb-1.5 border-b border-slate-100 flex-shrink-0">
                                     <div class="relative">
                                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                        <input type="text" x-model="search" placeholder="Cari lokasi..." class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
+                                        <input type="text" x-model="search" placeholder="{{ __('Search location...') }}" class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto">
@@ -671,7 +732,7 @@
                                             <div class="flex flex-col pr-3 py-0.5">
                                                 <div class="flex items-center mb-1">
                                                     <span class="text-sm transition-colors" :class="formAreas.includes(option.id) ? 'text-[#009B77] font-bold' : 'text-slate-700 font-medium'" x-text="option.nama"></span>
-                                                    <span x-show="isAreaScheduledOnDate(option.id)" class="text-[9px] font-bold text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded ml-2 uppercase tracking-wide">Terjadwal</span>
+                                                    <span x-show="isAreaScheduledOnDate(option.id)" class="text-[9px] font-bold text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded ml-2 uppercase tracking-wide">{{ __('Scheduled') }}</span>
                                                 </div>
                                                 <div class="flex flex-wrap items-center gap-1.5">
                                                     <div class="flex items-center gap-1 text-[10px] text-slate-500 font-medium bg-slate-100 px-1.5 py-0.5 rounded">
@@ -709,21 +770,21 @@
                             return u ? u.nama : '';
                         }
                     }">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Petugas Inspeksi</label>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Inspection Officer') }}</label>
                         <div x-data="{ open: false, search: '' }" class="relative">
                             <input type="hidden" name="user_id" :value="formUserId">
                             <i class="ph-bold ph-user-circle absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false; search = ''" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="selectedUserName || 'Pilih Petugas'" :class="!selectedUserName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="selectedUserName || '{{ __('Select Officer') }}'" :class="!selectedUserName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <div x-show="open" style="display: none;" class="absolute left-0 z-50 w-full mt-1.5 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 overflow-hidden origin-top max-h-56 flex flex-col">
                                 <div class="px-2 pb-1.5 mb-1.5 border-b border-slate-100 flex-shrink-0">
                                     <div class="relative">
                                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                        <input type="text" x-model="search" placeholder="Cari petugas..." class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
+                                        <input type="text" x-model="search" placeholder="{{ __('Search officer...') }}" class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto">
@@ -733,7 +794,7 @@
                                             <i class="ph-bold ph-check text-[#009B77]" x-show="formUserId === option.id"></i>
                                         </button>
                                     </template>
-                                    <div x-show="optionsUser.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
+                                    <div x-show="optionsUser.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">{{ __('Not found.') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -741,24 +802,24 @@
 
                     <!-- Catatan -->
                     <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Catatan Tambahan (Opsional)</label>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Additional Notes (Optional)') }}</label>
                         <div class="relative">
                             <i class="ph-bold ph-note-pencil absolute left-3.5 top-3.5 text-slate-400 text-base transition-colors peer-focus:text-[#009B77]"></i>
-                            <textarea name="catatan_tambahan" rows="2" placeholder="Fokuskan pada area..." class="peer w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium resize-none"></textarea>
+                            <textarea name="catatan_tambahan" rows="2" placeholder="{{ __('Focus on area...') }}" class="peer w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium resize-none"></textarea>
                         </div>
                     </div>
                 </div>
                 
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
                     <button type="button" @click="showModalBuatJadwal = false" class="px-5 py-2 rounded-xl font-bold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 transition-colors text-sm">
-                        Batal
+                        {{ __('Cancel') }}
                     </button>
                     <button type="submit" 
                             :disabled="!isFormValid"
                             :class="isFormValid ? 'bg-[#009B77] hover:bg-[#008264] text-white shadow-sm' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
                             class="font-bold py-2.5 px-6 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
                         <i class="ph-bold ph-floppy-disk text-lg"></i>
-                        Simpan Jadwal
+                        {{ __('Save Schedule') }}
                     </button>
                 </div>
             </form>
@@ -796,8 +857,8 @@
                         <i class="ph-bold ph-pencil-simple text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight">Edit Jadwal Inspeksi</h3>
-                        <p class="text-xs font-semibold text-slate-500">Perbarui area, tanggal, dan petugas inspeksi.</p>
+                        <h3 class="text-lg font-bold text-slate-800 leading-tight">{{ __('Edit Inspection Schedule') }}</h3>
+                        <p class="text-xs font-semibold text-slate-500">{{ __('Update area, date, and inspection officer.') }}</p>
                     </div>
                 </div>
                 <button @click="showModalEditJadwal = false" class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
@@ -835,14 +896,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                     <!-- Jenis Jadwal -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Jenis Jadwal</label>
-                        <div x-data="{ open: false, options: ['Inspeksi Rutin {{ __('Month') }}an', 'Inspeksi Khusus / Temuan'], get selected() { return formJenis }, set selected(val) { formJenis = val } }" class="relative">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Schedule Type') }}</label>
+                        <div x-data="{ open: false, options: ['{{ __('Routine Inspection') }}', '{{ __('Special Inspection / Findings') }}'], get selected() { return formJenis }, set selected(val) { formJenis = val } }" class="relative">
                             <input type="hidden" name="jenis_jadwal" :value="formJenis">
                             <i class="ph-bold ph-calendar-star absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="formJenis || 'Pilih Jenis'" :class="!formJenis ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="formJenis || '{{ __('Select Type') }}'" :class="!formJenis ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <!-- Dropdown -->
@@ -859,10 +920,10 @@
 
                     <!-- Tanggal Inspeksi -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tanggal Inspeksi</label>
-                        <div class="relative" x-data x-init="let fp = flatpickr($refs.dateInput, { dateFormat: 'Y-m-d', locale: 'id', onChange: function(s, d) { formTanggal = d; } }); $watch('formTanggal', val => { if(val) fp.setDate(val) })">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Inspection Date') }}</label>
+                        <div class="relative" x-data x-init="let fp = flatpickr($refs.dateInput, { dateFormat: 'Y-m-d', onChange: function(s, d) { formTanggal = d; } }); $watch('formTanggal', val => { if(val) fp.setDate(val) })">
                             <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors peer-focus:text-[#009B77] z-10"></i>
-                            <input x-ref="dateInput" name="tanggal" type="text" placeholder="Pilih Tanggal" required
+                            <input x-ref="dateInput" name="tanggal" type="text" placeholder="{{ __('Select Date') }}" required
                                    class="peer w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium appearance-none cursor-pointer">
                         </div>
                     </div>
@@ -895,17 +956,17 @@
                         }
                     }">
                         <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Cakupan Area</label>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">{{ __('Location Scope') }}</label>
                             
                             <!-- Toggle Tipe Area -->
                             <div class="flex items-center gap-3">
                                 <label class="flex items-center gap-1.5 cursor-pointer group">
                                     <input type="radio" x-model="formTipeArea" value="gedung" name="tipe_area" class="w-3.5 h-3.5 text-[#009B77] border-slate-300 focus:ring-[#009B77] cursor-pointer">
-                                    <span class="text-[10px] font-bold text-slate-500 group-hover:text-slate-800 transition-colors uppercase tracking-wider">Gedung</span>
+                                    <span class="text-[10px] font-bold text-slate-500 group-hover:text-slate-800 transition-colors uppercase tracking-wider">{{ __('Building') }}</span>
                                 </label>
                                 <label class="flex items-center gap-1.5 cursor-pointer group">
                                     <input type="radio" x-model="formTipeArea" value="lokasi" name="tipe_area" class="w-3.5 h-3.5 text-[#009B77] border-slate-300 focus:ring-[#009B77] cursor-pointer">
-                                    <span class="text-[10px] font-bold text-slate-500 group-hover:text-slate-800 transition-colors uppercase tracking-wider">Spesifik</span>
+                                    <span class="text-[10px] font-bold text-slate-500 group-hover:text-slate-800 transition-colors uppercase tracking-wider">{{ __('Specific') }}</span>
                                 </label>
                             </div>
                         </div>
@@ -917,19 +978,19 @@
                             <button type="button" @click="open = !open" @click.away="open = false; search = ''" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="selectedGedungName || 'Pilih Gedung'" :class="!selectedGedungName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="selectedGedungName || '{{ __('Select Building') }}'" :class="!selectedGedungName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <div x-show="open" style="display: none;" class="absolute left-0 z-50 w-full mt-1.5 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 overflow-hidden origin-top max-h-56 flex flex-col">
                                 <div class="px-2 pb-1.5 mb-1.5 border-b border-slate-100 flex-shrink-0">
                                     <div class="relative">
                                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                        <input type="text" x-model="search" placeholder="Cari gedung..." class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
+                                        <input type="text" x-model="search" placeholder="{{ __('Search building...') }}" class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto">
                                     <template x-if="optionsGedung.length === 0">
-                                        <div class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Belum ada gedung.</div>
+                                        <div class="px-4 py-3 text-sm text-slate-500 font-medium text-center">{{ __('No building yet.') }}</div>
                                     </template>
                                     <template x-for="option in optionsGedung" :key="option.id">
                                         <button type="button" x-show="option.nama.toLowerCase().includes(search.toLowerCase())" @click="formGedungId = option.id; open = false; search = ''" class="w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between" :class="formGedungId === option.id ? 'text-[#009B77] bg-[#009B77]/5 font-bold' : 'text-slate-600 font-medium hover:bg-slate-50'">
@@ -937,7 +998,7 @@
                                             <i class="ph-bold ph-check text-[#009B77]" x-show="formGedungId === option.id"></i>
                                         </button>
                                     </template>
-                                    <div x-show="optionsGedung.length > 0 && optionsGedung.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
+                                    <div x-show="optionsGedung.length > 0 && optionsGedung.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">{{ __('Not found.') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -949,19 +1010,19 @@
                             <button type="button" @click="open = !open" @click.away="open = false; search = ''" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="selectedLokasiName || 'Pilih Lokasi'" :class="!selectedLokasiName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="selectedLokasiName || '{{ __('Select Location') }}'" :class="!selectedLokasiName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <div x-show="open" style="display: none;" class="absolute left-0 z-50 w-full mt-1.5 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 overflow-hidden origin-top max-h-60 flex flex-col">
                                 <div class="px-2 pb-1.5 mb-1.5 border-b border-slate-100 flex-shrink-0">
                                     <div class="relative">
                                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                        <input type="text" x-model="search" placeholder="Cari lokasi..." class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
+                                        <input type="text" x-model="search" placeholder="{{ __('Search location...') }}" class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto">
                                     <template x-if="optionsLokasi.length === 0">
-                                        <div class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Belum ada lokasi.</div>
+                                        <div class="px-4 py-3 text-sm text-slate-500 font-medium text-center">{{ __('No location yet.') }}</div>
                                     </template>
                                     <template x-for="option in optionsLokasi" :key="option.id">
                                         <button type="button" x-show="option.text_search.toLowerCase().includes(search.toLowerCase())" @click="formLokasiId = option.id; open = false; search = ''" class="w-full text-left px-4 py-2.5 transition-colors flex items-start justify-between" :class="formLokasiId === option.id ? 'bg-[#009B77]/5' : 'hover:bg-slate-50'">
@@ -984,7 +1045,7 @@
                                             <i class="ph-bold ph-check text-[#009B77] mt-1" x-show="formLokasiId === option.id"></i>
                                         </button>
                                     </template>
-                                    <div x-show="optionsLokasi.length > 0 && optionsLokasi.filter(o => o.nama.toLowerCase().includes(search.toLowerCase()) || o.gedung_nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
+                                    <div x-show="optionsLokasi.length > 0 && optionsLokasi.filter(o => o.nama.toLowerCase().includes(search.toLowerCase()) || o.gedung_nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">{{ __('Not found.') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -1002,21 +1063,21 @@
                             return u ? u.nama : '';
                         }
                     }">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Petugas Inspeksi</label>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Inspection Officer') }}</label>
                         <div x-data="{ open: false, search: '' }" class="relative">
                             <input type="hidden" name="user_id" :value="formUserId">
                             <i class="ph-bold ph-user-circle absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                             <button type="button" @click="open = !open" @click.away="open = false; search = ''" 
                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                     :class="open ? 'border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                <span x-text="selectedUserName || 'Pilih Petugas'" :class="!selectedUserName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                                <span x-text="selectedUserName || '{{ __('Select Officer') }}'" :class="!selectedUserName ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                                 <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                             </button>
                             <div x-show="open" style="display: none;" class="absolute left-0 z-50 w-full mt-1.5 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 overflow-hidden origin-top max-h-56 flex flex-col">
                                 <div class="px-2 pb-1.5 mb-1.5 border-b border-slate-100 flex-shrink-0">
                                     <div class="relative">
                                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                        <input type="text" x-model="search" placeholder="Cari petugas..." class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
+                                        <input type="text" x-model="search" placeholder="{{ __('Search officer...') }}" class="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs font-medium text-slate-700 focus:ring-0 placeholder:text-slate-400" @click.stop>
                                     </div>
                                 </div>
                                 <div class="overflow-y-auto">
@@ -1026,7 +1087,7 @@
                                             <i class="ph-bold ph-check text-[#009B77]" x-show="formUserId === option.id"></i>
                                         </button>
                                     </template>
-                                    <div x-show="optionsUser.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">Tidak ditemukan.</div>
+                                    <div x-show="optionsUser.filter(o => o.nama.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-4 py-3 text-sm text-slate-500 font-medium text-center">{{ __('Not found.') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -1034,24 +1095,24 @@
 
                     <!-- Catatan -->
                     <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Catatan Tambahan (Opsional)</label>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ __('Additional Notes (Optional)') }}</label>
                         <div class="relative">
                             <i class="ph-bold ph-note-pencil absolute left-3.5 top-3.5 text-slate-400 text-base transition-colors peer-focus:text-[#009B77]"></i>
-                            <textarea name="catatan_tambahan" x-model="formCatatan" rows="2" placeholder="Fokuskan pada area..." class="peer w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium resize-none"></textarea>
+                            <textarea name="catatan_tambahan" x-model="formCatatan" rows="2" placeholder="{{ __('Focus on area...') }}" class="peer w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium resize-none"></textarea>
                         </div>
                     </div>
                 </div>
                 
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
                     <button type="button" @click="showModalEditJadwal = false" class="px-5 py-2 rounded-xl font-bold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 transition-colors text-sm">
-                        Batal
+                        {{ __('Cancel') }}
                     </button>
                     <button type="submit" 
                             :disabled="!isFormValid"
                             :class="isFormValid ? 'bg-[#009B77] hover:bg-[#008264] text-white shadow-sm' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
                             class="font-bold py-2.5 px-6 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
                         <i class="ph-bold ph-floppy-disk text-lg"></i>
-                        Simpan Perubahan
+                        {{ __('Save Changes') }}
                     </button>
                 </div>
             </form>

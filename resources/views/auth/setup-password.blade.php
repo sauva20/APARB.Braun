@@ -72,7 +72,7 @@
             <div class="text-center mb-8">
                 <h1 class="text-xl sm:text-xl font-bold text-[#1A1A1A] tracking-tight mb-1.5">SETUP PASSWORD</h1>
                 <p class="text-sm text-gray-500">
-                    Halo, <strong>{{ $user->name }}</strong>.<br>Silakan buat kata sandi untuk akun Anda.
+                    {{ __('Hello,') }} <strong>{{ $user->name }}</strong>.<br>{{ __('Please create a password for your account.') }}
                 </p>
             </div>
 
@@ -102,12 +102,12 @@
 
                 <!-- PIN -->
                 <div>
-                    <label for="pin" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">PIN Inspeksi (6 Digit)</label>
+                    <label for="pin" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">{{ __('Inspection PIN (6 Digits)') }}</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-numpad text-lg"></i>
                         </div>
-                        <input type="text" id="pin" name="pin" placeholder="Masukkan PIN dari Email" maxlength="6" pattern="[0-9]*" inputmode="numeric" value="{{ old('pin') }}"
+                        <input type="text" id="pin" name="pin" placeholder="{{ __('Enter PIN from Email') }}" maxlength="6" pattern="[0-9]*" inputmode="numeric" value="{{ old('pin') }}"
                             class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm font-medium placeholder:font-normal text-center tracking-[0.5em]" required autofocus>
                     </div>
                 </div>
@@ -115,7 +115,7 @@
                 <!-- Submit Button -->
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
-                        <span>Verifikasi PIN</span>
+                        <span>{{ __('Verify PIN') }}</span>
                         <i class="ph-bold ph-arrow-right"></i>
                     </button>
                 </div>
@@ -134,19 +134,19 @@
                 <div class="bg-teal-50 border border-teal-100 rounded-xl p-3 mb-2 flex items-start gap-3">
                     <i class="ph-fill ph-check-circle text-teal-600 text-lg mt-0.5"></i>
                     <div>
-                        <p class="text-xs text-teal-800 font-bold mb-0.5">PIN Terverifikasi</p>
-                        <p class="text-[11px] text-teal-600 font-medium">Silakan buat kata sandi baru untuk akun Anda.</p>
+                        <p class="text-xs text-teal-800 font-bold mb-0.5">{{ __('PIN Verified') }}</p>
+                        <p class="text-[11px] text-teal-600 font-medium">{{ __('Please create a new password for your account.') }}</p>
                     </div>
                 </div>
 
                 <!-- New Password -->
                 <div>
-                    <label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Password Baru</label>
+                    <label for="password" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">{{ __('New Password') }}</label>
                     <div class="relative group" x-data="{ show: false }">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-lock-key text-lg"></i>
                         </div>
-                        <input :type="show ? 'text' : 'password'" id="password" name="password" placeholder="Minimal 8 karakter" minlength="8"
+                        <input :type="show ? 'text' : 'password'" id="password" name="password" placeholder="{{ __('Minimum 8 characters') }}" minlength="8"
                             class="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm tracking-widest font-mono placeholder:font-sans placeholder:tracking-normal" required autofocus>
                         <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-[#009B77] transition-colors focus:outline-none">
                             <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
@@ -156,12 +156,12 @@
                 
                 <!-- Confirm New Password -->
                 <div>
-                    <label for="password_confirmation" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Ulangi Password Baru</label>
+                    <label for="password_confirmation" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Ulangi {{ __('New Password') }}</label>
                     <div class="relative group" x-data="{ show: false }">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-check-circle text-lg"></i>
                         </div>
-                        <input :type="show ? 'text' : 'password'" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password di atas" minlength="8"
+                        <input :type="show ? 'text' : 'password'" id="password_confirmation" name="password_confirmation" placeholder="{{ __('Repeat the password above') }}" minlength="8"
                             class="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#009B77]/10 focus:border-[#009B77] focus:bg-white transition-all outline-none text-[#1A1A1A] text-sm tracking-widest font-mono placeholder:font-sans placeholder:tracking-normal" required>
                         <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-[#009B77] transition-colors focus:outline-none">
                             <i class="ph-fill text-lg" :class="show ? 'ph-eye-slash' : 'ph-eye'"></i>
@@ -172,7 +172,7 @@
                 <!-- Submit Button -->
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
-                        <span>Simpan Password</span>
+                        <span>{{ __('Save Password') }}</span>
                         <i class="ph-bold ph-check"></i>
                     </button>
                 </div>

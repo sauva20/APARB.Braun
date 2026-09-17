@@ -36,7 +36,7 @@ class PasswordSetupController extends Controller
         // Jika form mengirimkan PIN (Step 1)
         if ($request->has('pin')) {
             $request->validate([
-                'pin' => 'required|string|size:6',
+                'pin' => 'required|string|size:4',
             ]);
 
             if ($request->pin !== $user->pin) {

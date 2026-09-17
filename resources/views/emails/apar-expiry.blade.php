@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peringatan Kedaluwarsa APAR</title>
+    <title>PFE Expiry Warning</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -94,24 +94,24 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Peringatan Kedaluwarsa APAR (H-30)</h1>
+            <h1>PFE Expiry Warning (30 Days)</h1>
         </div>
         
         <div class="content">
             <div class="warning-text">
-                Ada APAR yang akan kedaluwarsa pada tanggal {{ $targetDate }}
+                There are PFE units that will expire on {{ $targetDate }}
             </div>
 
-            <p style="font-weight: 600; font-size: 16px;">Halo{{ $recipientName ? ' ' . $recipientName : '' }},</p>
-            <p>Email ini adalah pengingat otomatis bahwa ada <strong>{{ $apars->count() }} Alat Pemadam Api Ringan (APAR)</strong> di area tanggung jawab Anda yang akan segera habis masa berlakunya dalam waktu 30 hari.</p>
+            <p style="font-weight: 600; font-size: 16px;">Hello{{ $recipientName ? ' ' . $recipientName : '' }},</p>
+            <p>This email is an automated reminder that there are <strong>{{ $apars->count() }} Portable Fire Extinguishers (PFE)</strong> in your responsible area that will expire in 30 days.</p>
             
             <table>
                 <thead>
                     <tr>
-                        <th>ID APAR</th>
-                        <th>Gedung</th>
-                        <th>Titik Lokasi</th>
-                        <th>Jenis</th>
+                        <th>PFE ID</th>
+                        <th>Building</th>
+                        <th>Location Point</th>
+                        <th>Type</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,15 +126,15 @@
                 </tbody>
             </table>
 
-            <p>Mohon segera lakukan koordinasi untuk pengecekan, pengisian ulang (refill), atau penggantian APAR tersebut sebelum tanggal kedaluwarsa demi menjaga standar keselamatan dan keamanan.</p>
+            <p>Please coordinate immediately for checking, refilling, or replacing these PFE units before the expiry date to maintain safety and security standards.</p>
 
             <div style="text-align: center; margin-top: 30px;">
-                <a href="{{ url('/master-data') }}" class="btn" style="color: #ffffff !important; text-decoration: none; display: inline-block; background-color: #009B77; padding: 12px 24px; border-radius: 8px; font-weight: bold;">Lihat Data APAR di Sistem</a>
+                <a href="{{ url('/master-data') }}" class="btn" style="color: #ffffff !important; text-decoration: none; display: inline-block; background-color: #009B77; padding: 12px 24px; border-radius: 8px; font-weight: bold;">View PFE Data in System</a>
             </div>
         </div>
 
         <div class="footer">
-            <p>Email ini dikirim secara otomatis oleh PFE Monitoring Control System (B. Braun). Mohon tidak membalas email ini.</p>
+            <p>This email is sent automatically by the PFE Monitoring Control System (B. Braun). Please do not reply to this email.</p>
         </div>
     </div>
 </body>

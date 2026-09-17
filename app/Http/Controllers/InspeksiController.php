@@ -16,21 +16,33 @@ class InspeksiController extends Controller
     private function getPertanyaan()
     {
         return [
-            'Apakah APAR tersebut berada dalam lokasi yang mudah diakses dan terlihat dengan jelas?',
-            'Apakah penunjuk tekanan pada APAR menunjukkan tekanan yang sesuai?',
-            'Apakah segel keselamatan pada APAR terjaga dan tidak rusak?',
-            'Apakah tabung APAR dalam kondisi baik dan tidak terdapat kerusakan fisik?',
-            'Apakah spindel pengatur aliran pada APAR berfungsi dengan baik?',
-            'Apakah tuas pemadam pada APAR dapat dioperasikan dengan mudah dan bebas dari kebocoran?',
-            'Apakah nozzle atau alat semprot pada APAR tidak tersumbat atau rusak?',
-            'Apakah selang pemadam pada APAR tidak terdapat kerusakan, sobek, atau kebocoran?',
-            'Apakah label instruksi penggunaan APAR masih terpasang dan mudah dibaca?',
-            'Apakah tanggal terakhir inspeksi APAR telah dicatat dan sesuai dengan jadwal inspeksi yang ditetapkan?',
-            'Apakah APAR tersebut dilengkapi dengan segala perlengkapan tambahan yang diperlukan, seperti penyangga dinding atau bracket pemasangan?',
-            'Apakah petunjuk penggunaan APAR dan tanda peringatan bahaya terkait penggunaan APAR tersedia dan mudah diakses?',
-            'Apakah petugas yang bertanggung jawab terhadap APAR terlatih dalam penggunaan dan pemeliharaan APAR?',
-            'Apakah daerah sekitar APAR bebas dari bahan yang mudah terbakar atau bahan yang dapat menghambat akses ke APAR?',
-            'Apakah APAR tersebut telah diuji atau dirakit kembali setelah digunakan sebelumnya?',
+            __('Apakah APAR tersebut berada dalam lokasi yang mudah diakses dan terlihat dengan jelas?'),
+            __('Apakah penunjuk tekanan pada APAR menunjukkan tekanan yang sesuai?'),
+            __('Apakah segel keselamatan pada APAR terjaga dan tidak rusak?'),
+            __('Apakah tabung APAR dalam kondisi baik dan tidak terdapat kerusakan fisik?'),
+            __('Apakah spindel pengatur aliran pada APAR berfungsi dengan baik?'),
+            __('Apakah tuas pemadam pada APAR dapat dioperasikan dengan mudah dan bebas dari kebocoran?'),
+            __('Apakah nozzle atau alat semprot pada APAR tidak tersumbat atau rusak?'),
+            __('Apakah selang pemadam pada APAR tidak terdapat kerusakan, sobek, atau kebocoran?'),
+            __('Apakah label instruksi penggunaan APAR masih terpasang dan mudah dibaca?'),
+            __('Apakah tanggal terakhir inspeksi APAR telah dicatat dan sesuai dengan jadwal inspeksi yang ditetapkan?'),
+            __('Apakah APAR tersebut dilengkapi dengan segala perlengkapan tambahan yang diperlukan, seperti penyangga dinding atau bracket pemasangan?'),
+            __('Apakah petunjuk penggunaan APAR dan tanda peringatan bahaya terkait penggunaan APAR tersedia dan mudah diakses?'),
+            __('Apakah petugas yang bertanggung jawab terhadap APAR terlatih dalam penggunaan dan pemeliharaan APAR?'),
+            __('Apakah daerah sekitar APAR bebas dari bahan yang mudah terbakar atau bahan yang dapat menghambat akses ke APAR?'),
+            __('Apakah APAR tersebut telah diuji atau dirakit kembali setelah digunakan sebelumnya?'),
+            
+            // 10 Item Pemeriksaan Fisik (Langkah 1)
+            __('Jenis APAR'),
+            __('Kapasitas'),
+            __('Tanggal isi ulang terakhir'),
+            __('Tanggal masa berlaku'),
+            __('Segel keselamatan'),
+            __('Karat pada tabung'),
+            __('Kepadatan isi dalam tabung'),
+            __('Nozzle'),
+            __('Pin pengaman'),
+            __('Lokasi APAR'),
         ];
     }
 
@@ -83,7 +95,10 @@ class InspeksiController extends Controller
         $menunggu = $totalApar - $selesai;
         $pertanyaan = $this->getPertanyaan();
 
-        $jadwalsQuery = JadwalInspeksi::with(['gedung', 'lokasi', 'user'])->orderBy('tanggal_inspeksi', 'asc');
+        $jadwalsQuery = JadwalInspeksi::with(['gedung', 'lokasi', 'user'])
+            ->whereMonth('tanggal_inspeksi', $currentMonth)
+            ->whereYear('tanggal_inspeksi', $currentYear)
+            ->orderBy('tanggal_inspeksi', 'asc');
         $jadwals = $jadwalsQuery->get();
         $users = User::with('gedungs')->get();
 
@@ -168,6 +183,11 @@ class InspeksiController extends Controller
         return view('inspection-schedule.index', compact('gedungs', 'totalApar', 'selesai', 'menunggu', 'pertanyaan', 'jadwals', 'users', 'currentMonth', 'currentYear'));
     }
 
+    public function pedoman(Apar $apar)
+    {
+        return view('inspeksi.pedoman', compact('apar'));
+    }
+
     public function create(Apar $apar)
     {
         $pertanyaan = $this->getPertanyaan();
@@ -181,17 +201,17 @@ class InspeksiController extends Controller
     public function store(Request $request, Apar $apar)
     {
         $request->validate([
-            'checklist' => 'required|array|size:15',
-            'checklist.*.jawaban' => 'required|in:ya,tidak',
+            'checklist' => 'required|array|size:25',
+            'checklist.*.jawaban' => 'required|in:ya,tidak,ada,tidak ada',
             'checklist.*.keterangan' => 'nullable|string',
             'status' => 'required|string',
             'catatan_tambahan' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240', // 10MB
             'foto_base64' => 'required|string',
-            'qty' => 'required|integer|min:1',
+            'qty' => 'required|integer|min:0',
             'tgl_kedaluwarsa' => 'required|date',
         ], [
-            'foto_base64.required' => 'Foto kondisi APAR wajib diambil sebelum submit.',
+            'foto_base64.required' => __('Foto kondisi APAR wajib diambil sebelum submit.'),
         ]);
 
         if ($request->hasFile('foto')) {
@@ -297,7 +317,7 @@ class InspeksiController extends Controller
             Mail::to($user->email)->send(new InspectionAssigned($user, $jadwals, $user->pin));
         }
 
-        return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dibuat dan notifikasi email telah dikirim!');
+        return redirect('/inspection-schedule')->with('success', __('Jadwal inspeksi berhasil dibuat dan notifikasi email telah dikirim!'));
     }
 
     public function updateJadwal(Request $request, JadwalInspeksi $jadwal)
@@ -322,7 +342,7 @@ class InspeksiController extends Controller
             'catatan_tambahan' => $request->catatan_tambahan,
         ]);
 
-        return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil diperbarui!');
+        return redirect('/inspection-schedule')->with('success', __('Jadwal inspeksi berhasil diperbarui!'));
     }
 
     public function destroyJadwal($id)
@@ -331,7 +351,7 @@ class InspeksiController extends Controller
         
         if ($jadwal) {
             $jadwal->delete();
-            return redirect('/inspection-schedule')->with('success', 'Jadwal inspeksi berhasil dihapus!');
+            return redirect('/inspection-schedule')->with('success', __('Jadwal inspeksi berhasil dihapus!'));
         }
 
         return redirect('/inspection-schedule');

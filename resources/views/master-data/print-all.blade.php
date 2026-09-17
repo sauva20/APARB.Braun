@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak Semua QR Code APAR</title>
+    <title>{{ __('Print All PFE QR Codes') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -166,15 +166,15 @@
 
     <div class="header-bar">
         <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">Cetak Stiker QR Code APAR</h2>
-            <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Total: {{ $apars->count() }} unit APAR siap dicetak ke kertas label/stiker</p>
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a;">{{ __('Print PFE QR Code Stickers') }}</h2>
+            <p style="font-size: 12px; color: #64748b; margin-top: 2px;">{{ __('Total:') }} {{ $apars->count() }} {{ __('PFE units ready to print on label/sticker paper') }}</p>
         </div>
         <div style="display: flex; gap: 10px;">
             <a href="/master-data" class="btn-back">
-                <i class="ph-bold ph-arrow-left"></i> Kembali
+                <i class="ph-bold ph-arrow-left"></i> {{ __('Back') }}
             </a>
             <button onclick="window.print()" class="btn-print">
-                <i class="ph-bold ph-printer"></i> Cetak Sekarang
+                <i class="ph-bold ph-printer"></i> {{ __('Print Now') }}
             </button>
         </div>
     </div>
@@ -186,7 +186,7 @@
                 {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->generate(route('scan.apar', $apar->kode)) !!}
             </div>
             <div class="info-wrapper">
-                <div class="tag-system">PFE Monitoring System</div>
+                <div class="tag-system">{{ __('PFE MONITORING CONTROL SYSTEM') }}</div>
                 <div class="kode-apar">{{ $apar->kode }}</div>
                 
                 <div class="meta-row">
@@ -203,13 +203,13 @@
                 </div>
 
                 <div class="scan-hint">
-                    <i class="ph-bold ph-scan"></i> Scan QR untuk cek detail & inspeksi
+                    <i class="ph-bold ph-scan"></i> {{ __('Scan QR to check details & inspection') }}
                 </div>
             </div>
         </div>
         @empty
         <div style="grid-column: span 2; text-align: center; padding: 48px; background: white; border-radius: 16px; color: #64748b;">
-            Belum ada data APAR yang terdaftar.
+            {{ __('No registered PFE data available.') }}
         </div>
         @endforelse
     </div>

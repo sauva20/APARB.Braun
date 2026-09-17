@@ -1,0 +1,28 @@
+import json
+import os
+
+en_file = "c:/laragon/www/APARB.Braun/lang/en.json"
+id_file = "c:/laragon/www/APARB.Braun/lang/id.json"
+
+translations_id = {
+    "PFE MONITORING SYSTEM": "APAR MONITORING SYSTEM",
+    "PFE MONITORING CONTROL SYSTEM": "APAR MONITORING CONTROL SYSTEM"
+}
+
+translations_en = {
+    "PFE MONITORING SYSTEM": "PFE MONITORING SYSTEM",
+    "PFE MONITORING CONTROL SYSTEM": "PFE MONITORING CONTROL SYSTEM"
+}
+
+for file_path, new_trans in [(id_file, translations_id), (en_file, translations_en)]:
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        for k, v in new_trans.items():
+            data[k] = v
+        
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+
+print("Title translations updated successfully.")

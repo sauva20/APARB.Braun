@@ -31,6 +31,15 @@ class MasterDataController extends Controller
                             ->orWhereHas('gedung', function ($q3) use ($search) {
                                 $q3->where('nama', 'like', "%{$search}%");
                             });
+                    })
+                    ->orWhereHas('pic', function ($q4) use ($search) {
+                        $q4->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('jenis', function ($q5) use ($search) {
+                        $q5->where('nama', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('kapasitas', function ($q6) use ($search) {
+                        $q6->where('ukuran', 'like', "%{$search}%");
                     });
             });
         }
@@ -146,7 +155,7 @@ class MasterDataController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['No', 'ID APAR', 'Lokasi', 'Gedung', 'Jenis', 'Kapasitas', 'Kelas Kebakaran', 'Tgl Kedaluwarsa', 'Qty', 'Vendor', 'PIC', 'Terakhir Inspeksi'];
+        $columns = [__('No'), __('PFE ID'), __('Location'), __('Building'), __('Type'), __('Capacity'), __('Fire Class'), __('Expiry Date'), __('Qty'), __('PIC'), __('Last Inspection')];
 
         $callback = function() use($apars, $columns) {
             $file = fopen('php://output', 'w');
@@ -181,7 +190,6 @@ class MasterDataController extends Controller
                     $kelas,
                     $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-',
                     $apar->qty,
-                    $apar->vendor ?? 'n/a',
                     $picName,
                     $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
                 ];
@@ -194,12 +202,89 @@ class MasterDataController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    public function previewExcel(Request $request)
+    {
+        $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas', 'latestInspeksi.user', 'pic']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('kode', 'like', "%{$search}%")
+                    ->orWhereHas('lokasi', function ($q2) use ($search) {
+                        $q2->where('nama', 'like', "%{$search}%")
+                            ->orWhereHas('gedung', function ($q3) use ($search) {
+                                $q3->where('nama', 'like', "%{$search}%");
+                            });
+                    });
+            });
+        }
+
+        if ($request->filled('gedung_id')) {
+            $query->whereHas('lokasi', function ($q) use ($request) {
+                $q->where('gedung_id', $request->gedung_id);
+            });
+        }
+
+        if ($request->filled('lokasi_id')) {
+            $query->where('lokasi_id', $request->lokasi_id);
+        }
+
+        if ($request->filled('kapasitas_id')) {
+            $query->where('kapasitas_id', $request->kapasitas_id);
+        }
+
+        if ($request->filled('jenis_id')) {
+            $query->where('jenis_id', $request->jenis_id);
+        }
+
+        $apars = $query->orderBy('id', 'asc')->get();
+        $columns = [__('No'), __('PFE ID'), __('Location'), __('Building'), __('Type'), __('Capacity'), __('Fire Class'), __('Expiry Date'), __('Qty'), __('PIC'), __('Last Inspection')];
+        $rows = [];
+
+        foreach ($apars as $index => $apar) {
+            $jenisNamaL = strtolower($apar->jenis->nama ?? '');
+            $kelas = '-';
+            if (strpos($jenisNamaL, 'dry chemical') !== false || strpos($jenisNamaL, 'powder') !== false) {
+                $kelas = 'A-B-C';
+            } elseif (strpos($jenisNamaL, 'carbon') !== false || strpos($jenisNamaL, 'dioxide') !== false || strpos($jenisNamaL, 'co2') !== false) {
+                $kelas = 'B-C';
+            }
+
+            $lastInspeksi = $apar->latestInspeksi;
+            $picName = '-';
+            if ($lastInspeksi && $lastInspeksi->user) {
+                $picName = $lastInspeksi->user->name;
+            } elseif ($apar->pic) {
+                $picName = $apar->pic->name;
+            }
+
+            $rows[] = [
+                $index + 1,
+                $apar->kode,
+                $apar->lokasi->nama ?? 'n/a',
+                $apar->lokasi->gedung->nama ?? 'n/a',
+                $apar->jenis->nama ?? 'n/a',
+                $apar->kapasitas->ukuran ?? 'n/a',
+                $kelas,
+                $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-',
+                $apar->qty,
+                $picName,
+                $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
+            ];
+        }
+
+        return response()->json([
+            'headers' => $columns,
+            'rows' => $rows
+        ]);
+    }
+
     public function storeGedung(Request $request)
     {
         $request->validate(['nama' => 'required|string|max:255|unique:gedung,nama'], ['nama.unique' => 'Nama gedung ini sudah terdaftar.']);
         Gedung::create($request->only('nama'));
 
-        return redirect()->back()->with('success', 'Data gedung berhasil ditambahkan!');
+        return redirect()->back()->with('success', __('Data gedung berhasil ditambahkan!'));
     }
 
     public function storeLokasi(Request $request)
@@ -217,7 +302,7 @@ class MasterDataController extends Controller
         ]);
         Lokasi::create($request->only('nama', 'gedung_id'));
 
-        return redirect()->back()->with('success', 'Data lokasi berhasil ditambahkan!');
+        return redirect()->back()->with('success', __('Data lokasi berhasil ditambahkan!'));
     }
 
     public function storeJenis(Request $request)
@@ -225,7 +310,7 @@ class MasterDataController extends Controller
         $request->validate(['nama' => 'required|string|max:255|unique:jenis_apar,nama'], ['nama.unique' => 'Jenis APAR ini sudah terdaftar.']);
         JenisApar::create($request->only('nama'));
 
-        return redirect()->back()->with('success', 'Jenis APAR berhasil ditambahkan!');
+        return redirect()->back()->with('success', __('Jenis APAR berhasil ditambahkan!'));
     }
 
     public function storeKapasitas(Request $request)
@@ -240,35 +325,35 @@ class MasterDataController extends Controller
         $request->validate(['ukuran' => 'required|string|max:255|unique:kapasitas_apar,ukuran'], ['ukuran.unique' => 'Kapasitas APAR ini sudah terdaftar.']);
         KapasitasApar::create($request->only('ukuran'));
 
-        return redirect()->back()->with('success', 'Kapasitas APAR berhasil ditambahkan!');
+        return redirect()->back()->with('success', __('Kapasitas APAR berhasil ditambahkan!'));
     }
 
     public function destroyGedung(Gedung $gedung)
     {
         $gedung->delete();
 
-        return redirect()->back()->with('success', 'Data gedung berhasil dihapus!');
+        return redirect()->back()->with('success', __('Data gedung berhasil dihapus!'));
     }
 
     public function destroyLokasi(Lokasi $lokasi)
     {
         $lokasi->delete();
 
-        return redirect()->back()->with('success', 'Data lokasi berhasil dihapus!');
+        return redirect()->back()->with('success', __('Data lokasi berhasil dihapus!'));
     }
 
     public function destroyJenis(JenisApar $jenisApar)
     {
         $jenisApar->delete();
 
-        return redirect()->back()->with('success', 'Jenis APAR berhasil dihapus!');
+        return redirect()->back()->with('success', __('Jenis APAR berhasil dihapus!'));
     }
 
     public function destroyKapasitas(KapasitasApar $kapasitasApar)
     {
         $kapasitasApar->delete();
 
-        return redirect()->back()->with('success', 'Kapasitas APAR berhasil dihapus!');
+        return redirect()->back()->with('success', __('Kapasitas APAR berhasil dihapus!'));
     }
 
     public function getQrData(Apar $apar)
@@ -312,7 +397,7 @@ class MasterDataController extends Controller
     {
         $apar->delete();
 
-        return redirect()->back()->with('success', 'Data APAR berhasil dihapus!');
+        return redirect()->back()->with('success', __('Data APAR berhasil dihapus!'));
     }
 
     public function storeApar(Request $request)
@@ -351,7 +436,7 @@ class MasterDataController extends Controller
 
         Apar::create($data);
 
-        return redirect()->back()->with('success', 'Data APAR berhasil ditambahkan!');
+        return redirect()->back()->with('success', __('Data APAR berhasil ditambahkan!'));
     }
 
     public function updateGedung(Request $request, Gedung $gedung)
@@ -359,7 +444,7 @@ class MasterDataController extends Controller
         $request->validate(['nama' => 'required|string|max:255|unique:gedung,nama,'.$gedung->id], ['nama.unique' => 'Nama gedung ini sudah terdaftar.']);
         $gedung->update($request->only('nama'));
 
-        return redirect()->back()->with('success', 'Data gedung berhasil diperbarui!');
+        return redirect()->back()->with('success', __('Data gedung berhasil diperbarui!'));
     }
 
     public function updateLokasi(Request $request, Lokasi $lokasi)
@@ -377,7 +462,7 @@ class MasterDataController extends Controller
         ]);
         $lokasi->update($request->only('nama', 'gedung_id'));
 
-        return redirect()->back()->with('success', 'Data lokasi berhasil diperbarui!');
+        return redirect()->back()->with('success', __('Data lokasi berhasil diperbarui!'));
     }
 
     public function updateJenis(Request $request, JenisApar $jenisApar)
@@ -385,7 +470,7 @@ class MasterDataController extends Controller
         $request->validate(['nama' => 'required|string|max:255|unique:jenis_apar,nama,'.$jenisApar->id], ['nama.unique' => 'Jenis APAR ini sudah terdaftar.']);
         $jenisApar->update($request->only('nama'));
 
-        return redirect()->back()->with('success', 'Jenis APAR berhasil diperbarui!');
+        return redirect()->back()->with('success', __('Jenis APAR berhasil diperbarui!'));
     }
 
     public function updateKapasitas(Request $request, KapasitasApar $kapasitasApar)
@@ -400,7 +485,7 @@ class MasterDataController extends Controller
         $request->validate(['ukuran' => 'required|string|max:255|unique:kapasitas_apar,ukuran,'.$kapasitasApar->id], ['ukuran.unique' => 'Kapasitas APAR ini sudah terdaftar.']);
         $kapasitasApar->update($request->only('ukuran'));
 
-        return redirect()->back()->with('success', 'Kapasitas APAR berhasil diperbarui!');
+        return redirect()->back()->with('success', __('Kapasitas APAR berhasil diperbarui!'));
     }
 
     public function updateApar(Request $request, Apar $apar)
@@ -440,7 +525,7 @@ class MasterDataController extends Controller
 
         $apar->update($data);
 
-        return redirect()->back()->with('success', 'Data APAR berhasil diperbarui!');
+        return redirect()->back()->with('success', __('Data APAR berhasil diperbarui!'));
     }
 
     private function generatePrefix($lokasi_id, $jenis_id)

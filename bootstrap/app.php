@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
         ]);
+        $middleware->alias([
+            'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
+        ]);
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo(function (Request $request) {
             session()->flash('auth_error', 'Anda harus login untuk mengakses sistem ini.');

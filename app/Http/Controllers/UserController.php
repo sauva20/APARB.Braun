@@ -82,7 +82,7 @@ class UserController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['No', 'User ID', 'Nama', 'Email', 'Gedung', 'Role', 'Jadwal Inspeksi'];
+        $columns = [__('No'), __('User ID'), __('Name'), __('Email'), __('Building'), __('Role'), __('Inspection Schedule')];
 
         $callback = function() use($users, $columns) {
             $file = fopen('php://output', 'w');
@@ -107,6 +107,46 @@ class UserController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function previewExcel(Request $request)
+    {
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->with('gedungs')->latest()->get();
+
+        $columns = [__('No'), __('User ID'), __('Name'), __('Email'), __('Building'), __('Role'), __('Inspection Schedule')];
+        $rows = [];
+
+        foreach ($users as $index => $user) {
+            $gedungsStr = $user->gedungs->pluck('nama')->implode(', ');
+            $rows[] = [
+                $index + 1,
+                $user->employee_id ?? 'n/a',
+                $user->name,
+                $user->email,
+                $gedungsStr ?: 'n/a',
+                $user->role,
+                $user->jadwal_rutin_tanggal ? 'Tanggal ' . $user->jadwal_rutin_tanggal : 'n/a',
+            ];
+        }
+
+        return response()->json([
+            'headers' => $columns,
+            'rows' => $rows
+        ]);
     }
 
     public function store(Request $request)
@@ -156,7 +196,7 @@ class UserController extends Controller
         // Send Email
         \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\NewUserRegistered($user, $setupUrl));
 
-        return redirect()->back()->with('success', 'User berhasil ditambahkan! Email setup telah dikirim.');
+        return redirect()->back()->with('success', __('User berhasil ditambahkan! Email setup telah dikirim.'));
     }
 
     public function update(Request $request, User $user)
@@ -195,13 +235,13 @@ class UserController extends Controller
             $user->gedungs()->detach();
         }
 
-        return redirect()->back()->with('success', 'Data user berhasil diperbarui!');
+        return redirect()->back()->with('success', __('Data user berhasil diperbarui!'));
     }
 
     public function destroy(User $user)
     {
         $user->delete();
 
-        return redirect()->back()->with('success', 'User berhasil dihapus!');
+        return redirect()->back()->with('success', __('User berhasil dihapus!'));
     }
 }

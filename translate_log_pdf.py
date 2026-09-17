@@ -1,0 +1,24 @@
+import os
+import re
+
+file_path = "c:/laragon/www/APARB.Braun/resources/views/activity-log/pdf.blade.php"
+with open(file_path, "r", encoding="utf-8") as f:
+    content = f.read()
+
+replacements = {
+    r">Waktu<": ">{{ __('Time') }}<",
+    r">Pengguna<": ">{{ __('User') }}<",
+    r">Aksi<": ">{{ __('Action') }}<",
+    r">Modul<": ">{{ __('Module') }}<",
+    r">Keterangan<": ">{{ __('Description') }}<",
+    r"'Sistem \/ Guest'": "'{{ __('System / Guest') }}'",
+    r"Belum ada log aktivitas\.": "{{ __('No activity log yet.') }}"
+}
+
+for old, new in replacements.items():
+    content = re.sub(old, new, content)
+
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(content)
+
+print("Done activity-log pdf.blade.php")

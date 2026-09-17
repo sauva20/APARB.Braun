@@ -81,6 +81,7 @@
                 <i class="ph-bold ph-calendar-blank text-lg"></i>
             </div>
             <div>
+                <h2 class="text-base font-bold text-slate-800 leading-tight">{{ __('Today\'s Statistics') }}</h2>
                 <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ \Carbon\Carbon::now()->locale(app()->getLocale())->translatedFormat('l, d F Y') }}</p>
             </div>
         </div>
@@ -150,7 +151,7 @@
 
             <button onclick="window.print()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl shadow-md hover:shadow-lg shadow-red-600/20 transition-all flex items-center gap-2 text-sm">
                 <i class="ph-bold ph-file-pdf text-lg"></i>
-                <span class="hidden sm:inline">Export PDF</span>
+                <span class="hidden sm:inline">{{ __('Export PDF') }}</span>
             </button>
         </div>
     </div>
@@ -207,7 +208,7 @@
                 <h2 class="text-2xl font-extrabold text-red-500 transition-transform group-hover:scale-105 origin-left">{{ $rusakServis }}</h2>
                 @if($rusakServis > 0)
                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-2 py-1 rounded-lg mb-1.5 uppercase tracking-wider">
-                    <i class="ph-bold ph-warning"></i> Segera
+                    <i class="ph-bold ph-warning"></i> {{ __('Immediate') }}
                 </span>
                 @endif
             </div>
@@ -245,7 +246,7 @@
                 <h2 class="text-2xl font-extrabold text-red-600 transition-transform group-hover:scale-105 origin-left">{{ $sudahKedaluwarsa }}</h2>
                 @if($sudahKedaluwarsa > 0)
                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-50 border border-red-100 px-2 py-1 rounded-lg mb-1.5 uppercase tracking-wider">
-                    <i class="ph-bold ph-warning"></i> Bahaya
+                    <i class="ph-bold ph-warning"></i> {{ __('Danger') }}
                 </span>
                 @endif
             </div>
@@ -264,7 +265,7 @@
                 <h2 class="text-2xl font-extrabold text-rose-500 transition-transform group-hover:scale-105 origin-left">{{ $aparKosong }}</h2>
                 @if($aparKosong > 0)
                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2 py-1 rounded-lg mb-1.5 uppercase tracking-wider">
-                    <i class="ph-bold ph-warning"></i> Kosong
+                    <i class="ph-bold ph-warning"></i> {{ __('Empty') }}
                 </span>
                 @endif
             </div>
@@ -355,11 +356,11 @@
                                 <span class="text-sm font-semibold text-emerald-100">{{ __('Days') }}</span>
                             </div>
                         @elseif($isCurrentMonth && $daysLeft === 0)
-                            <span class="text-2xl font-extrabold text-rose-200">{{ __('Days') }} Terakhir!</span>
+                            <span class="text-2xl font-extrabold text-rose-200">{{ __('Days') }} {{ __('Last!') }}</span>
                         @elseif($endOfMonth->isPast())
-                            <span class="text-xl font-extrabold text-emerald-100">Bulan Berakhir</span>
+                            <span class="text-xl font-extrabold text-emerald-100">{{ __('Month Ended') }}</span>
                         @else
-                            <span class="text-xl font-extrabold text-emerald-100">Segera Datang</span>
+                            <span class="text-xl font-extrabold text-emerald-100">{{ __('Coming Soon') }}</span>
                         @endif
                     </div>
                 </div>
@@ -536,7 +537,7 @@
                                 </span>
                             @elseif($inspeksi->status === 'perbaikan' || $inspeksi->status === 'rusak')
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-red-50 text-red-600 border border-red-100 uppercase tracking-wider">
-                                    <i class="ph-fill ph-warning-circle"></i> Perbaikan
+                                    <i class="ph-fill ph-warning-circle"></i> {{ __('Repair') }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-50 text-amber-600 border border-amber-100 uppercase tracking-wider">
@@ -547,7 +548,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="py-8 text-center text-slate-500 font-semibold">Belum ada aktivitas inspeksi.</td>
+                        <td colspan="4" class="py-8 text-center text-slate-500 font-semibold">{{ __('No inspection activity yet.') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -593,7 +594,7 @@
                     }
                 }
             },
-            colors: ['#009B77', '#ef4444'],
+            colors: ['#009B77', '#F59E0B'],
             plotOptions: {
                 bar: {
                     horizontal: false,
@@ -650,7 +651,7 @@
             const monthlyChart = new ApexCharts(document.querySelector("#monthlyChart"), monthlyOptions);
             monthlyChart.render();
         } else if (document.getElementById("monthlyChart")) {
-            document.getElementById("monthlyChart").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-semibold text-sm">Belum ada data grafik</div>';
+            document.getElementById("monthlyChart").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-semibold text-sm">{{ __('No chart data available') }}</div>';
         }
 
         // Data for APAR Types Donut Chart
@@ -708,7 +709,7 @@
             const typeChart = new ApexCharts(document.querySelector("#typeChart"), typeOptions);
             typeChart.render();
         } else if (document.getElementById("typeChart")) {
-            document.getElementById("typeChart").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-semibold text-sm">Belum ada data APAR</div>';
+            document.getElementById("typeChart").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-semibold text-sm">{{ __('No PFE data available') }}</div>';
         }
 
         // Data for Progress Donut Chart
@@ -765,7 +766,7 @@
                             total: {
                                 show: true,
                                 showAlways: true,
-                                label: 'PROGRES',
+                                label: '{{ __('PROGRESS') }}',
                                 fontSize: '10px',
                                 fontWeight: 700,
                                 color: '#a7f3d0',

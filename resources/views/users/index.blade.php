@@ -45,7 +45,7 @@
                     <a href="{{ route('users.export-pdf', request()->all()) }}" target="_blank" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors">
                         <i class="ph-bold ph-file-pdf text-lg text-red-500"></i> {{ __('Export to PDF') }}
                     </a>
-                    <a href="{{ route('users.export-excel', request()->all()) }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-green-50 hover:text-green-600 flex items-center gap-2 transition-colors">
+                    <a href="#" @click.prevent="$dispatch('open-excel-preview', { previewUrl: '{{ route('users.export-excel-preview', request()->all()) }}', downloadUrl: '{{ route('users.export-excel', request()->all()) }}' })" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-green-50 hover:text-green-600 flex items-center gap-2 transition-colors">
                         <i class="ph-bold ph-file-csv text-lg text-green-500"></i> {{ __('Export to Excel (CSV)') }}
                     </a>
                 </div>
@@ -65,7 +65,10 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <i class="ph-bold ph-magnifying-glass text-slate-400 text-lg"></i>
                 </div>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search user name or email...') }}" class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all shadow-sm">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search user name or email...') }}" class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all shadow-sm"
+                       x-data
+                       x-init="if ($el.value) { $nextTick(() => { $el.focus({ preventScroll: true }); let val = $el.value; $el.value = ''; $el.value = val; }) }"
+                       @input.debounce.750ms="$el.form.submit()">
                 @if(request('search'))
                 <a href="/users?role={{ request('role') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
                     <i class="ph-bold ph-x-circle text-lg"></i>
@@ -145,10 +148,10 @@
                                 @endforeach
                                 </div>
                                 @if($user->jadwal_rutin_tanggal)
-                                    <div class="text-xs text-slate-500 mt-1"><i class="ph-bold ph-calendar-blank"></i> Rutin: Tgl {{ $user->jadwal_rutin_tanggal }}</div>
+                                    <div class="text-xs text-slate-500 mt-1"><i class="ph-bold ph-calendar-blank"></i> {{ __('Routine: Date') }} {{ $user->jadwal_rutin_tanggal }}</div>
                                 @endif
                             @else
-                                <span class="text-slate-400 text-xs italic">Belum ditugaskan</span>
+                                <span class="text-slate-400 text-xs italic">{{ __('Unassigned') }}</span>
                             @endif
                         </td>
                         <td class="py-4 px-5 text-center">
@@ -156,13 +159,13 @@
                         </td>
                         <td class="py-4 px-5">
                             <div class="flex items-center justify-center gap-1">
-                                <button @click="showEditUser = true; editUser = { id: '{{ $user->id }}', employee_id: '{{ addslashes($user->employee_id) }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', role: '{{ addslashes($user->role) }}', jadwal_rutin_tanggal: '{{ $user->jadwal_rutin_tanggal }}', gedungs: {{ json_encode($user->gedungs->pluck('id')) }} }" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
+                                <button @click="showEditUser = true; editUser = { id: '{{ $user->id }}', employee_id: '{{ addslashes($user->employee_id) }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', role: '{{ addslashes($user->role) }}', jadwal_rutin_tanggal: '{{ $user->jadwal_rutin_tanggal }}', gedungs: {{ json_encode($user->gedungs->pluck('id')) }} }" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="{{ __('Edit') }}">
                                     <i class="ph-bold ph-pencil-simple text-base"></i>
                                 </button>
-                                <form action="/users/{{ $user->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, 'User ini akan dihapus secara permanen!')">
+                                <form action="/users/{{ $user->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, '{{ __('This user will be permanently deleted!') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus">
+                                    <button type="submit" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="{{ __('Delete') }}">
                                         <i class="ph-bold ph-trash text-base"></i>
                                     </button>
                                 </form>
@@ -171,7 +174,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-8 text-center text-slate-500 font-medium">Belum ada data User.</td>
+                        <td colspan="7" class="py-8 text-center text-slate-500 font-medium">{{ __('No User data yet.') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -207,7 +210,7 @@
                     <input type="hidden" name="form_type" value="tambah_user">
                     
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID / NIK <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID <span class="text-red-500">*</span></label>
                         <input type="text" name="employee_id" value="{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}" required placeholder="{{ __('Example: 123456') }}" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
@@ -220,7 +223,7 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" value="{{ old('form_type') == 'tambah_user' ? old('email') : '' }}" required placeholder="contoh@bbraun.com" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="email" name="email" value="{{ old('form_type') == 'tambah_user' ? old('email') : '' }}" required placeholder="example@bbraun.com" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'tambah_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
@@ -313,7 +316,7 @@
                     <input type="hidden" name="id" x-model="editUser.id">
                     
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID / NIK <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID <span class="text-red-500">*</span></label>
                         <input type="text" name="employee_id" x-model="editUser.employee_id" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
                         @if(old('form_type') == 'edit_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
@@ -395,6 +398,7 @@
     </div>
 
 </div>
+    <x-excel-preview-modal />
 @endsection
 
 

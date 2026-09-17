@@ -37,7 +37,7 @@ class ActivityLogController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['Waktu', 'Pengguna', 'Aksi', 'Modul', 'Keterangan'];
+        $columns = [__('Time'), __('User'), __('Action'), __('Module'), __('Description')];
 
         $callback = function() use($activities, $columns) {
             $file = fopen('php://output', 'w');
@@ -59,5 +59,28 @@ class ActivityLogController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function previewExcel()
+    {
+        $activities = Activity::with('causer')->latest()->get();
+        
+        $columns = [__('Time'), __('User'), __('Action'), __('Module'), __('Description')];
+        $rows = [];
+
+        foreach ($activities as $activity) {
+            $rows[] = [
+                $activity->created_at->format('d M Y H:i:s'),
+                $activity->causer->name ?? 'Sistem / Guest',
+                strtoupper($activity->event),
+                preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type)),
+                $activity->description,
+            ];
+        }
+
+        return response()->json([
+            'headers' => $columns,
+            'rows' => $rows
+        ]);
     }
 }

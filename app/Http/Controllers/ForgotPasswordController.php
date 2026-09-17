@@ -73,6 +73,6 @@ class ForgotPasswordController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return redirect()->route('login')->with('success', 'Kata sandi berhasil direset! Silakan masuk.');
+        return redirect()->route('login')->with('success', __('Kata sandi berhasil direset! Silakan masuk.'));
     }
 }

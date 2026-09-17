@@ -8,12 +8,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <!-- Left: Page Context -->
         <div class="flex items-center gap-3">
-            <a href="/inspection-schedule" class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="Kembali">
+            <a href="/inspection-schedule" class="w-10 h-10 rounded-xl bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="{{ __('Back') }}">
                 <i class="ph-bold ph-arrow-left text-xl"></i>
             </a>
             <div>
-                <h2 class="text-lg font-extrabold text-slate-800 leading-tight">Buat Jadwal Inspeksi Baru</h2>
-                <p class="text-xs font-semibold text-slate-500 mt-0.5">Tentukan area, tanggal, dan petugas untuk inspeksi rutin/khusus</p>
+                <h2 class="text-lg font-extrabold text-slate-800 leading-tight">{{ __('Create New Inspection Schedule') }}</h2>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('Determine area, date, and officer for routine/special inspection') }}</p>
             </div>
         </div>
     </div>
@@ -24,14 +24,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Jenis Jadwal -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Jadwal</label>
-                    <div x-data="{ open: false, selected: '', options: ['Inspeksi Rutin Bulanan', 'Inspeksi Khusus / Temuan'] }" class="relative">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Schedule Type') }}</label>
+                    <div x-data="{ open: false, selected: '', options: ['{{ __('Routine Monthly Inspection') }}', '{{ __('Special Inspection / Findings') }}'] }" class="relative">
                         <input type="hidden" name="jenis_jadwal" :value="selected">
                         <i class="ph-bold ph-calendar-star absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                         <button type="button" @click="open = !open" @click.away="open = false" 
                                 class="w-full bg-slate-50/50 border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                 :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                            <span x-text="selected || 'Pilih Jenis Jadwal'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                            <span x-text="selected || '{{ __('Select Schedule Type') }}'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                             <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                         </button>
                         
@@ -57,25 +57,25 @@
 
                 <!-- Tanggal Inspeksi -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Inspeksi</label>
-                    <div class="relative" x-data x-init="flatpickr($refs.dateInput, { dateFormat: 'Y-m-d', minDate: 'today', locale: 'id' })">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Inspection Date') }}</label>
+                    <div class="relative" x-data x-init="flatpickr($refs.dateInput, { dateFormat: 'Y-m-d', minDate: 'today' })">
                         <i class="ph-bold ph-calendar-blank absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors peer-focus:text-[#009B77] z-10"></i>
-                        <input x-ref="dateInput" type="text" placeholder="Pilih Tanggal"
+                        <input x-ref="dateInput" type="text" placeholder="{{ __('Select Date') }}"
                                class="peer w-full bg-slate-50/50 border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium appearance-none cursor-pointer bg-transparent">
                     </div>
                 </div>
 
                 <!-- Cakupan Lokasi/Gedung -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Cakupan Area (Gedung)</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Area Scope (Building)') }}</label>
                     <div x-data="{ 
                         open: false, 
                         selected: '', 
                         options: [
-                            { label: 'Semua Area', value: 'semua', disabled: false },
-                            { label: 'Gedung Utama (Sudah dijadwalkan)', value: 'utama', disabled: true },
-                            { label: 'Gedung Produksi', value: 'produksi', disabled: false },
-                            { label: 'Gudang Logistik', value: 'gudang', disabled: false }
+                            { label: '{{ __('All Areas') }}', value: 'semua', disabled: false },
+                            { label: '{{ __('Main Building (Already scheduled)') }}', value: 'utama', disabled: true },
+                            { label: '{{ __('Production Building') }}', value: 'produksi', disabled: false },
+                            { label: '{{ __('Logistics Warehouse') }}', value: 'gudang', disabled: false }
                         ] 
                     }" class="relative">
                         <input type="hidden" name="cakupan" :value="selected">
@@ -83,7 +83,7 @@
                         <button type="button" @click="open = !open" @click.away="open = false" 
                                 class="w-full bg-slate-50/50 border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                 :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                            <span x-text="selected || 'Pilih Area Cakupan'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                            <span x-text="selected || '{{ __('Select Scope Area') }}'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                             <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                         </button>
                         
@@ -118,14 +118,14 @@
 
                 <!-- Petugas Inspeksi -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Petugas Inspeksi</label>
-                    <div x-data="{ open: false, selected: '', options: ['Bebas / Siapa Saja', 'Budi Santoso', 'Dewi Wahyuni', 'Andi Rahman'] }" class="relative">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Inspection Officer') }}</label>
+                    <div x-data="{ open: false, selected: '', options: ['{{ __('Free / Anyone') }}', 'Budi Santoso', 'Dewi Wahyuni', 'Andi Rahman'] }" class="relative">
                         <input type="hidden" name="petugas" :value="selected">
                         <i class="ph-bold ph-user-circle absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : ''"></i>
                         <button type="button" @click="open = !open" @click.away="open = false" 
                                 class="w-full bg-slate-50/50 border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                 :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                            <span x-text="selected || 'Pilih Petugas'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
+                            <span x-text="selected || '{{ __('Select Officer') }}'" :class="!selected ? 'text-slate-400 font-medium' : ''" class="truncate block"></span>
                             <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                         </button>
                         
@@ -151,10 +151,10 @@
 
                 <!-- Catatan -->
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Catatan Tambahan (Opsional)</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Additional Notes (Optional)') }}</label>
                     <div class="relative">
                         <i class="ph-bold ph-note-pencil absolute left-4 top-4 text-slate-400 text-lg transition-colors peer-focus:text-[#009B77]"></i>
-                        <textarea rows="3" placeholder="Contoh: Fokuskan pada APAR di area dapur dan genset."
+                        <textarea rows="3" placeholder="{{ __('Example: Focus on PFE in kitchen and generator area.') }}"
                                   class="peer w-full bg-slate-50/50 border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium resize-none"></textarea>
                     </div>
                 </div>
@@ -163,11 +163,11 @@
             
             <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
                 <a href="/inspection-schedule" class="px-6 py-2.5 rounded-xl font-bold text-slate-600 hover:text-slate-900 bg-white border-2 border-slate-200 hover:border-slate-300 transition-all text-sm">
-                    Batal
+                    {{ __('Cancel') }}
                 </a>
                 <button type="submit" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2.5 px-8 rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all flex items-center gap-2 text-sm">
                     <i class="ph-bold ph-floppy-disk text-lg"></i>
-                    Simpan Jadwal
+                    {{ __('Save Schedule') }}
                 </button>
             </div>
         </form>

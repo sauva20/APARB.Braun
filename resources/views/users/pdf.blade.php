@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Data User</title>
+    <title>{{ __('User Data') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,7 +67,7 @@
 <body>
 
     <div class="header">
-        <h1>Laporan Data User PFE Monitoring Control System</h1>
+        <h1>{{ __('PFE Monitoring Control System User Data Report') }}</h1>
         <p>Authorized Personnel and Access Level Documentation</p>
     </div>
 
@@ -95,10 +95,10 @@
             <tr>
                 <th class="text-center" style="width: 5%;">No</th>
                 <th style="width: 12%;">User ID</th>
-                <th style="width: 23%;">Nama</th>
+                <th style="width: 23%;">{{ __('Name') }}</th>
                 <th style="width: 22%;">Email</th>
-                <th style="width: 15%;">Gedung</th>
-                <th style="width: 15%;">Jadwal Inspeksi</th>
+                <th style="width: 15%;">{{ __('Building') }}</th>
+                <th style="width: 15%;">{{ __('Inspection Schedule') }}</th>
                 <th style="width: 8%;">Role</th>
             </tr>
         </thead>
@@ -116,14 +116,14 @@
                             n/a
                         @endif
                     </td>
-                    <td>{{ $user->jadwal_rutin_tanggal ? 'Tanggal ' . $user->jadwal_rutin_tanggal : 'n/a' }}</td>
+                    <td>{{ $user->jadwal_rutin_tanggal ? __('Date') . ' ' . $user->jadwal_rutin_tanggal : 'n/a' }}</td>
                     <td>{{ $user->role }}</td>
                 </tr>
             @endforeach
             
             @if($users->isEmpty())
                 <tr>
-                    <td colspan="7" class="text-center" style="padding: 20px;">Belum ada data User.</td>
+                    <td colspan="7" class="text-center" style="padding: 20px;">{{ __('No User data yet.') }}</td>
                 </tr>
             @endif
         </tbody>

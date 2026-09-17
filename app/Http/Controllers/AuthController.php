@@ -17,11 +17,11 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard')->with('success', 'Login berhasil! Selamat datang.');
+            return redirect()->intended('/dashboard')->with('success', __('Login berhasil! Selamat datang.'));
         }
 
         return back()->withErrors([
-            'email' => 'Email atau Password yang Anda masukkan salah.',
+            'email' => __('Email atau Password yang Anda masukkan salah.'),
         ])->onlyInput('email');
     }
 

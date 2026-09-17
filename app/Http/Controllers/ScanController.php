@@ -41,7 +41,7 @@ class ScanController extends Controller
         $user = User::where('pin', $request->pin)->first();
 
         if (! $user) {
-            return redirect()->back()->with('error', 'PIN tidak valid atau tidak ditemukan.');
+            return redirect()->back()->with('error', __('PIN tidak valid atau tidak ditemukan.'));
         }
 
         // Log the user in so they can access the inspection form
@@ -52,6 +52,6 @@ class ScanController extends Controller
         }
 
         // Redirect to start inspection
-        return redirect()->route('inspeksi.mulai', $apar->id);
+        return redirect()->route('inspeksi.pedoman', $apar->id);
     }
 }

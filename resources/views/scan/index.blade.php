@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Informasi APAR - {{ $apar->kode }}</title>
+    <title>{{ __('PFE Information') }} - {{ $apar->kode }}</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -41,7 +41,6 @@
     <!-- Flatpickr (for date picker) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     <style>
         .flatpickr-calendar { font-family: 'Rotis Sans Serif', sans-serif !important; }
         .flatpickr-wrapper { display: block !important; width: 100% !important; }
@@ -65,6 +64,14 @@
         tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}'
     } }">
         
+        <!-- Top Bar for Language Switcher -->
+        <div class="flex justify-end mb-3 shrink-0">
+            <div class="flex items-center gap-1 bg-white/50 backdrop-blur-md p-1 rounded-lg border border-slate-200/50 shadow-sm">
+                <a href="{{ route('set-locale', 'id') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'id' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-500 hover:text-slate-700' }} transition-colors">ID</a>
+                <a href="{{ route('set-locale', 'en') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'en' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-500 hover:text-slate-700' }} transition-colors">EN</a>
+            </div>
+        </div>
+
         <!-- Header / Photo Section -->
         <div class="bg-white rounded-[24px] shadow-[0_10px_30px_-15px_rgba(0,155,119,0.15)] overflow-hidden border border-slate-100 mb-4 shrink-0 relative group">
             
@@ -76,7 +83,7 @@
             <div class="absolute bottom-4 left-5 right-5">
                 <div class="flex justify-between items-end">
                     <div>
-                        <p class="text-white/80 text-[10px] font-bold tracking-widest uppercase mb-0.5 drop-shadow-md">Kode APAR</p>
+                        <p class="text-white/80 text-[10px] font-bold tracking-widest uppercase mb-0.5 drop-shadow-md">{{ __('PFE ID') }}</p>
                         <h1 class="text-2xl font-bold text-white drop-shadow-md tracking-tight">{{ $apar->kode }}</h1>
                     </div>
                     <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-lg">
@@ -98,23 +105,23 @@
         </div>
 
         @if(session('error'))
-        <div class="bg-red-50/90 backdrop-blur-md border border-red-100 p-3 rounded-xl mb-4 shadow-sm flex items-start gap-2 shrink-0">
-            <i class="ph-fill ph-warning-circle text-red-500 text-lg shrink-0 mt-0.5"></i>
+        <div class="bg-red-50/90 backdrop-blur-md border border-red-100 p-3 rounded-xl mb-4 shadow-sm flex items-center gap-2 shrink-0">
+            <i class="ph-fill ph-warning-circle text-red-500 text-lg shrink-0"></i>
             <p class="text-xs font-medium text-red-700 leading-tight">{{ session('error') }}</p>
         </div>
         @endif
 
         @if(session('success'))
-        <div class="bg-teal-50/90 backdrop-blur-md border border-teal-100 p-3 rounded-xl mb-4 shadow-sm flex items-start gap-2 shrink-0">
-            <i class="ph-fill ph-check-circle text-teal-500 text-lg shrink-0 mt-0.5"></i>
+        <div class="bg-teal-50/90 backdrop-blur-md border border-teal-100 p-3 rounded-xl mb-4 shadow-sm flex items-center gap-2 shrink-0">
+            <i class="ph-fill ph-check-circle text-teal-500 text-lg shrink-0"></i>
             <p class="text-xs font-medium text-teal-700 leading-tight">{{ session('success') }}</p>
         </div>
         @endif
 
         @if($errors->any())
-        <div class="bg-red-50/90 backdrop-blur-md border border-red-100 p-3 rounded-xl mb-4 shadow-sm flex items-start gap-2 shrink-0">
-            <i class="ph-fill ph-warning-circle text-red-500 text-lg shrink-0 mt-0.5"></i>
-            <div class="flex flex-col">
+        <div class="bg-red-50/90 backdrop-blur-md border border-red-100 p-3 rounded-xl mb-4 shadow-sm flex items-center gap-2 shrink-0">
+            <i class="ph-fill ph-warning-circle text-red-500 text-lg shrink-0"></i>
+            <div class="flex flex-col gap-1">
                 @foreach ($errors->all() as $error)
                     <p class="text-xs font-medium text-red-700 leading-tight">{{ $error }}</p>
                 @endforeach
@@ -128,14 +135,21 @@
             <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 shrink-0">
                 <div class="flex items-center gap-2">
                     <i class="ph-light ph-list-dashes text-[#009B77] text-lg"></i>
-                    <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Detail Informasi</h2>
+                    <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest">{{ __('Information Details') }}</h2>
                 </div>
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-2">
+                    @if(Auth::check() && request('source') == 'system')
+                    <a href="{{ route('inspeksi.pedoman', $apar->id) }}" class="bg-[#009B77] hover:bg-[#008264] text-white px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 transition-colors">
+                        <i class="ph-light ph-scan text-sm"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest">{{ __('Inspection') }}</span>
+                    </a>
+                    @else
                     <button @click="showPinModal = true; pinAction = 'inspeksi'" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 transition-colors">
                         <i class="ph-light ph-scan text-sm"></i>
-                        <span class="text-[10px] font-bold uppercase tracking-widest">Inspeksi</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest">{{ __('Inspection') }}</span>
                     </button>
+                    @endif
                 </div>
             </div>
             
@@ -146,7 +160,7 @@
                         <i class="ph-light ph-map-pin text-lg"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Lokasi & Gedung</p>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">{{ __('Location & Building') }}</p>
                         <p class="text-xs font-medium text-slate-800">{{ $apar->lokasi->nama ?? 'n/a' }} — {{ $apar->lokasi->gedung->nama ?? 'n/a' }}</p>
                     </div>
                 </div>
@@ -157,7 +171,7 @@
                         <i class="ph-light ph-drop text-lg"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Jenis / Media</p>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">{{ __('Type / Media') }}</p>
                         <p class="text-xs font-medium text-slate-800">{{ $apar->jenis->nama ?? 'n/a' }}</p>
                     </div>
                 </div>
@@ -168,7 +182,7 @@
                         <i class="ph-light ph-fire text-lg"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Kelas Kebakaran</p>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">{{ __('Fire Class') }}</p>
                         @php
                             $jenis = strtolower($apar->jenis->nama ?? '');
                             $kelas = 'A, B, C'; // Default for Dry Powder / Halotron
@@ -180,7 +194,7 @@
                                 $kelas = 'A';
                             }
                         @endphp
-                        <p class="text-xs font-medium text-slate-800">Kelas {{ $kelas }}</p>
+                        <p class="text-xs font-medium text-slate-800">{{ __('Class') }} {{ $kelas }}</p>
                     </div>
                 </div>
 
@@ -190,7 +204,7 @@
                         <i class="ph-light ph-scales text-lg"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Kapasitas</p>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">{{ __('Capacity') }}</p>
                         <p class="text-xs font-medium text-slate-800">{{ $apar->kapasitas->ukuran ?? 'n/a' }}</p>
                     </div>
                 </div>
@@ -201,7 +215,7 @@
                         <i class="ph-light ph-calendar-blank text-lg"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">Kedaluwarsa</p>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest">{{ __('Expiry Date') }}</p>
                         <p class="text-xs font-medium text-slate-800">{{ $apar->tgl_kedaluwarsa ? \Carbon\Carbon::parse($apar->tgl_kedaluwarsa)->format('d F Y') : '-' }}</p>
                     </div>
                 </div>
@@ -212,10 +226,10 @@
                         <i class="ph-light ph-clock-counter-clockwise text-lg"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest mb-0.5">Inspeksi Terakhir</p>
+                        <p class="text-[9px] font-bold text-[#009B77] uppercase tracking-widest mb-0.5">{{ __('Last Inspection') }}</p>
                         @if($latestInspeksi)
                             <p class="text-xs font-medium text-slate-800 leading-tight">
-                                {{ $latestInspeksi->created_at->format('d M Y') }} oleh <span class="font-bold">{{ $latestInspeksi->user->name ?? 'User' }}</span>
+                                {{ $latestInspeksi->created_at->format('d M Y') }} {{ __('by') }} <span class="font-bold">{{ $latestInspeksi->user->name ?? 'User' }}</span>
                                 <span class="ml-1 inline-flex items-center text-[8px] px-1.5 py-0.5 rounded {{ $latestInspeksi->status == 'layak' ? 'bg-teal-50 text-teal-600' : 'bg-red-50 text-red-600' }} uppercase font-bold">{{ $latestInspeksi->status }}</span>
                             </p>
                             @if(!empty($latestInspeksi->catatan_tambahan))
@@ -224,7 +238,7 @@
                                 </p>
                             @endif
                         @else
-                            <p class="text-xs font-medium text-slate-400 italic">Belum pernah diinspeksi</p>
+                            <p class="text-xs font-medium text-slate-400 italic">{{ __('Never been inspected') }}</p>
                         @endif
                     </div>
                 </div>
@@ -239,8 +253,8 @@
                 
                 <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h3 class="text-base font-bold text-slate-800 tracking-tight">Verifikasi Petugas</h3>
-                        <p class="text-[10px] font-medium text-slate-500 mt-0.5">Masukkan 4 digit PIN untuk memulai inspeksi.</p>
+                        <h3 class="text-base font-bold text-slate-800 tracking-tight">{{ __('Officer Verification') }}</h3>
+                        <p class="text-[10px] font-medium text-slate-500 mt-0.5">{{ __('Enter 4 digit PIN to start inspection.') }}</p>
                     </div>
                     <button @click="showPinModal = false" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-full transition-colors">
                         <i class="ph-light ph-x"></i>
@@ -251,7 +265,7 @@
                     @csrf
                     <input type="hidden" name="action" :value="pinAction">
                     <div class="mb-5">
-                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">PIN Petugas</label>
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{{ __('Officer PIN') }}</label>
                         <div class="relative" x-data="{ show: false }">
                             <input :type="show ? 'text' : 'password'" name="pin" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" required 
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
@@ -264,7 +278,7 @@
                     </div>
                     
                     <button type="submit" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-medium py-3 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-xs flex items-center justify-center gap-2 uppercase tracking-widest active:scale-[0.98]">
-                        <span>Verifikasi</span>
+                        <span>{{ __('Verify') }}</span>
                         <i class="ph-bold ph-arrow-right"></i>
                     </button>
                 </form>

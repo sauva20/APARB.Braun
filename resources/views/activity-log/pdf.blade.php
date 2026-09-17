@@ -92,27 +92,27 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 20%;">Waktu</th>
-                <th style="width: 20%;">Pengguna</th>
-                <th class="text-center" style="width: 15%;">Aksi</th>
-                <th style="width: 15%;">Modul</th>
-                <th style="width: 30%;">Keterangan</th>
+                <th style="width: 20%;">{{ __('Time') }}</th>
+                <th style="width: 20%;">{{ __('User') }}</th>
+                <th class="text-center" style="width: 15%;">{{ __('Action') }}</th>
+                <th style="width: 15%;">{{ __('Module') }}</th>
+                <th style="width: 30%;">{{ __('Description') }}</th>
             </tr>
         </thead>
         <tbody>
             @foreach($activities as $activity)
                 <tr>
                     <td class="font-bold">{{ $activity->created_at->format('d M Y H:i:s') }}</td>
-                    <td>{{ $activity->causer->name ?? 'Sistem / Guest' }}</td>
+                    <td>{{ $activity->causer->name ?? __('System / Guest') }}</td>
                     <td class="text-center font-bold">{{ strtoupper($activity->event) }}</td>
-                    <td>{{ preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type)) }}</td>
-                    <td>{{ $activity->description }}</td>
+                    <td>{{ __(preg_replace('/([a-z])([A-Z])/s', '$1 $2', class_basename($activity->subject_type))) }}</td>
+                    <td>{{ __($activity->description) }}</td>
                 </tr>
             @endforeach
             
             @if($activities->isEmpty())
                 <tr>
-                    <td colspan="5" class="text-center" style="padding: 20px;">Belum ada log aktivitas.</td>
+                    <td colspan="5" class="text-center" style="padding: 20px;">{{ __('No activity log yet.') }}</td>
                 </tr>
             @endif
         </tbody>

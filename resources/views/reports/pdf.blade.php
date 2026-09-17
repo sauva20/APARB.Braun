@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Inspeksi APAR</title>
+    <title>{{ __('PFE Inspection Report') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,17 +68,17 @@
 <body>
 
     <div class="header">
-        <h1>Laporan Inspeksi APAR Bulan {{ $monthName }}</h1>
+        <h1>{{ __('PFE Inspection Report') }} {{ __('Month') }} {{ $monthName }}</h1>
         <p>Identification of Inspection Portable Fire Extinguisher</p>
     </div>
 
     @php
         $activeFilters = [];
         if (!empty($monthName)) $activeFilters[] = $monthName;
-        if (!empty($gedungName) && $gedungName !== 'Semua Gedung') $activeFilters[] = $gedungName;
+        if (!empty($gedungName) && $gedungName !== __('All Buildings')) $activeFilters[] = $gedungName;
         if (!empty($status) && $status !== 'all') {
-            if ($status === 'sudah') $activeFilters[] = 'Sudah Diinspeksi';
-            elseif ($status === 'belum') $activeFilters[] = 'Belum Diinspeksi';
+            if ($status === 'sudah') $activeFilters[] = __('Inspected');
+            elseif ($status === 'belum') $activeFilters[] = __('Uninspected');
             else $activeFilters[] = $status;
         }
     @endphp
@@ -101,15 +101,15 @@
             <tr>
                 <th width="3%" class="text-center">No</th>
                 <th width="8%">ID APAR</th>
-                <th width="6%">Gedung</th>
-                <th width="8%">Lokasi</th>
-                <th width="12%">Jenis</th>
-                <th width="8%">Kapasitas</th>
-                <th width="8%">Status</th>
-                <th width="12%">Tgl Inspeksi</th>
-                <th width="10%">Inspektor</th>
-                <th width="7%">Kondisi</th>
-                <th width="30%">Catatan Tambahan</th>
+                <th width="6%">{{ __('Building') }}</th>
+                <th width="8%">{{ __('Location') }}</th>
+                <th width="12%">{{ __('Type') }}</th>
+                <th width="8%">{{ __('Capacity') }}</th>
+                <th width="8%">{{ __('Status') }}</th>
+                <th width="12%">{{ __('Inspection Date') }}</th>
+                <th width="10%">{{ __('Inspector') }}</th>
+                <th width="7%">{{ __('Condition') }}</th>
+                <th width="30%">{{ __('Additional Notes') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -126,10 +126,10 @@
                     <td>{{ $apar->jenis->nama ?? 'n/a' }}</td>
                     <td>{{ $apar->kapasitas->ukuran ?? 'n/a' }}</td>
                     <td class="text-center">
-                        @if($row['status'] == 'Sudah Diinspeksi')
-                            <span class="badge bg-green">Sudah</span>
+                        @if($row['status'] === 'Sudah Diinspeksi')
+                            <span class="badge bg-green">{{ __('Inspected') }}</span>
                         @else
-                            <span class="badge bg-orange">Belum</span>
+                            <span class="badge bg-orange">{{ __('Uninspected') }}</span>
                         @endif
                     </td>
                     <td>
@@ -139,21 +139,21 @@
                     <td>
                         @if($inspeksi)
                             @if($inspeksi->status == 'layak')
-                                <span style="color: #009B77; font-weight: bold; font-size: 8px;">LAYAK</span>
+                                <span style="color: #009B77; font-weight: bold;">{{ __('Pass') }}</span>
                             @else
-                                <span style="color: #EF4444; font-weight: bold; font-size: 8px;">PERBAIKAN</span>
+                                <span style="color: #EF4444; font-weight: bold;">{{ __('Repair') }}</span>
                             @endif
                         @else
                             n/a
                         @endif
                     </td>
-                    <td style="font-size: 8px;">
+                    <td>
                         {{ $inspeksi->catatan_tambahan ?? 'n/a' }}
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10" class="text-center">Tidak ada data untuk periode dan filter ini.</td>
+                    <td colspan="10" class="text-center">{{ __('No data for this period and filter.') }}</td>
                 </tr>
             @endforelse
         </tbody>

@@ -172,7 +172,7 @@
     </div>
 
     <div class="label-card">
-        <div class="system-badge">PFE Monitoring Control System</div>
+        <div class="system-badge">{{ __('PFE MONITORING CONTROL SYSTEM') }}</div>
         <div class="kode-apar">{{ $apar->kode }}</div>
 
         <div class="qr-box">

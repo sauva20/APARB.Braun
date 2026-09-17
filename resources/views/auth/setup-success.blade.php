@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Berhasil - PFE Monitoring Control System</title>
+    <title>{{ __('Success') }} - PFE Monitoring Control System</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -53,16 +53,16 @@
 
             <!-- Titles -->
             <div class="mb-10">
-                <h1 class="text-xl sm:text-2xl font-bold text-[#1A1A1A] tracking-tight mb-2">SETUP BERHASIL</h1>
+                <h1 class="text-xl sm:text-2xl font-bold text-[#1A1A1A] tracking-tight mb-2">{{ __('SETUP SUCCESSFUL') }}</h1>
                 <p class="text-sm text-gray-500 leading-relaxed">
-                    Kata sandi akun Anda telah berhasil dibuat dan disimpan dengan aman.
+                    {{ __('Your account password has been successfully created and safely stored.') }}
                 </p>
             </div>
 
             <!-- Submit Button -->
             <div class="pt-2">
                 <a href="{{ route('login') }}" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-[#009B77]/30 hover:shadow-[#009B77]/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm uppercase tracking-widest transform hover:-translate-y-0.5">
-                    <span>Masuk ke Sistem Sekarang</span>
+                    <span>{{ __('Login to System Now') }}</span>
                     <i class="ph-bold ph-arrow-right"></i>
                 </a>
             </div>

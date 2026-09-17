@@ -25,7 +25,7 @@ class ProfileController extends Controller
             'password' => Hash::make($request->new_password),
         ]);
 
-        return back()->with('success', 'Kata sandi berhasil diubah!');
+        return back()->with('success', __('Kata sandi berhasil diubah!'));
     }
 
     public function updatePin(Request $request)
@@ -45,6 +45,6 @@ class ProfileController extends Controller
             'pin' => $request->new_pin,
         ]);
 
-        return back()->with('success', 'PIN berhasil diubah!');
+        return back()->with('success', __('PIN berhasil diubah!'));
     }
 }
