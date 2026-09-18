@@ -188,14 +188,19 @@ class InspeksiController extends Controller
         return view('inspeksi.pedoman', compact('apar'));
     }
 
-    public function create(Apar $apar)
+    public function create(Request $request, Apar $apar)
     {
         $pertanyaan = $this->getPertanyaan();
         $gedungs = \App\Models\Gedung::with('lokasi')->get();
         $jenisApars = \App\Models\JenisApar::all();
         $kapasitasApars = \App\Models\KapasitasApar::all();
 
-        return view('inspeksi.mulai', compact('apar', 'pertanyaan', 'gedungs', 'jenisApars', 'kapasitasApars'));
+        $backUrl = route('scan.apar', $apar->kode);
+        if ($request->query('source') === 'schedule') {
+            $backUrl = url('/inspection-schedule');
+        }
+
+        return view('inspeksi.mulai', compact('apar', 'pertanyaan', 'gedungs', 'jenisApars', 'kapasitasApars', 'backUrl'));
     }
 
     public function store(Request $request, Apar $apar)
@@ -240,10 +245,15 @@ class InspeksiController extends Controller
             'pic_id' => auth()->id()
         ]);
 
+        $status = $request->status;
+        if ((int)$request->qty <= 0) {
+            $status = 'isi_ulang';
+        }
+
         $apar->inspeksis()->create([
             'user_id' => auth()->id(),
             'checklist' => $request->checklist,
-            'status' => $request->status,
+            'status' => $status,
             'catatan_tambahan' => $request->catatan_tambahan,
         ]);
 

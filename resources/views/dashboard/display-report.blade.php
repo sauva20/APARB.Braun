@@ -71,6 +71,17 @@
 <!-- Include ApexCharts CDN -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+<style>
+@keyframes pop-highlight {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 155, 119, 0.4); }
+    50% { transform: scale(1.02); box-shadow: 0 0 0 15px rgba(0, 155, 119, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 155, 119, 0); }
+}
+.animate-pop-highlight {
+    animation: pop-highlight 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
+
 <div class="flex flex-col flex-1 h-full gap-3">
     
     <!-- Header Area -->
@@ -101,7 +112,7 @@
                 </div>
             </div>
             <div class="flex items-end justify-between relative z-10">
-                <h2 class="text-2xl font-extrabold text-slate-800 transition-colors group-hover:text-[#009B77]">{{ $totalApar }}</h2>
+                <h2 id="stat-totalApar" class="text-2xl font-extrabold text-slate-800 transition-colors group-hover:text-[#009B77]">{{ $totalApar }}</h2>
             </div>
         </div>
 
@@ -116,11 +127,11 @@
             </div>
             <div class="relative z-10">
                 <div class="flex items-end justify-between mb-2">
-                    <h2 class="text-2xl font-extrabold text-slate-800 transition-colors group-hover:text-teal-600">{{ $kondisiBaik }}</h2>
-                    <span class="text-xs font-bold text-teal-600 mb-1.5">{{ $totalApar > 0 ? round(($kondisiBaik / $totalApar) * 100) : 0 }}%</span>
+                    <h2 id="stat-kondisiBaik" class="text-2xl font-extrabold text-slate-800 transition-colors group-hover:text-teal-600">{{ $kondisiBaik }}</h2>
+                    <span id="stat-kondisiBaikPercentage" class="text-xs font-bold text-teal-600 mb-1.5">{{ $totalApar > 0 ? round(($kondisiBaik / $totalApar) * 100) : 0 }}%</span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                    <div class="bg-teal-500 h-1.5 rounded-full transition-all duration-1000" style="width: {{ $totalApar > 0 ? round(($kondisiBaik / $totalApar) * 100) : 0 }}%"></div>
+                    <div id="stat-kondisiBaikBar" class="bg-teal-500 h-1.5 rounded-full transition-all duration-1000" style="width: {{ $totalApar > 0 ? round(($kondisiBaik / $totalApar) * 100) : 0 }}%"></div>
                 </div>
             </div>
         </div>
@@ -135,7 +146,7 @@
                 </div>
             </div>
             <div class="flex items-end justify-between relative z-10">
-                <h2 class="text-2xl font-extrabold text-red-500 transition-transform group-hover:scale-105 origin-left">{{ $rusakServis }}</h2>
+                <h2 id="stat-rusakServis" class="text-2xl font-extrabold text-red-500 transition-transform group-hover:scale-105 origin-left">{{ $rusakServis }}</h2>
                 @if($rusakServis > 0)
                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-2 py-1 rounded-lg mb-1.5 uppercase tracking-wider">
                     <i class="ph-bold ph-warning"></i> {{ __('Immediate') }}
@@ -154,7 +165,7 @@
                 </div>
             </div>
             <div class="flex items-end justify-between relative z-10">
-                <h2 class="text-2xl font-extrabold text-amber-500 transition-transform group-hover:scale-105 origin-left">{{ $akanKedaluwarsa }}</h2>
+                <h2 id="stat-akanKedaluwarsa" class="text-2xl font-extrabold text-amber-500 transition-transform group-hover:scale-105 origin-left">{{ $akanKedaluwarsa }}</h2>
                 @if($akanKedaluwarsa > 0)
                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-1 rounded-lg mb-1.5 uppercase tracking-wider">
                     <i class="ph-bold ph-calendar-blank"></i> &lt; 30 hr
@@ -173,7 +184,7 @@
                 </div>
             </div>
             <div class="flex items-end justify-between relative z-10">
-                <h2 class="text-2xl font-extrabold text-red-600 transition-transform group-hover:scale-105 origin-left">{{ $sudahKedaluwarsa }}</h2>
+                <h2 id="stat-sudahKedaluwarsa" class="text-2xl font-extrabold text-red-600 transition-transform group-hover:scale-105 origin-left">{{ $sudahKedaluwarsa }}</h2>
                 @if($sudahKedaluwarsa > 0)
                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-50 border border-red-100 px-2 py-1 rounded-lg mb-1.5 uppercase tracking-wider">
                     <i class="ph-bold ph-warning"></i> {{ __('Danger') }}
@@ -183,7 +194,7 @@
         </div>
 
         <!-- Card 6: {{ __('EMPTY PFE') }} -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
+        <a href="{{ route('master-data.index', ['qty_status' => 'empty']) }}" class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden block text-left">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-colors"></div>
             <div class="flex items-center justify-between mb-3 relative z-10">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('EMPTY PFE') }}</h3>
@@ -192,14 +203,14 @@
                 </div>
             </div>
             <div class="flex items-end justify-between relative z-10">
-                <h2 class="text-2xl font-extrabold text-rose-500 transition-transform group-hover:scale-105 origin-left">{{ $aparKosong }}</h2>
+                <h2 id="stat-aparKosong" class="text-2xl font-extrabold text-rose-500 transition-transform group-hover:scale-105 origin-left">{{ $aparKosong }}</h2>
                 @if($aparKosong > 0)
                 <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2 py-1 rounded-lg mb-1.5 uppercase tracking-wider">
                     <i class="ph-bold ph-warning"></i> {{ __('Empty') }}
                 </span>
                 @endif
             </div>
-        </div>
+        </a>
 
     </div>
 
@@ -227,7 +238,7 @@
                         </div>
                         <div>
                             <p class="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">{{ __('INSPECTED') }}</p>
-                            <p class="text-lg font-extrabold text-white">{{ $sudahDiinspeksiBulanIni }} <span class="text-xs font-semibold text-emerald-100">APAR</span></p>
+                            <p class="text-lg font-extrabold text-white"><span id="stat-sudahDiinspeksi">{{ $sudahDiinspeksiBulanIni }}</span> <span class="text-xs font-semibold text-emerald-100">APAR</span></p>
                         </div>
                     </div>
                     
@@ -237,7 +248,7 @@
                         </div>
                         <div>
                             <p class="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">{{ __('UNINSPECTED') }}</p>
-                            <p class="text-lg font-extrabold text-white">{{ $belumDiinspeksiBulanIni }} <span class="text-xs font-semibold text-emerald-100">APAR</span></p>
+                            <p class="text-lg font-extrabold text-white"><span id="stat-belumDiinspeksi">{{ $belumDiinspeksiBulanIni }}</span> <span class="text-xs font-semibold text-emerald-100">APAR</span></p>
                         </div>
                     </div>
                 </div>
@@ -419,8 +430,8 @@
         };
 
         if(document.getElementById("monthlyChart") && monthCategories.length > 0) {
-            const monthlyChart = new ApexCharts(document.querySelector("#monthlyChart"), monthlyOptions);
-            monthlyChart.render();
+            window.monthlyChart = new ApexCharts(document.querySelector("#monthlyChart"), monthlyOptions);
+            window.monthlyChart.render();
         } else if (document.getElementById("monthlyChart")) {
             document.getElementById("monthlyChart").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-semibold text-sm">{{ __('No chart data available') }}</div>';
         }
@@ -477,8 +488,8 @@
         };
 
         if(document.getElementById("typeChart") && typeSeries.length > 0) {
-            const typeChart = new ApexCharts(document.querySelector("#typeChart"), typeOptions);
-            typeChart.render();
+            window.typeChart = new ApexCharts(document.querySelector("#typeChart"), typeOptions);
+            window.typeChart.render();
         } else if (document.getElementById("typeChart")) {
             document.getElementById("typeChart").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-semibold text-sm">{{ __('No PFE data available') }}</div>';
         }
@@ -567,9 +578,151 @@
         };
 
         if(document.getElementById("progressPieChart")) {
-            const progressChart = new ApexCharts(document.querySelector("#progressPieChart"), progressOptions);
-            progressChart.render();
+            window.progressChart = new ApexCharts(document.querySelector("#progressPieChart"), progressOptions);
+            window.progressChart.render();
         }
+
+        // --- Animation Helpers ---
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                obj.innerHTML = Math.floor(easeOutQuart * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = end;
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function updateStatWithAnimation(id, newValue, isPercentage = false) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const currentText = el.innerText.replace('%', '');
+            const currentValue = parseInt(currentText) || 0;
+            
+            if (currentValue !== newValue) {
+                // Animate Number
+                let startTimestamp = null;
+                const duration = 1200; // 1.2s animation
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    let val = Math.floor(easeOutQuart * (newValue - currentValue) + currentValue);
+                    el.innerHTML = val + (isPercentage ? '%' : '');
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        el.innerHTML = newValue + (isPercentage ? '%' : '');
+                    }
+                };
+                window.requestAnimationFrame(step);
+
+                // Add Highlight Pop Effect to the Card
+                const card = el.closest('.report-card') || el.closest('.bg-white') || el.parentElement;
+                if(card) {
+                    card.classList.remove('animate-pop-highlight');
+                    void card.offsetWidth; // trigger reflow
+                    card.classList.add('animate-pop-highlight');
+                }
+            }
+        }
+
+        function updateTableWithAnimation(id, newHtml) {
+            const container = document.getElementById(id);
+            if (!container) return;
+            if (container.innerHTML.trim() !== newHtml.trim()) {
+                // Fade out
+                container.style.transition = 'opacity 0.3s ease';
+                container.style.opacity = '0';
+                setTimeout(() => {
+                    container.innerHTML = newHtml;
+                    // Fade in
+                    container.style.opacity = '1';
+                    
+                    // Add a subtle flash effect to the table rows
+                    const rows = container.querySelectorAll('tbody tr');
+                    rows.forEach(row => {
+                        row.classList.add('bg-emerald-50/50');
+                        setTimeout(() => row.classList.remove('bg-emerald-50/50'), 2000);
+                    });
+                }, 300);
+            }
+        }
+
+        // Start polling for real-time updates every 15 seconds
+        setInterval(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const month = urlParams.get('month') || '{{ $selectedMonth }}';
+            const year = urlParams.get('year') || '{{ $selectedYear }}';
+            
+            fetch(`/dashboard?month=${month}&year=${year}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update stats with super cool animations
+                updateStatWithAnimation('stat-totalApar', data.stats.totalApar);
+                updateStatWithAnimation('stat-kondisiBaik', data.stats.kondisiBaik);
+                updateStatWithAnimation('stat-kondisiBaikPercentage', data.stats.kondisiBaikPercentage, true);
+                
+                const bar = document.getElementById('stat-kondisiBaikBar');
+                if(bar) bar.style.width = data.stats.kondisiBaikPercentage + '%';
+                
+                updateStatWithAnimation('stat-rusakServis', data.stats.rusakServis);
+                updateStatWithAnimation('stat-akanKedaluwarsa', data.stats.akanKedaluwarsa);
+                updateStatWithAnimation('stat-sudahKedaluwarsa', data.stats.sudahKedaluwarsa);
+                updateStatWithAnimation('stat-aparKosong', data.stats.aparKosong);
+                updateStatWithAnimation('stat-sudahDiinspeksi', data.stats.sudahDiinspeksiBulanIni);
+                updateStatWithAnimation('stat-belumDiinspeksi', data.stats.belumDiinspeksiBulanIni);
+                
+                // Update Progress Donut Chart
+                const totalProgress = data.stats.sudahDiinspeksiBulanIni + data.stats.belumDiinspeksiBulanIni;
+                const progPct = totalProgress > 0 ? Math.round((data.stats.sudahDiinspeksiBulanIni / totalProgress) * 100) : 0;
+                
+                if (window.progressChart) {
+                    window.progressChart.updateSeries([data.stats.sudahDiinspeksiBulanIni, data.stats.belumDiinspeksiBulanIni]);
+                    window.progressChart.updateOptions({
+                        plotOptions: {
+                            pie: { donut: { labels: { 
+                                value: { formatter: function() { return progPct + "%"; } },
+                                total: { formatter: function() { return progPct + "%"; } }
+                            }}}
+                        }
+                    });
+                }
+                
+                // Update Monthly Chart
+                if (window.monthlyChart) {
+                    const monthSudah = data.charts.yearlyInspections.map(item => item.sudah);
+                    const monthBelum = data.charts.yearlyInspections.map(item => item.belum);
+                    window.monthlyChart.updateSeries([
+                        { name: '{{ __('INSPECTED') }}', data: monthSudah },
+                        { name: '{{ __('UNINSPECTED') }}', data: monthBelum }
+                    ]);
+                }
+                
+                // Update Types Chart
+                if (window.typeChart) {
+                    window.typeChart.updateSeries(Object.values(data.charts.jenisData));
+                    window.typeChart.updateOptions({ labels: Object.keys(data.charts.jenisData) });
+                }
+                
+                // Update Tables with cross-fade animation
+                updateTableWithAnimation('table-recent-container', data.html.recentInspections);
+                updateTableWithAnimation('table-uninspected-container', data.html.uninspectedTable);
+                updateTableWithAnimation('table-inspected-container', data.html.inspectedTable);
+            })
+            .catch(error => console.error('Error fetching real-time dashboard data:', error));
+        }, 15000);
     });
 </script>
 @endsection

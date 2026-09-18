@@ -45,7 +45,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/users/export-excel-preview', [UserController::class, 'previewExcel'])->name('users.export-excel-preview');
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
 
-    Route::get('/master-data', [MasterDataController::class, 'index']);
+    Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');
     Route::get('/master-data/export-pdf', [MasterDataController::class, 'exportPdf'])->name('master-data.export-pdf');
     Route::get('/master-data/export-excel', [MasterDataController::class, 'exportExcel'])->name('master-data.export-excel');
     Route::get('/master-data/export-excel-preview', [MasterDataController::class, 'previewExcel'])->name('master-data.export-excel-preview');

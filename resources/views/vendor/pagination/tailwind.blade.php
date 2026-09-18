@@ -51,6 +51,28 @@
                     @endif
 
                     {{-- Pagination Elements --}}
+                    @php
+                        $last = $paginator->lastPage();
+                        if ($last > 4) {
+                            $elements = [
+                                [
+                                    1 => $paginator->url(1),
+                                    2 => $paginator->url(2),
+                                ],
+                                '...',
+                                [
+                                    ($last - 1) => $paginator->url($last - 1),
+                                    $last => $paginator->url($last),
+                                ]
+                            ];
+                        } else {
+                            $el = [];
+                            for($i=1; $i<=$last; $i++) {
+                                $el[$i] = $paginator->url($i);
+                            }
+                            $elements = [$el];
+                        }
+                    @endphp
                     @foreach ($elements as $element)
                         {{-- "Three Dots" Separator --}}
                         @if (is_string($element))

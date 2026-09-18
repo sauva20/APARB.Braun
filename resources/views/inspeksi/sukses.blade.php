@@ -50,6 +50,14 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- HTML5 QR Code -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <!-- Block Back Button -->
+    <script>
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
 </head>
 <body class="bg-[#F0F0F0] text-[#1A1A1A] relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-x-hidden overflow-y-auto">
 

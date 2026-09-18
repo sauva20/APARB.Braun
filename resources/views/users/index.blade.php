@@ -15,7 +15,28 @@
         jadwal_rutin_tanggal:'{{ old('form_type') == 'edit_user' ? old('jadwal_rutin_tanggal') : '' }}',
         gedungs: []
     },
-    formRoleTambah: '{{ old('form_type') == 'tambah_user' ? old('role') : '' }}'
+    formRoleTambah: '{{ old('form_type') == 'tambah_user' ? old('role') : '' }}',
+    formGedungs: [],
+    gedungAssignments: {
+        @foreach($gedungs as $g)
+        '{{ $g->id }}': [
+            @foreach($g->users as $u)
+                { id: '{{ $u->id }}', name: '{{ addslashes($u->name) }}' },
+            @endforeach
+        ],
+        @endforeach
+    },
+    getGedungWarning(gedungId, currentUserId = null) {
+        let users = this.gedungAssignments[gedungId] || [];
+        if (currentUserId) {
+            users = users.filter(u => u.id != currentUserId);
+        }
+        if (users.length > 0) {
+            let names = users.map(u => u.name).join(', ');
+            return `{{ __('Already assigned to') }}: ${names}`;
+        }
+        return '';
+    }
 }">
 
     <!-- Header Area -->
@@ -262,9 +283,15 @@
                             <label class="block text-xs font-bold text-slate-700 mb-2">{{ __('Select Main Responsibility Building') }}</label>
                             <div class="grid grid-cols-2 gap-2">
                                 @foreach($gedungs as $g)
-                                <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
-                                    <input type="checkbox" name="gedungs[]" value="{{ $g->id }}" class="w-4 h-4 text-[#009B77] bg-slate-100 border-slate-300 rounded focus:ring-[#009B77] focus:ring-2">
-                                    <span class="text-sm font-medium text-slate-700">{{ $g->nama }}</span>
+                                <label class="flex flex-col justify-center gap-1 p-2 rounded-lg border transition-colors cursor-pointer"
+                                       :class="formGedungs.includes('{{ $g->id }}') && getGedungWarning('{{ $g->id }}') ? 'border-red-300 bg-red-50 hover:bg-red-100' : 'border-slate-200 bg-white hover:bg-slate-50'">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" name="gedungs[]" value="{{ $g->id }}" x-model="formGedungs" class="w-4 h-4 text-[#009B77] bg-slate-100 border-slate-300 rounded focus:ring-[#009B77] focus:ring-2">
+                                        <span class="text-sm font-medium text-slate-700">{{ $g->nama }}</span>
+                                    </div>
+                                    <p x-show="formGedungs.includes('{{ $g->id }}') && getGedungWarning('{{ $g->id }}')" 
+                                       x-text="getGedungWarning('{{ $g->id }}')" 
+                                       class="text-[10px] text-red-600 font-bold leading-tight" x-cloak></p>
                                 </label>
                                 @endforeach
                             </div>
@@ -368,9 +395,15 @@
                             <label class="block text-xs font-bold text-slate-700 mb-2">{{ __('Select Main Responsibility Building') }}</label>
                             <div class="grid grid-cols-2 gap-2">
                                 @foreach($gedungs as $g)
-                                <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition-colors">
-                                    <input type="checkbox" name="gedungs[]" value="{{ $g->id }}" x-model="editUser.gedungs" class="w-4 h-4 text-[#009B77] bg-slate-100 border-slate-300 rounded focus:ring-[#009B77] focus:ring-2">
-                                    <span class="text-sm font-medium text-slate-700">{{ $g->nama }}</span>
+                                <label class="flex flex-col justify-center gap-1 p-2 rounded-lg border transition-colors cursor-pointer"
+                                       :class="editUser.gedungs.map(String).includes('{{ $g->id }}') && getGedungWarning('{{ $g->id }}', editUser.id) ? 'border-red-300 bg-red-50 hover:bg-red-100' : 'border-slate-200 bg-white hover:bg-slate-50'">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" name="gedungs[]" value="{{ $g->id }}" x-model="editUser.gedungs" class="w-4 h-4 text-[#009B77] bg-slate-100 border-slate-300 rounded focus:ring-[#009B77] focus:ring-2">
+                                        <span class="text-sm font-medium text-slate-700">{{ $g->nama }}</span>
+                                    </div>
+                                    <p x-show="editUser.gedungs.map(String).includes('{{ $g->id }}') && getGedungWarning('{{ $g->id }}', editUser.id)" 
+                                       x-text="getGedungWarning('{{ $g->id }}', editUser.id)" 
+                                       class="text-[10px] text-red-600 font-bold leading-tight" x-cloak></p>
                                 </label>
                                 @endforeach
                             </div>

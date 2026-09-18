@@ -63,11 +63,11 @@
         vendor: '{{ addslashes($apar->vendor) }}',
         tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}'
     }
-}">
+}" x-init="$watch('qty', value => { if (value !== '' && value <= 0) statusAkhir = 'isi_ulang'; }); if (qty !== '' && qty <= 0) statusAkhir = 'isi_ulang';">
     <!-- Header Area -->
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-            <a href="{{ route('scan.apar', $apar->kode) }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="{{ __('Back') }}">
+            <a href="{{ $backUrl }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="{{ __('Back') }}">
                 <i class="ph-bold ph-arrow-left text-lg"></i>
             </a>
             <div>
@@ -143,7 +143,7 @@
                         @foreach($pertanyaan as $index => $tanya)
                         @if($index >= 15)
                         @php
-                            $expected = ($index === 20 || $index === 21) ? 'tidak ada' : 'ada';
+                            $expected = ($index === 20) ? 'tidak ada' : 'ada';
                         @endphp
                         <div x-data="{ 
                                 jawaban: $persist('{{ old('checklist.'.$index.'.jawaban', $expected) }}').using(sessionStorage).as('inspeksi_jawaban_{{ $index }}_{{ $apar->id }}'), 
@@ -404,7 +404,7 @@
                     {{ __('Kembali') }}
                 </button>
                 <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <a href="{{ route('scan.apar', $apar->kode) }}" class="flex-1 sm:flex-none px-5 py-2 text-center rounded-lg font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 border border-transparent transition-all text-xs">
+                    <a href="{{ $backUrl }}" class="flex-1 sm:flex-none px-5 py-2 text-center rounded-lg font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 border border-transparent transition-all text-xs">
                         {{ __('Cancel') }}
                     </a>
                     <button type="submit" class="flex-1 sm:flex-none btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2 px-6 rounded-lg shadow-sm shadow-[#009B77]/25 transition-all flex items-center justify-center gap-1.5 text-xs">

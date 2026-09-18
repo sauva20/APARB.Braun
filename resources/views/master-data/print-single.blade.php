@@ -86,12 +86,12 @@
         .system-badge {
             background: #e6f7f2;
             color: #009B77;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
             padding: 4px 12px;
             border-radius: 999px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             margin-bottom: 12px;
         }
         .kode-apar {
@@ -144,10 +144,17 @@
         }
 
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
             body {
                 background: white;
                 padding: 0;
+                margin: 0;
                 display: block;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             .header-bar {
                 display: none !important;

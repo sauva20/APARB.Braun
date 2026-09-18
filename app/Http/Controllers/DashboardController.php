@@ -144,6 +144,32 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $data = $this->getDashboardData($request);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'stats' => [
+                    'totalApar' => $data['totalApar'],
+                    'kondisiBaik' => $data['kondisiBaik'],
+                    'kondisiBaikPercentage' => $data['totalApar'] > 0 ? round(($data['kondisiBaik'] / $data['totalApar']) * 100) : 0,
+                    'rusakServis' => $data['rusakServis'],
+                    'akanKedaluwarsa' => $data['akanKedaluwarsa'],
+                    'sudahKedaluwarsa' => $data['sudahKedaluwarsa'],
+                    'aparKosong' => $data['aparKosong'],
+                    'sudahDiinspeksiBulanIni' => $data['sudahDiinspeksiBulanIni'],
+                    'belumDiinspeksiBulanIni' => $data['belumDiinspeksiBulanIni'],
+                ],
+                'charts' => [
+                    'yearlyInspections' => $data['yearlyInspections'],
+                    'jenisData' => $data['jenisData'],
+                ],
+                'html' => [
+                    'recentInspections' => view('dashboard.partials.recent-inspections', ['recentInspections' => $data['recentInspections']])->render(),
+                    'uninspectedTable' => view('dashboard.partials.uninspected-table', ['belumDiinspeksiApars' => $data['belumDiinspeksiApars']])->render(),
+                    'inspectedTable' => view('dashboard.partials.inspected-table', ['sudahDiinspeksiApars' => $data['sudahDiinspeksiApars']])->render(),
+                ]
+            ]);
+        }
+        
         return view('dashboard.index', $data);
     }
 

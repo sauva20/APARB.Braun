@@ -27,7 +27,7 @@ class UserController extends Controller
 
         $users = $query->with('gedungs')->latest()->paginate(10)->withQueryString();
         $roles = User::select('role')->whereNotNull('role')->distinct()->pluck('role');
-        $gedungs = \App\Models\Gedung::orderBy('nama')->get();
+        $gedungs = \App\Models\Gedung::with('users:id,name')->orderBy('nama')->get();
 
         return view('users.index', compact('users', 'roles', 'gedungs'));
     }

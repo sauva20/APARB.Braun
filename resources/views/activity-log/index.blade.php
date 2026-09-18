@@ -22,10 +22,7 @@
                 <i class="ph-bold ph-file-pdf text-lg"></i>
                 {{ __('Export PDF') }}
             </a>
-            <a href="#" @click.prevent="$dispatch('open-excel-preview', { previewUrl: '{{ route('activity-log.export-excel-preview', request()->all()) }}', downloadUrl: '{{ route('activity-log.export-excel', request()->all()) }}' })" class="flex items-center gap-2 px-4 py-2.5 text-sm bg-emerald-50 text-emerald-600 hover:bg-emerald-100 font-bold rounded-xl transition-colors">
-                <i class="ph-bold ph-file-csv text-lg"></i>
-                {{ __('Export Excel') }}
-            </a>
+
         </div>
     </div>
 
@@ -90,7 +87,7 @@
         
         <!-- Pagination -->
         <div class="px-6 py-4 border-t border-slate-100">
-            {{ $activities->links() }}
+            {{ $activities->onEachSide(0)->links() }}
         </div>
     </div>
 </div>

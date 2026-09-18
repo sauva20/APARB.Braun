@@ -104,12 +104,12 @@
             flex-grow: 1;
         }
         .tag-system {
-            font-size: 10px;
+            font-size: 13px;
             font-weight: 800;
             color: #009B77;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
         .kode-apar {
             font-size: 20px;
@@ -142,23 +142,48 @@
         }
 
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
             body {
                 background: white;
                 padding: 0;
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             .header-bar {
                 display: none !important;
             }
             .grid-container {
                 max-width: 100%;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 330px);
+                justify-content: center;
                 gap: 16px;
             }
             .label-card {
                 box-shadow: none;
                 border: 1.5px dashed #009B77;
                 break-inside: avoid;
+                padding: 16px;
+                gap: 16px;
             }
+            .label-card:nth-child(10n) {
+                break-after: page;
+                page-break-after: always;
+            }
+            .qr-wrapper svg {
+                width: 130px !important;
+                height: 130px !important;
+            }
+            .qr-wrapper {
+                padding: 6px;
+            }
+            .tag-system { font-size: 10.5px; letter-spacing: 0.3px; margin-bottom: 2px; }
+            .kode-apar { font-size: 18px; margin-bottom: 4px; }
+            .meta-row { font-size: 11px; margin-bottom: 3px; }
+            .scan-hint { font-size: 9px; margin-top: 8px; padding-top: 6px; }
         }
     </style>
 </head>

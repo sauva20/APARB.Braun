@@ -10,7 +10,9 @@
     window.statusTranslations = {
         'layak': '{{ __('Good Condition') }}',
         'perbaikan': '{{ __('Needs Maintenance') }}',
-        'tidak_layak': '{{ __('Bad Condition') }}'
+        'tidak_layak': '{{ __('Bad Condition') }}',
+        'isi_ulang': '{{ __('Needs Refill') }}',
+        'rusak': '{{ __('Damaged') }}'
     };
 </script>
 
@@ -243,7 +245,7 @@
                                         </div>
                                         <div class="flex items-center gap-2 w-full sm:w-auto">
                                             <span class="hidden sm:inline-flex px-2 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-500 border border-amber-100">{{ __('Waiting') }}</span>
-                                            <a href="{{ route('inspeksi.mulai', $apar->id) }}" class="w-full sm:w-auto text-center bg-white border-2 border-slate-200 hover:border-[#009B77] text-slate-600 hover:text-[#009B77] font-bold py-1.5 px-4 rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                                            <a href="{{ route('inspeksi.mulai', $apar->id) }}?source=schedule" class="w-full sm:w-auto text-center bg-white border-2 border-slate-200 hover:border-[#009B77] text-slate-600 hover:text-[#009B77] font-bold py-1.5 px-4 rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5 shadow-sm">
                                                 {{ __('Start') }} <i class="ph-bold ph-arrow-right"></i>
                                             </a>
                                         </div>
@@ -481,11 +483,11 @@
                                                                 <div class="flex items-start gap-3 p-3 rounded-xl border" 
                                                                     x-data="{ 
                                                                         isExpected() { 
-                                                                            if (parseInt(index) === 20 || parseInt(index) === 21) return item.jawaban === 'tidak ada';
+                                                                            if (parseInt(index) === 20) return item.jawaban === 'tidak ada';
                                                                             return item.jawaban === 'ada';
                                                                         },
                                                                         translatedAnswer() {
-                                                                            const dict = { 'ya': '{{ __('Yes') }}', 'tidak': '{{ __('No') }}', 'ada': '{{ __('Yes') }}', 'tidak ada': '{{ __('No') }}' };
+                                                                            const dict = { 'ya': '{{ __('Yes') }}', 'tidak': '{{ __('No') }}', 'ada': '{{ __('Ada') }}', 'tidak ada': '{{ __('Tidak Ada') }}' };
                                                                             return dict[item.jawaban] || item.jawaban;
                                                                         }
                                                                     }"
@@ -517,7 +519,7 @@
                                                                 <div class="flex items-start gap-3 p-3 rounded-xl border" 
                                                                     x-data="{ 
                                                                         translatedAnswer() {
-                                                                            const dict = { 'ya': '{{ __('Yes') }}', 'tidak': '{{ __('No') }}', 'ada': '{{ __('Yes') }}', 'tidak ada': '{{ __('No') }}' };
+                                                                            const dict = { 'ya': '{{ __('Yes') }}', 'tidak': '{{ __('No') }}', 'ada': '{{ __('Ada') }}', 'tidak ada': '{{ __('Tidak Ada') }}' };
                                                                             return dict[item.jawaban] || item.jawaban;
                                                                         }
                                                                     }"

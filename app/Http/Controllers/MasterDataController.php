@@ -62,6 +62,10 @@ class MasterDataController extends Controller
             $query->where('jenis_id', $request->jenis_id);
         }
 
+        if ($request->filled('qty_status') && $request->qty_status === 'empty') {
+            $query->where('qty', '<=', 0);
+        }
+
         $apars = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
 
         return view('master-data.index', compact('gedungs', 'lokasis', 'jenisApars', 'kapasitasApars', 'apars'));
