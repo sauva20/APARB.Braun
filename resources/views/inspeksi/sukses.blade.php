@@ -79,11 +79,69 @@
             <h1 class="text-2xl font-bold text-slate-800 mb-2">{{ __('Inspection Completed!') }}</h1>
             <p class="text-sm font-medium text-slate-500 mb-8">{{ __('Inspection data for PFE') }} <span class="font-bold text-slate-800">{{ $apar->kode }}</span> {{ __('has been successfully saved.') }}</p>
             
-            <button @click="startScanner()" class="w-full py-4 bg-[#009B77] hover:bg-[#008264] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#009B77]/30 transition-all flex items-center justify-center gap-2">
-                <i class="ph-bold ph-scan text-xl"></i> {{ __('Scan Another PFE') }}
-            </button>
-            
+            @if(request('source') === 'schedule')
+                @if($nextApar)
+                <a href="{{ route('inspeksi.mulai', ['apar' => $nextApar->id, 'source' => 'schedule']) }}" class="w-full py-4 bg-[#009B77] hover:bg-[#008264] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#009B77]/30 transition-all flex items-center justify-center gap-2 mb-3">
+                    <i class="ph-bold ph-arrow-right text-xl"></i> {{ __('Inspect Next PFE') }} ({{ $nextApar->kode }})
+                </a>
+                @endif
+                
+                <form x-ref="searchForm" action="{{ route('inspeksi.search') }}" method="GET" class="w-full mb-3"
+                      x-data="{
+                          searchQuery: '{{ old('kode') }}',
+                          apars: {{ json_encode($allApars ?? []) }},
+                          isOpen: false,
+                          get filteredApars() {
+                              if(this.searchQuery.trim() === '') return [];
+                              let q = this.searchQuery.toLowerCase();
+                              return this.apars.filter(i => 
+                                  i.kode.toLowerCase().includes(q) || 
+                                  i.lokasi.toLowerCase().includes(q) || 
+                                  i.gedung.toLowerCase().includes(q)
+                              ).slice(0, 5);
+                          },
+                          selectApar(kode) {
+                              this.searchQuery = kode;
+                              this.isOpen = false;
+                              $refs.searchForm.submit();
+                          }
+                      }">
+                    <input type="hidden" name="source" value="schedule">
+                    <div class="relative">
+                        <input type="text" name="kode" placeholder="{{ __('Or search PFE ID...') }}" required autocomplete="off"
+                               x-model="searchQuery"
+                               @focus="isOpen = true"
+                               @click.away="isOpen = false"
+                               class="w-full py-3 px-4 bg-slate-50 border-2 border-slate-200 rounded-xl font-medium text-sm focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all">
+                        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-[#009B77] text-white rounded-lg hover:bg-[#008264] transition-colors">
+                            <i class="ph-bold ph-magnifying-glass"></i>
+                        </button>
+                        
+                        <!-- Autocomplete Dropdown -->
+                        <div x-show="isOpen && filteredApars.length > 0" x-cloak
+                             x-transition
+                             class="absolute z-50 w-full bg-white mt-1 rounded-xl shadow-lg border border-slate-100 max-h-60 overflow-y-auto">
+                            <template x-for="apar in filteredApars" :key="apar.kode">
+                                <div @click="selectApar(apar.kode)" class="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 text-left">
+                                    <div class="font-bold text-sm text-[#009B77]" x-text="apar.kode"></div>
+                                    <div class="text-[10px] text-slate-500 font-medium mt-0.5" x-text="apar.gedung + ' - ' + apar.lokasi"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    @error('kode')
+                        <p class="text-red-500 text-xs font-medium mt-1 text-left">{{ $message }}</p>
+                    @enderror
+                </form>
 
+                <a href="/inspection-schedule" class="w-full py-3 bg-white hover:bg-slate-50 text-slate-600 rounded-xl font-bold text-[15px] shadow-sm ring-1 ring-inset ring-slate-300 transition-all flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-calendar-check text-xl"></i> {{ __('Back to Schedule') }}
+                </a>
+            @else
+                <button @click="startScanner()" class="w-full py-4 bg-[#009B77] hover:bg-[#008264] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#009B77]/30 transition-all flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-scan text-xl"></i> {{ __('Scan Another PFE') }}
+                </button>
+            @endif
         </div>
 
         <!-- Scanner View -->

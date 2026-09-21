@@ -47,6 +47,7 @@
                                         'kapasitas_id' => __('Capacity'),
                                         'pic_id' => __('PIC'),
                                         'tgl_kedaluwarsa' => __('Expired Date'),
+                                        'tgl_isi_ulang' => __('Last Refill'),
                                         'kode' => __('PFE ID'),
                                         'qty' => __('Qty'),
                                         'vendor' => __('Vendor'),
@@ -71,7 +72,7 @@
                                     if ($key === 'pic_id') {
                                         return \App\Models\User::find($value)->name ?? $value;
                                     }
-                                    if ($key === 'tgl_kedaluwarsa') {
+                                    if (in_array($key, ['tgl_kedaluwarsa', 'tgl_isi_ulang'])) {
                                         try {
                                             return \Carbon\Carbon::parse($value)->format('d M Y');
                                         } catch(\Exception $e) {

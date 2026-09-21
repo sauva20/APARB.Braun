@@ -183,6 +183,39 @@ class InspeksiController extends Controller
         return view('inspection-schedule.index', compact('gedungs', 'totalApar', 'selesai', 'menunggu', 'pertanyaan', 'jadwals', 'users', 'currentMonth', 'currentYear'));
     }
 
+    public function exportChecklist(Request $request)
+    {
+        $request->validate([
+            'gedung_id' => 'required|exists:gedung,id'
+        ]);
+
+        $gedungId = $request->gedung_id;
+        $gedung = \App\Models\Gedung::findOrFail($gedungId);
+
+        $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas'])
+            ->whereHas('lokasi', function ($q) use ($gedungId) {
+                $q->where('gedung_id', $gedungId);
+            });
+        
+        if (auth()->user()->role === 'Staff') {
+            $query->whereHas('lokasi.gedung.users', function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        }
+        
+        $apars = $query->orderBy('kode', 'asc')->get();
+        
+        $originalLocale = app()->getLocale();
+        app()->setLocale('id');
+        $pertanyaan = $this->getPertanyaan();
+        app()->setLocale($originalLocale);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('inspeksi.pdf_checklist', compact('apars', 'pertanyaan'))->setPaper('a4', 'landscape');
+        
+        $safeGedungName = preg_replace('/[^A-Za-z0-9\-]/', '_', $gedung->nama);
+        return $pdf->stream('Checklist_' . $safeGedungName . '_' . date('Ymd') . '.pdf');
+    }
+
     public function pedoman(Apar $apar)
     {
         return view('inspeksi.pedoman', compact('apar'));
@@ -215,16 +248,27 @@ class InspeksiController extends Controller
             'foto_base64' => 'required|string',
             'qty' => 'required|integer|min:0',
             'tgl_kedaluwarsa' => 'required|date',
+            'tgl_isi_ulang' => 'nullable|date',
+            'jenis_id' => 'required|exists:jenis_apar,id',
+            'kapasitas_id' => 'required|exists:kapasitas_apar,id',
         ], [
             'foto_base64.required' => __('Foto kondisi APAR wajib diambil sebelum submit.'),
         ]);
+
+        $updateData = [
+            'qty' => $request->qty,
+            'tgl_kedaluwarsa' => $request->tgl_kedaluwarsa,
+            'tgl_isi_ulang' => $request->tgl_isi_ulang ?? $apar->tgl_isi_ulang,
+            'pic_id' => auth()->id(),
+            'jenis_id' => $request->jenis_id,
+            'kapasitas_id' => $request->kapasitas_id
+        ];
 
         if ($request->hasFile('foto')) {
             if ($apar->foto && Storage::disk('public')->exists($apar->foto)) {
                 Storage::disk('public')->delete($apar->foto);
             }
-            $path = $request->file('foto')->store('foto-apar', 'public');
-            $apar->update(['foto' => $path]);
+            $updateData['foto'] = $request->file('foto')->store('foto-apar', 'public');
         } elseif ($request->filled('foto_base64')) {
             if ($apar->foto && Storage::disk('public')->exists($apar->foto)) {
                 Storage::disk('public')->delete($apar->foto);
@@ -235,15 +279,21 @@ class InspeksiController extends Controller
             $image_base64 = base64_decode($image_parts[1]);
             $path = 'foto-apar/' . uniqid() . '.' . $image_type;
             Storage::disk('public')->put($path, $image_base64);
-            $apar->update(['foto' => $path]);
+            $updateData['foto'] = $path;
         }
 
-        // Update qty, tgl_kedaluwarsa, and pic_id to the person who inspected
-        $apar->update([
-            'qty' => $request->qty,
-            'tgl_kedaluwarsa' => $request->tgl_kedaluwarsa,
-            'pic_id' => auth()->id()
-        ]);
+        // Jika Lokasi APAR (index 24) "Tidak Sesuai", update master data lokasi
+        if (isset($request->checklist[24]) && $request->checklist[24]['jawaban'] === 'tidak ada' && !empty($request->checklist[24]['keterangan'])) {
+            $newLokasiName = trim($request->checklist[24]['keterangan']);
+            $lokasi = \App\Models\Lokasi::firstOrCreate([
+                'nama' => $newLokasiName,
+                'gedung_id' => $apar->lokasi->gedung_id,
+            ]);
+            $updateData['lokasi_id'] = $lokasi->id;
+        }
+
+        // Jalankan update hanya satu kali agar history tercatat dalam 1 log
+        $apar->update($updateData);
 
         $status = $request->status;
         if ((int)$request->qty <= 0) {
@@ -284,12 +334,44 @@ class InspeksiController extends Controller
             }
         }
 
-        return redirect()->route('inspeksi.sukses', $apar->id);
+        return redirect()->route('inspeksi.sukses', ['apar' => $apar->id, 'source' => $request->source]);
     }
 
-    public function sukses(Apar $apar)
+    public function search(Request $request)
     {
-        return view('inspeksi.sukses', compact('apar'));
+        $request->validate(['kode' => 'required|string']);
+        $apar = Apar::where('kode', $request->kode)->first();
+        
+        if (!$apar) {
+            return back()->withErrors(['kode' => 'APAR dengan ID tersebut tidak ditemukan.']);
+        }
+
+        return redirect()->route('inspeksi.mulai', ['apar' => $apar->id, 'source' => $request->source]);
+    }
+
+    public function sukses(Request $request, Apar $apar)
+    {
+        $nextApar = null;
+        if ($request->source === 'schedule') {
+            $currentMonth = now()->month;
+            $currentYear = now()->year;
+            $nextApar = Apar::whereHas('lokasi', function($q) use ($apar) {
+                $q->where('gedung_id', $apar->lokasi->gedung_id);
+            })->whereDoesntHave('inspeksis', function($q) use ($currentMonth, $currentYear) {
+                $q->whereMonth('created_at', $currentMonth)
+                  ->whereYear('created_at', $currentYear);
+            })->where('id', '!=', $apar->id)->orderBy('id', 'asc')->first();
+        }
+
+        $allApars = Apar::with(['lokasi.gedung'])->select('id', 'kode', 'lokasi_id')->get()->map(function($a) {
+            return [
+                'kode' => $a->kode,
+                'lokasi' => $a->lokasi->nama ?? '-',
+                'gedung' => $a->lokasi->gedung->nama ?? '-'
+            ];
+        });
+
+        return view('inspeksi.sukses', compact('apar', 'nextApar', 'allApars'));
     }
 
     public function storeJadwal(Request $request)

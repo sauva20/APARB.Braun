@@ -159,7 +159,7 @@ class MasterDataController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = [__('No'), __('PFE ID'), __('Location'), __('Building'), __('Type'), __('Capacity'), __('Fire Class'), __('Expiry Date'), __('Qty'), __('PIC'), __('Last Inspection')];
+        $columns = [__('No'), __('PFE ID'), __('Location'), __('Building'), __('Type'), __('Capacity'), __('Fire Class'), __('Expiry Date'), __('Last Refill'), __('Qty'), __('PIC'), __('Last Inspection')];
 
         $callback = function() use($apars, $columns) {
             $file = fopen('php://output', 'w');
@@ -193,6 +193,7 @@ class MasterDataController extends Controller
                     $apar->kapasitas->ukuran ?? 'n/a',
                     $kelas,
                     $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-',
+                    $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('d M Y') : '-',
                     $apar->qty,
                     $picName,
                     $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
@@ -242,7 +243,7 @@ class MasterDataController extends Controller
         }
 
         $apars = $query->orderBy('id', 'asc')->get();
-        $columns = [__('No'), __('PFE ID'), __('Location'), __('Building'), __('Type'), __('Capacity'), __('Fire Class'), __('Expiry Date'), __('Qty'), __('PIC'), __('Last Inspection')];
+        $columns = [__('No'), __('PFE ID'), __('Location'), __('Building'), __('Type'), __('Capacity'), __('Fire Class'), __('Expiry Date'), __('Last Refill'), __('Qty'), __('PIC'), __('Last Inspection')];
         $rows = [];
 
         foreach ($apars as $index => $apar) {
@@ -271,6 +272,7 @@ class MasterDataController extends Controller
                 $apar->kapasitas->ukuran ?? 'n/a',
                 $kelas,
                 $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-',
+                $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('d M Y') : '-',
                 $apar->qty,
                 $picName,
                 $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
@@ -413,6 +415,7 @@ class MasterDataController extends Controller
             'kapasitas_id' => 'required|exists:kapasitas_apar,id',
             'vendor' => 'nullable|string|max:255',
             'tgl_kedaluwarsa' => 'nullable|date',
+            'tgl_isi_ulang' => 'nullable|date',
             'nomor_apar' => 'required|string|max:10',
         ]);
 
@@ -501,6 +504,7 @@ class MasterDataController extends Controller
             'kapasitas_id' => 'required|exists:kapasitas_apar,id',
             'vendor' => 'nullable|string|max:255',
             'tgl_kedaluwarsa' => 'nullable|date',
+            'tgl_isi_ulang' => 'nullable|date',
             'nomor_apar' => 'required|string|max:10',
         ]);
 

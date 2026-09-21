@@ -6,7 +6,7 @@
 <div class="space-y-6" x-data="{ activeTab: localStorage.getItem('masterDataTab') || 'data', showModalApar: {{ old('form_type') == 'tambah_apar' && $errors->any() ? 'true' : 'false' }}, 
 showQrModal: false, qrData: { id: '', kode: '', svg: '' },
 showModalEditApar: {{ old('form_type') == 'edit_apar' && $errors->any() ? 'true' : 'false' }}, 
-editApar: { id:'{{ old('form_type') == 'edit_apar' ? old('id') : '' }}', kode:'{{ old('form_type') == 'edit_apar' ? old('kode') : '' }}', nomor_apar:'{{ old('form_type') == 'edit_apar' ? old('nomor_apar') : '' }}', gedung_id:'{{ old('form_type') == 'edit_apar' ? old('gedung_id') : '' }}', lokasi:'{{ old('form_type') == 'edit_apar' ? old('lokasi') : '' }}', jenis_id:'{{ old('form_type') == 'edit_apar' ? old('jenis_id') : '' }}', kapasitas_id:'{{ old('form_type') == 'edit_apar' ? old('kapasitas_id') : '' }}', qty:'{{ old('form_type') == 'edit_apar' ? old('qty') : '' }}', tgl_kedaluwarsa:'{{ old('form_type') == 'edit_apar' ? old('tgl_kedaluwarsa') : '' }}' },  
+editApar: { id:'{{ old('form_type') == 'edit_apar' ? old('id') : '' }}', kode:'{{ old('form_type') == 'edit_apar' ? old('kode') : '' }}', nomor_apar:'{{ old('form_type') == 'edit_apar' ? old('nomor_apar') : '' }}', gedung_id:'{{ old('form_type') == 'edit_apar' ? old('gedung_id') : '' }}', lokasi:'{{ old('form_type') == 'edit_apar' ? old('lokasi') : '' }}', jenis_id:'{{ old('form_type') == 'edit_apar' ? old('jenis_id') : '' }}', kapasitas_id:'{{ old('form_type') == 'edit_apar' ? old('kapasitas_id') : '' }}', qty:'{{ old('form_type') == 'edit_apar' ? old('qty') : '' }}', tgl_kedaluwarsa:'{{ old('form_type') == 'edit_apar' ? old('tgl_kedaluwarsa') : '' }}', tgl_isi_ulang:'{{ old('form_type') == 'edit_apar' ? old('tgl_isi_ulang') : '' }}' },  
 showModalLokasi: {{ old('form_type') == 'tambah_lokasi' && $errors->any() ? 'true' : 'false' }}, 
 showModalGedung: {{ old('form_type') == 'tambah_gedung' && $errors->any() ? 'true' : 'false' }}, 
 showModalJenis: {{ old('form_type') == 'tambah_jenis' && $errors->any() ? 'true' : 'false' }}, 
@@ -288,6 +288,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Capacity') }}</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Fire Class</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Expired Date</th>
+                        <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Last Refill') }}</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">Qty</th>
                         <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">PIC</th>
                         @if(auth()->user()->role !== 'Staff')
@@ -329,6 +330,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                                 <span class="font-semibold text-slate-600">{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d M Y') : '-' }}</span>
                             @endif
                         </td>
+                        <td class="py-4 px-5">
+                            <span class="font-semibold text-slate-600">{{ $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('d M Y') : '-' }}</span>
+                        </td>
                         <td class="py-4 px-5 text-center font-bold text-slate-800">
                             @if($apar->qty <= 0)
                                 <span class="text-[10px] font-bold tracking-wider py-1 px-2.5 rounded-lg bg-red-50 text-red-600 border border-red-100 whitespace-nowrap">{{ __('OUT OF STOCK') }}</span>
@@ -361,7 +365,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                         @if(auth()->user()->role !== 'Staff')
                         <td class="py-4 px-5">
                             <div class="flex items-center justify-center gap-1">
-                                <button type="button" @click="editApar = { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}', nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '', gedung_id: '{{ $apar->lokasi->gedung_id ?? '' }}', lokasi: '{{ addslashes($apar->lokasi->nama ?? '') }}', jenis_id: '{{ $apar->jenis_id }}', kapasitas_id: '{{ $apar->kapasitas_id }}', qty: {{ $apar->qty }}, tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}' }; showModalEditApar = true" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
+                                <button type="button" @click="editApar = { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}', nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '', gedung_id: '{{ $apar->lokasi->gedung_id ?? '' }}', lokasi: '{{ addslashes($apar->lokasi->nama ?? '') }}', jenis_id: '{{ $apar->jenis_id }}', kapasitas_id: '{{ $apar->kapasitas_id }}', qty: {{ $apar->qty }}, tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}', tgl_isi_ulang: '{{ $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('Y-m-d') : '' }}' }; showModalEditApar = true" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
                                     <i class="ph-bold ph-pencil-simple text-lg"></i>
                                 </button>
                                 <form action="/master-data/apar/{{ $apar->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, '{{ __('Are you sure you want to delete this PFE?') }}');">
@@ -1235,6 +1239,18 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                 </div>
                 @error('tgl_kedaluwarsa') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
+            
+            <!-- {{ __('Last Refill') }} -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Last Refill') }}</label>
+                <div class="relative">
+                    <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
+                    <input type="text" name="tgl_isi_ulang" placeholder="{{ __('Select Date...') }}" value="{{ old('tgl_isi_ulang') }}"
+                           class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
+                    <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                </div>
+                @error('tgl_isi_ulang') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+            </div>
                             </div>
                         </div>
                         
@@ -1559,6 +1575,18 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                 </div>
                 @error('tgl_kedaluwarsa') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+            </div>
+            
+            <!-- {{ __('Last Refill') }} -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Last Refill') }}</label>
+                <div class="relative">
+                    <i class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
+                    <input type="text" name="tgl_isi_ulang" placeholder="{{ __('Select Date...') }}" x-model="editApar.tgl_isi_ulang"
+                           class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
+                    <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                </div>
+                @error('tgl_isi_ulang') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
                             </div>
                         </div>

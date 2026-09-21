@@ -108,15 +108,16 @@
     <table>
         <thead>
             <tr>
-                <th class="text-center" style="width: 5%;">No</th>
-                <th style="width: 12%;">{{ __('PFE ID') }}</th>
-                <th style="width: 14%;">Location</th>
-                <th style="width: 14%;">Building</th>
-                <th style="width: 13%;">Type</th>
-                <th style="width: 10%;">Capacity</th>
+                <th class="text-center" style="width: 4%;">No</th>
+                <th style="width: 10%;">{{ __('PFE ID') }}</th>
+                <th style="width: 12%;">Location</th>
+                <th style="width: 10%;">Building</th>
+                <th style="width: 12%;">Type</th>
+                <th style="width: 8%;">Capacity</th>
                 <th class="text-center" style="width: 8%;">Fire Class</th>
-                <th style="width: 12%;">{{ __('Expired DATE') }}</th>
-                <th class="text-center" style="width: 5%;">Qty</th>
+                <th style="width: 10%;">{{ __('Expired DATE') }}</th>
+                <th style="width: 10%;">{{ __('Last Refill') }}</th>
+                <th class="text-center" style="width: 4%;">Qty</th>
                 <th style="width: 12%;">PIC</th>
             </tr>
         </thead>
@@ -145,6 +146,9 @@
                         @else
                             {{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('d/m/Y') : '-' }}
                         @endif
+                    </td>
+                    <td>
+                        {{ $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('d/m/Y') : '-' }}
                     </td>
                     <td class="text-center font-bold">
                         {{ $apar->qty }}

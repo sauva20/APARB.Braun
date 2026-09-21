@@ -39,6 +39,19 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <!-- AlpineJS -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Flatpickr (Datepicker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        .flatpickr-wrapper {
+            display: block !important;
+            width: 100% !important;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected:hover {
+            background: #009B77 !important;
+            border-color: #009B77 !important;
+        }
+    </style>
 </head>
 <body class="bg-[#F0F0F0] text-[#1A1A1A] relative min-h-screen w-screen overflow-x-hidden flex flex-col pb-24">
 
@@ -123,7 +136,17 @@
 
     <!-- Checklist Section -->
     <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 overflow-hidden" x-data="{ step: $persist(1).using(sessionStorage).as('inspeksi_step_{{ $apar->id }}') }">
-        <form action="{{ route('inspeksi.store', $apar->id ?? 0) }}" method="POST" enctype="multipart/form-data" @submit="Object.keys(sessionStorage).forEach(k => { if(k.startsWith('inspeksi_')) sessionStorage.removeItem(k); })">
+        <form action="{{ route('inspeksi.store', $apar->id ?? 0) }}" method="POST" enctype="multipart/form-data" 
+              @submit.prevent="
+                  let foto = $el.querySelector('input[name=\'foto_base64\']').value;
+                  if ('{{ request('source') }}' !== 'schedule' && (!foto || foto.trim() === '')) {
+                      alert('{{ __('Foto kondisi wajib dilampirkan untuk inspeksi langsung via QR!') }}');
+                      return;
+                  }
+                  Object.keys(sessionStorage).forEach(k => { if(k.startsWith('inspeksi_')) sessionStorage.removeItem(k); });
+                  $el.submit();
+              ">
+            <input type="hidden" name="source" value="{{ request('source') }}">
             @csrf
             
             <!-- Step 1: Pemeriksaan Fisik -->
@@ -142,6 +165,138 @@
                     <div class="space-y-3">
                         @foreach($pertanyaan as $index => $tanya)
                         @if($index >= 15)
+                        
+                        @if($index === 15)
+                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
+                             x-data="{ 
+                                 selectedJenis: $persist('{{ old('jenis_id', $apar->jenis_id) }}').using(sessionStorage).as('inspeksi_jenis_{{ $apar->id }}'), 
+                                 expectedJenis: '{{ $apar->jenis_id }}',
+                                 keterangan: $persist('{{ addslashes(old('checklist.'.$index.'.keterangan', '')) }}').using(sessionStorage).as('inspeksi_ket_{{ $index }}_{{ $apar->id }}')
+                             }"
+                             :class="selectedJenis == expectedJenis ? 'bg-teal-50/50 border-teal-200/60' : 'bg-red-50/80 border-red-200'">
+                            <!-- Number & Question -->
+                            <div class="flex-1 flex gap-3">
+                                <div class="w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] flex-shrink-0 transition-colors"
+                                     :class="selectedJenis == expectedJenis ? 'bg-[#009B77] text-white' : 'bg-red-500 text-white'">
+                                    {{ $index - 14 }}
+                                </div>
+                                <p class="font-bold text-slate-700 text-xs leading-relaxed pt-0.5">{{ $tanya }}</p>
+                            </div>
+                            
+                            <!-- Toggle Buttons -->
+                            <div class="flex flex-col gap-2 min-w-[180px] sm:w-[320px]">
+                                <div class="flex flex-wrap bg-slate-100/80 rounded-lg p-1 border border-slate-200 shadow-inner self-start w-full sm:w-auto">
+                                    <input type="hidden" name="checklist[{{ $index }}][jawaban]" :value="selectedJenis == expectedJenis ? 'ada' : 'tidak ada'">
+                                    <input type="hidden" name="jenis_id" :value="selectedJenis" required>
+                                    
+                                    @foreach($jenisApars as $jenis)
+                                    <button type="button" @click="selectedJenis = '{{ $jenis->id }}'" 
+                                            class="flex-1 px-3 py-1.5 rounded text-[10px] font-bold transition-all duration-300 flex items-center justify-center gap-1.5 whitespace-nowrap" 
+                                            :class="selectedJenis == '{{ $jenis->id }}' ? (selectedJenis == expectedJenis ? 'bg-[#009B77] text-white shadow-sm scale-[1.02]' : 'bg-red-500 text-white shadow-sm scale-[1.02]') : 'text-slate-500 hover:bg-white hover:text-slate-700 hover:shadow-sm'">
+                                        {{ $jenis->nama }}
+                                    </button>
+                                    @endforeach
+                                </div>
+                                
+                                <!-- Input Keterangan -->
+                                <div x-show="selectedJenis !== ''" x-collapse>
+                                    <div class="relative">
+                                        <i class="ph-bold absolute left-2.5 top-1/2 -translate-y-1/2 text-base" :class="selectedJenis != expectedJenis ? 'ph-warning-circle text-red-400' : 'ph-note-pencil text-slate-400'"></i>
+                                        <input type="text" name="checklist[{{ $index }}][keterangan]" x-model="keterangan" 
+                                               placeholder="{{ __('Kondisi / Keterangan (Opsional)...') }}" 
+                                               class="w-full text-[11px] py-2 pl-8 pr-3 border-2 bg-white rounded-lg focus:ring-2 outline-none transition-all font-medium shadow-sm"
+                                               :class="selectedJenis != expectedJenis ? 'border-red-200 focus:border-red-400 focus:ring-red-100 placeholder:text-red-300 text-red-700' : 'border-slate-200 focus:border-[#009B77] focus:ring-[#009B77]/15 placeholder:text-slate-300 text-slate-700'">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @elseif($index === 16)
+                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
+                             x-data="{ 
+                                 selectedKapasitas: $persist('{{ old('kapasitas_id', $apar->kapasitas_id) }}').using(sessionStorage).as('inspeksi_kapasitas_{{ $apar->id }}'), 
+                                 expectedKapasitas: '{{ $apar->kapasitas_id }}',
+                                 keterangan: $persist('{{ addslashes(old('checklist.'.$index.'.keterangan', '')) }}').using(sessionStorage).as('inspeksi_ket_{{ $index }}_{{ $apar->id }}')
+                             }"
+                             :class="selectedKapasitas == expectedKapasitas ? 'bg-teal-50/50 border-teal-200/60' : 'bg-red-50/80 border-red-200'">
+                            <!-- Number & Question -->
+                            <div class="flex-1 flex gap-3">
+                                <div class="w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] flex-shrink-0 transition-colors"
+                                     :class="selectedKapasitas == expectedKapasitas ? 'bg-[#009B77] text-white' : 'bg-red-500 text-white'">
+                                    {{ $index - 14 }}
+                                </div>
+                                <p class="font-bold text-slate-700 text-xs leading-relaxed pt-0.5">{{ $tanya }}</p>
+                            </div>
+                            
+                            <!-- Toggle Buttons -->
+                            <div class="flex flex-col gap-2 min-w-[180px] sm:w-[320px]">
+                                <div class="flex flex-wrap bg-slate-100/80 rounded-lg p-1 border border-slate-200 shadow-inner self-start w-full sm:w-auto">
+                                    <input type="hidden" name="checklist[{{ $index }}][jawaban]" :value="selectedKapasitas == expectedKapasitas ? 'ada' : 'tidak ada'">
+                                    <input type="hidden" name="kapasitas_id" :value="selectedKapasitas" required>
+                                    
+                                    @foreach($kapasitasApars as $kapasitas)
+                                    <button type="button" @click="selectedKapasitas = '{{ $kapasitas->id }}'" 
+                                            class="flex-1 px-3 py-1.5 rounded text-[10px] font-bold transition-all duration-300 flex items-center justify-center gap-1.5 whitespace-nowrap" 
+                                            :class="selectedKapasitas == '{{ $kapasitas->id }}' ? (selectedKapasitas == expectedKapasitas ? 'bg-[#009B77] text-white shadow-sm scale-[1.02]' : 'bg-red-500 text-white shadow-sm scale-[1.02]') : 'text-slate-500 hover:bg-white hover:text-slate-700 hover:shadow-sm'">
+                                        {{ $kapasitas->ukuran }}
+                                    </button>
+                                    @endforeach
+                                </div>
+                                
+                                <!-- Input Keterangan -->
+                                <div x-show="selectedKapasitas !== ''" x-collapse>
+                                    <div class="relative">
+                                        <i class="ph-bold absolute left-2.5 top-1/2 -translate-y-1/2 text-base" :class="selectedKapasitas != expectedKapasitas ? 'ph-warning-circle text-red-400' : 'ph-note-pencil text-slate-400'"></i>
+                                        <input type="text" name="checklist[{{ $index }}][keterangan]" x-model="keterangan" 
+                                               placeholder="{{ __('Kondisi / Keterangan (Opsional)...') }}" 
+                                               class="w-full text-[11px] py-2 pl-8 pr-3 border-2 bg-white rounded-lg focus:ring-2 outline-none transition-all font-medium shadow-sm"
+                                               :class="selectedKapasitas != expectedKapasitas ? 'border-red-200 focus:border-red-400 focus:ring-red-100 placeholder:text-red-300 text-red-700' : 'border-slate-200 focus:border-[#009B77] focus:ring-[#009B77]/15 placeholder:text-slate-300 text-slate-700'">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @elseif($index === 17)
+                        @php
+                            $tglIsiUlangStr = $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('Y-m-d') : '';
+                        @endphp
+                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
+                             x-data="{ 
+                                 selectedTgl: $persist('{{ old('tgl_isi_ulang', $tglIsiUlangStr) }}').using(sessionStorage).as('inspeksi_tglisiulang_{{ $apar->id }}'), 
+                                 expectedTgl: '{{ $tglIsiUlangStr }}',
+                                 keterangan: $persist('{{ addslashes(old('checklist.'.$index.'.keterangan', '')) }}').using(sessionStorage).as('inspeksi_ket_{{ $index }}_{{ $apar->id }}')
+                             }"
+                             :class="(selectedTgl == expectedTgl && expectedTgl !== '') ? 'bg-teal-50/50 border-teal-200/60' : 'bg-red-50/80 border-red-200'">
+                            <!-- Number & Question -->
+                            <div class="flex-1 flex gap-3">
+                                <div class="w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] flex-shrink-0 transition-colors"
+                                     :class="(selectedTgl == expectedTgl && expectedTgl !== '') ? 'bg-[#009B77] text-white' : 'bg-red-500 text-white'">
+                                    {{ $index - 14 }}
+                                </div>
+                                <p class="font-bold text-slate-700 text-xs leading-relaxed pt-0.5">{{ $tanya }}</p>
+                            </div>
+                            
+                            <!-- Date Input -->
+                            <div class="flex flex-col gap-2 min-w-[180px] sm:w-[320px]">
+                                <div class="flex flex-wrap bg-slate-100/80 rounded-lg p-1 border border-slate-200 shadow-inner self-start w-full sm:w-auto">
+                                    <input type="hidden" name="checklist[{{ $index }}][jawaban]" :value="(selectedTgl == expectedTgl && expectedTgl !== '') ? 'ada' : 'tidak ada'">
+                                    <input type="text" name="tgl_isi_ulang" x-model="selectedTgl" required
+                                           x-init="flatpickr($el, { dateFormat: 'Y-m-d', disableMobile: 'true', defaultDate: selectedTgl, onChange: (s, d) => { selectedTgl = d; } })"
+                                           class="w-full sm:w-auto px-3 py-1.5 rounded text-xs font-bold transition-all duration-300 outline-none shadow-sm focus:ring-2 focus:ring-[#009B77]/20 border-2"
+                                           :class="(selectedTgl == expectedTgl && expectedTgl !== '') ? 'bg-[#009B77] text-white border-[#009B77]' : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'">
+                                </div>
+                                
+                                <!-- Input Keterangan -->
+                                <div x-show="selectedTgl !== ''" x-collapse>
+                                    <div class="relative">
+                                        <i class="ph-bold absolute left-2.5 top-1/2 -translate-y-1/2 text-base" :class="(selectedTgl != expectedTgl || expectedTgl === '') ? 'ph-warning-circle text-red-400' : 'ph-note-pencil text-slate-400'"></i>
+                                        <input type="text" name="checklist[{{ $index }}][keterangan]" x-model="keterangan" 
+                                               placeholder="{{ __('Kondisi / Keterangan (Opsional)...') }}" 
+                                               class="w-full text-[11px] py-2 pl-8 pr-3 border-2 bg-white rounded-lg focus:ring-2 outline-none transition-all font-medium shadow-sm"
+                                               :class="(selectedTgl != expectedTgl || expectedTgl === '') ? 'border-red-200 focus:border-red-400 focus:ring-red-100 placeholder:text-red-300 text-red-700' : 'border-slate-200 focus:border-[#009B77] focus:ring-[#009B77]/15 placeholder:text-slate-300 text-slate-700'">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @else
                         @php
                             $expected = ($index === 20) ? 'tidak ada' : 'ada';
                         @endphp
@@ -150,6 +305,15 @@
                                 keterangan: $persist('{{ addslashes(old('checklist.'.$index.'.keterangan', '')) }}').using(sessionStorage).as('inspeksi_ket_{{ $index }}_{{ $apar->id }}'),
                                 expected: '{{ $expected }}' 
                              }" 
+                             @if($index === 24)
+                             x-effect="if ($refs.lokasiInput) {
+                                if (jawaban === 'tidak ada' && keterangan.trim().toLowerCase() === '{{ strtolower($apar->lokasi->nama) }}') {
+                                    $refs.lokasiInput.setCustomValidity('Lokasi yang dimasukkan sama dengan lokasi saat ini.');
+                                } else {
+                                    $refs.lokasiInput.setCustomValidity('');
+                                }
+                             }"
+                             @endif
                              class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
                              :class="jawaban === expected ? 'bg-teal-50/50 border-teal-200/60' : (jawaban !== '' ? 'bg-red-50/80 border-red-200' : 'bg-white border-slate-100 hover:border-slate-200')">
                              
@@ -163,18 +327,18 @@
                             </div>
                             
                             <!-- Toggle Ya / Tidak -->
-                            <div class="flex flex-col gap-2 min-w-[180px]">
+                            <div class="flex flex-col gap-2 min-w-[180px] sm:w-[320px]">
                                 <div class="flex bg-slate-100/80 rounded-lg p-1 border border-slate-200 shadow-inner self-start w-full sm:w-auto">
                                     <input type="hidden" name="checklist[{{ $index }}][jawaban]" x-model="jawaban">
                                     <button type="button" @click="jawaban = 'ada'" 
                                             class="flex-1 px-3 py-1.5 rounded text-[10px] font-bold transition-all duration-300 flex items-center justify-center gap-1.5" 
                                             :class="jawaban === 'ada' ? (expected === 'ada' ? 'bg-[#009B77] text-white shadow-sm scale-[1.02]' : 'bg-red-500 text-white shadow-sm scale-[1.02]') : 'text-slate-500 hover:bg-white hover:text-slate-700 hover:shadow-sm'">
-                                        <i class="ph-bold ph-check text-[10px]"></i> {{ __('Ada') }}
+                                        <i class="ph-bold ph-check text-[10px]"></i> {{ $index === 21 ? __('Padat') : ($index === 24 ? __('Sesuai') : __('Ada')) }}
                                     </button>
                                     <button type="button" @click="jawaban = 'tidak ada'" 
                                             class="flex-1 px-3 py-1.5 rounded text-[10px] font-bold transition-all duration-300 flex items-center justify-center gap-1.5" 
                                             :class="jawaban === 'tidak ada' ? (expected === 'tidak ada' ? 'bg-[#009B77] text-white shadow-sm scale-[1.02]' : 'bg-red-500 text-white shadow-sm scale-[1.02]') : 'text-slate-500 hover:bg-white hover:text-slate-700 hover:shadow-sm'">
-                                        <i class="ph-bold ph-x text-[10px]"></i> {{ __('Tidak Ada') }}
+                                        <i class="ph-bold ph-x text-[10px]"></i> {{ $index === 21 ? __('Tidak') : ($index === 24 ? __('Tidak Sesuai') : __('Tidak Ada')) }}
                                     </button>
                                 </div>
                                 
@@ -183,13 +347,24 @@
                                     <div class="relative">
                                         <i class="ph-bold absolute left-2.5 top-1/2 -translate-y-1/2 text-base" :class="jawaban !== expected ? 'ph-warning-circle text-red-400' : 'ph-note-pencil text-slate-400'"></i>
                                         <input type="text" name="checklist[{{ $index }}][keterangan]" x-model="keterangan" 
-                                               placeholder="{{ __('Kondisi / Keterangan (Opsional)...') }}" 
+                                               @if($index === 24) x-ref="lokasiInput" @endif 
+                                               placeholder="{{ $index === 24 ? __('Masukkan lokasi yang tepat...') : __('Kondisi / Keterangan (Opsional)...') }}" 
+                                               :required="jawaban === 'tidak ada' && {{ $index === 24 ? 'true' : 'false' }}"
                                                class="w-full text-[11px] py-2 pl-8 pr-3 border-2 bg-white rounded-lg focus:ring-2 outline-none transition-all font-medium shadow-sm"
                                                :class="jawaban !== expected ? 'border-red-200 focus:border-red-400 focus:ring-red-100 placeholder:text-red-300 text-red-700' : 'border-slate-200 focus:border-[#009B77] focus:ring-[#009B77]/15 placeholder:text-slate-300 text-slate-700'">
                                     </div>
+                                    @if($index === 24)
+                                    <div x-show="jawaban === 'tidak ada' && keterangan.trim().toLowerCase() === '{{ strtolower($apar->lokasi->nama) }}'" x-collapse>
+                                        <div class="mt-1.5 flex items-start gap-1.5 text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+                                            <i class="ph-bold ph-warning text-sm mt-0.5"></i>
+                                            <p class="text-[10px] font-medium leading-tight">{{ __('Lokasi yang Anda masukkan sama dengan lokasi saat ini. Masukkan lokasi yang berbeda jika memang tidak sesuai.') }}</p>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
+                        @endif
                         @endif
                         @endforeach
                     </div>
@@ -197,7 +372,18 @@
 
                 <!-- Lanjut Button Step 1 -->
                 <div class="p-4 sm:p-5 border-t border-slate-100 flex items-center justify-end bg-white sticky bottom-0 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-                    <button type="button" @click="step = 2" class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2 px-6 rounded-lg shadow-sm shadow-[#009B77]/25 transition-all flex items-center gap-1.5 text-xs">
+                    <button type="button" @click="
+                        let isValid = true;
+                        let inputs = $el.closest('div[x-show=\'step === 1\']').querySelectorAll('input, select, textarea');
+                        for (let input of inputs) {
+                            if (!input.checkValidity()) {
+                                input.reportValidity();
+                                isValid = false;
+                                break;
+                            }
+                        }
+                        if (isValid) step = 2;
+                    " class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2 px-6 rounded-lg shadow-sm shadow-[#009B77]/25 transition-all flex items-center gap-1.5 text-xs">
                         {{ __('Lanjut (Fungsi & Kelayakan)') }} <i class="ph-bold ph-arrow-right text-base"></i>
                     </button>
                 </div>
@@ -323,7 +509,8 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Expired</label>
                                 <div class="relative">
-                                    <input type="date" name="tgl_kedaluwarsa" x-model="tgl_kedaluwarsa" required
+                                    <input type="text" name="tgl_kedaluwarsa" x-model="tgl_kedaluwarsa" required
+                                           x-init="flatpickr($el, { dateFormat: 'Y-m-d', disableMobile: 'true', defaultDate: tgl_kedaluwarsa, onChange: (s, d) => { tgl_kedaluwarsa = d; } })"
                                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none appearance-none">
                                 </div>
                             </div>
@@ -331,8 +518,22 @@
 
                         <!-- Upload Foto -->
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Condition Photo') }}</label>
-                            <div class="relative w-full rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 hover:border-[#009B77] transition-all aspect-video flex items-center justify-center group" x-data="{ fileName: '', photoPreview: null }">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                                {{ __('Condition Photo') }}
+                                <span class="text-[10px] text-red-500 ml-1">
+                                    {{ __('(Wajib)') }}
+                                </span>
+                            </label>
+                            @if(request('source') === 'schedule')
+                            <p class="text-[10px] text-slate-500 mb-3 leading-relaxed">
+                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Silakan unggah foto bukti form ceklis (kertas) yang telah diisi secara manual di lapangan.') }}
+                            </p>
+                            @else
+                            <p class="text-[10px] text-slate-500 mb-3 leading-relaxed">
+                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Mohon lampirkan foto kondisi fisik APAR saat inspeksi dilakukan.') }}
+                            </p>
+                            @endif
+                            <div class="relative w-full rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 hover:border-[#009B77] transition-all min-h-[180px] flex items-center justify-center group" x-data="{ fileName: '', photoPreview: null }">
                                 <input type="hidden" name="foto_base64" :value="photoPreview">
                                 <input type="file" id="foto" class="hidden" accept="image/*" capture="environment"
                                        @change="
@@ -362,12 +563,12 @@
                                            reader.readAsDataURL(file);
                                        ">
                                 
-                                <label for="foto" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all" x-show="!photoPreview">
-                                    <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-[#009B77] group-hover:scale-110 transition-all">
+                                <label for="foto" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 p-4 cursor-pointer transition-all" x-show="!photoPreview">
+                                    <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-[#009B77] group-hover:scale-110 transition-all flex-shrink-0">
                                         <i class="ph-bold ph-camera text-xl"></i>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-500 group-hover:text-[#009B77]">{{ __('Take Photo') }}</span>
-                                    <span class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 border border-red-200 rounded-md uppercase tracking-widest mt-1">{{ __('TAKE PHOTO IN LANDSCAPE') }}</span>
+                                    <span class="text-sm font-bold text-slate-500 group-hover:text-[#009B77] text-center leading-none">{{ __('Take Photo') }}</span>
+                                    <span class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-1.5 border border-red-200 rounded-md uppercase tracking-widest text-center leading-tight">{{ __('TAKE PHOTO IN LANDSCAPE') }}</span>
                                 </label>
 
                                 <template x-if="photoPreview">

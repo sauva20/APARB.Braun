@@ -60,6 +60,14 @@
             </div>
         </div>
 
+        <!-- Information Box -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 sm:p-4 flex items-start gap-3">
+            <i class="ph-fill ph-info text-blue-500 text-lg shrink-0"></i>
+            <p class="text-[11px] font-medium text-blue-800 leading-relaxed mt-0.5">
+                {{ __('PERATURAN MENTRI TENAGA KERJA DAN TRANSMIGRASI No : PER.04/MEN/1980 TENTANG SYARAT-SYARAT PEMASANGAN DAN PEMELIHARAAN ALAT PEMADAM API RINGAN') }}
+            </p>
+        </div>
+
         <!-- Guidelines List -->
         <div class="bg-white rounded-[24px] shadow-[0_10px_30px_-15px_rgba(0,155,119,0.1)] border border-slate-100 p-5 sm:p-6">
             <div class="space-y-4">

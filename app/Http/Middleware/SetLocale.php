@@ -20,8 +20,13 @@ class SetLocale
         if (Session::has('locale')) {
             App::setLocale(Session::get('locale'));
         } else {
-            // Default to English
-            App::setLocale('en');
+            // Default to Indonesian for inspection and scan routes
+            if ($request->is('inspeksi*') || $request->is('scan*')) {
+                App::setLocale('id');
+            } else {
+                // Default to English for other routes
+                App::setLocale('en');
+            }
         }
 
         return $next($request);

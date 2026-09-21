@@ -90,12 +90,14 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::delete('/master-data/apar/{apar}', [MasterDataController::class, 'destroyApar']);
 
     Route::get('/inspection-schedule', [InspeksiController::class, 'index']);
+    Route::get('/inspection-schedule/export-checklist', [InspeksiController::class, 'exportChecklist'])->name('inspection-schedule.export-checklist');
     Route::post('/inspection-schedule', [InspeksiController::class, 'storeJadwal']);
     Route::put('/inspection-schedule/{jadwal}', [InspeksiController::class, 'updateJadwal']);
     Route::delete('/inspection-schedule/{jadwal}', [InspeksiController::class, 'destroyJadwal']);
 
     Route::get('/inspeksi/pedoman/{apar}', [InspeksiController::class, 'pedoman'])->name('inspeksi.pedoman');
     Route::get('/inspeksi/mulai/{apar}', [InspeksiController::class, 'create'])->name('inspeksi.mulai');
+    Route::get('/inspeksi/search', [InspeksiController::class, 'search'])->name('inspeksi.search');
     Route::get('/inspeksi/sukses/{apar}', [InspeksiController::class, 'sukses'])->name('inspeksi.sukses');
     Route::post('/inspeksi/store/{apar}', [InspeksiController::class, 'store'])->name('inspeksi.store');
 });

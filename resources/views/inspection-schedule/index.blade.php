@@ -40,6 +40,33 @@
                 <span class="hidden sm:inline">{{ __('Create Schedule') }}</span>
             </button>
             @endif
+            
+            <div x-data="{ openExport: false }" class="relative z-50">
+                <button @click="openExport = !openExport" @click.away="openExport = false" class="btn-smooth-ring bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
+                    <i class="ph-bold ph-printer text-lg"></i>
+                    <span class="hidden sm:inline">{{ __('Export Checklist') }}</span>
+                    <i class="ph-bold ph-caret-down text-sm text-slate-400 ml-1 transition-transform" :class="openExport ? 'rotate-180' : ''"></i>
+                </button>
+                <div x-show="openExport" 
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="transform opacity-0 scale-95"
+                     x-transition:enter-end="transform opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="transform opacity-100 scale-100"
+                     x-transition:leave-end="transform opacity-0 scale-95"
+                     class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-100 py-2 max-h-60 overflow-y-auto" x-cloak style="display: none;">
+                    
+                    <div class="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                        {{ __('Select Building') }}
+                    </div>
+                    
+                    @foreach($gedungs as $gedung)
+                    <a href="{{ route('inspection-schedule.export-checklist', ['gedung_id' => $gedung->id]) }}" target="_blank" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-teal-50 hover:text-teal-600 flex items-center gap-2 transition-colors">
+                        <i class="ph-fill ph-buildings text-lg text-teal-500"></i> <span class="truncate">{{ $gedung->nama }}</span>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 
