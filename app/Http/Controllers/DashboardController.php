@@ -34,7 +34,11 @@ class DashboardController extends Controller
         // 1. Summary Cards Data
         $totalApar = Apar::count();
         
-        $apars = Apar::with(['latestInspeksi', 'jenis'])->get();
+        $endOfSelectedMonth = Carbon::createFromDate($selectedYear, $selectedMonth, 1)->endOfMonth();
+
+        $apars = Apar::with(['inspeksis' => function($q) use ($endOfSelectedMonth) {
+            $q->where('created_at', '<=', $endOfSelectedMonth)->latest();
+        }, 'jenis'])->get();
         
         $kondisiBaik = 0;
         $rusakServis = 0;
@@ -42,24 +46,24 @@ class DashboardController extends Controller
         $sudahKedaluwarsa = 0;
         $aparKosong = $apars->where('qty', '<', 1)->count();
         
-        $now = Carbon::now();
-        $thirtyDaysFromNow = $now->copy()->addDays(30);
+        $thirtyDaysFromSelected = $endOfSelectedMonth->copy()->addDays(30);
 
         foreach ($apars as $apar) {
-            // Status based on latest inspection
-            if ($apar->latestInspeksi) {
-                if ($apar->latestInspeksi->status === 'layak') {
+            // Status based on latest inspection up to selected month
+            $latestInspeksi = $apar->inspeksis->first();
+            if ($latestInspeksi) {
+                if ($latestInspeksi->status === 'layak') {
                     $kondisiBaik++;
-                } elseif (in_array($apar->latestInspeksi->status, ['rusak', 'perbaikan', 'isi_ulang'])) {
+                } elseif (in_array($latestInspeksi->status, ['rusak', 'perbaikan', 'isi_ulang'])) {
                     $rusakServis++;
                 }
             }
 
-            // Expiry Check
+            // Expiry Check relative to selected month
             if ($apar->tgl_kedaluwarsa) {
-                if ($apar->tgl_kedaluwarsa->isPast()) {
+                if ($apar->tgl_kedaluwarsa->isBefore($endOfSelectedMonth)) {
                     $sudahKedaluwarsa++;
-                } elseif ($apar->tgl_kedaluwarsa->between($now, $thirtyDaysFromNow)) {
+                } elseif ($apar->tgl_kedaluwarsa->between($endOfSelectedMonth, $thirtyDaysFromSelected)) {
                     $akanKedaluwarsa++;
                 }
             }

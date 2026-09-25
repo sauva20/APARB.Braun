@@ -170,8 +170,8 @@
     
     <!-- Sidebar -->
     <aside @mouseenter="sidebarOpen = true" @mouseleave="sidebarOpen = false" 
-           :class="sidebarOpen ? 'w-[260px]' : 'w-[80px]'" 
-           class="w-[80px] bg-white flex-col hidden md:flex border-r border-slate-200/60 z-20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] relative flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.01)] will-change-[width]">
+           :class="sidebarOpen ? 'w-[260px] shadow-2xl' : 'w-[80px] shadow-[4px_0_24px_rgba(0,0,0,0.01)]'" 
+           class="h-screen absolute left-0 top-0 bg-white flex-col hidden md:flex border-r border-slate-200/60 z-[70] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[width]">
         
         <!-- Logo Area -->
         <div class="px-0 justify-center h-[72px] flex items-center border-b border-slate-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] w-full overflow-hidden" :class="sidebarOpen ? 'px-6 justify-start' : 'px-0 justify-center'">
@@ -326,7 +326,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative print:h-auto print:overflow-visible">
+    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative print:h-auto print:overflow-visible md:ml-[80px]">
         
         <!-- Top Navbar -->
         <header class="h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-8 z-[60] relative flex-shrink-0 shadow-[0_2px_10px_rgba(0,0,0,0.01)]">

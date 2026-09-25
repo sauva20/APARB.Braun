@@ -42,6 +42,8 @@
     <!-- Flatpickr (Datepicker) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .flatpickr-wrapper {
             display: block !important;
@@ -140,7 +142,17 @@
               @submit.prevent="
                   let foto = $el.querySelector('input[name=\'foto_base64\']').value;
                   if ('{{ request('source') }}' !== 'schedule' && (!foto || foto.trim() === '')) {
-                      alert('{{ __('Foto kondisi wajib dilampirkan untuk inspeksi langsung via QR!') }}');
+                      Swal.fire({
+                          icon: 'warning',
+                          title: '{{ __('Peringatan') }}',
+                          text: '{{ __('Lampirkan form saat inspeksi berlangsung!') }}',
+                          confirmButtonColor: '#009B77',
+                          confirmButtonText: '{{ __('OK') }}',
+                          customClass: {
+                              popup: 'rounded-2xl',
+                              confirmButton: 'rounded-lg font-bold shadow-sm'
+                          }
+                      });
                       return;
                   }
                   Object.keys(sessionStorage).forEach(k => { if(k.startsWith('inspeksi_')) sessionStorage.removeItem(k); });
@@ -462,7 +474,7 @@
                 <div class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Status Akhir -->
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Overall Status') }}</label>
                             <div x-data="{ open: false, options: { 'layak': '{{ __('Good Condition') }}', 'perbaikan': '{{ __('Needs Repair') }}', 'isi_ulang': '{{ __('Needs Refill') }}', 'rusak': '{{ __('Broken / Service') }}' } }" class="relative">
                                 <input type="hidden" name="status" :value="statusAkhir">
@@ -493,31 +505,28 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Qty & Tgl Kedaluwarsa -->
-                        <div class="grid grid-cols-1 gap-4">
-                            <!-- Qty -->
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Qty</label>
-                                <div class="relative">
-                                    <i class="ph-bold ph-hash absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                                    <input type="number" name="qty" min="0" x-model="qty" required
-                                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
-                                </div>
+                        <!-- Qty -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Qty</label>
+                            <div class="relative">
+                                <i class="ph-bold ph-hash absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                                <input type="number" name="qty" min="0" x-model="qty" required
+                                       class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                             </div>
-                            
-                            <!-- Tgl Kedaluwarsa -->
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Expired</label>
-                                <div class="relative">
-                                    <input type="text" name="tgl_kedaluwarsa" x-model="tgl_kedaluwarsa" required
-                                           x-init="flatpickr($el, { dateFormat: 'Y-m-d', disableMobile: 'true', defaultDate: tgl_kedaluwarsa, onChange: (s, d) => { tgl_kedaluwarsa = d; } })"
-                                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none appearance-none">
-                                </div>
+                        </div>
+                        
+                        <!-- Tgl Kedaluwarsa -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Expired</label>
+                            <div class="relative">
+                                <input type="text" name="tgl_kedaluwarsa" x-model="tgl_kedaluwarsa" required
+                                       x-init="flatpickr($el, { dateFormat: 'Y-m-d', disableMobile: 'true', defaultDate: tgl_kedaluwarsa, onChange: (s, d) => { tgl_kedaluwarsa = d; } })"
+                                       class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none appearance-none">
                             </div>
                         </div>
 
                         <!-- Upload Foto -->
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                                 {{ __('Condition Photo') }}
                                 <span class="text-[10px] text-red-500 ml-1">
@@ -530,7 +539,7 @@
                             </p>
                             @else
                             <p class="text-[10px] text-slate-500 mb-3 leading-relaxed">
-                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Mohon lampirkan foto kondisi fisik APAR saat inspeksi dilakukan.') }}
+                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Lampirkan form saat inspeksi berlangsung.') }}
                             </p>
                             @endif
                             <div class="relative w-full rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 hover:border-[#009B77] transition-all min-h-[180px] flex items-center justify-center group" x-data="{ fileName: '', photoPreview: null }">

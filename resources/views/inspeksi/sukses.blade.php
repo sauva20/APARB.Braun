@@ -103,7 +103,9 @@
                           selectApar(kode) {
                               this.searchQuery = kode;
                               this.isOpen = false;
-                              $refs.searchForm.submit();
+                              this.$nextTick(() => {
+                                  $refs.searchForm.submit();
+                              });
                           }
                       }">
                     <input type="hidden" name="source" value="schedule">

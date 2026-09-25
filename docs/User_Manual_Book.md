@@ -146,13 +146,13 @@ Halaman arsip digital untuk seluruh kegiatan inspeksi yang telah dilakukan.
 3. Tekan tombol **Mata (Detail)** untuk melihat rincian jawaban inspeksi dan foto yang dilampirkan.
 4. Gunakan tombol **Export PDF / Excel** di pojok kanan atas untuk mengunduh laporan ke perangkat komputer Anda.
 
-### 4.7 Display Dashboard (Mode Presentasi / TV)
+    ### 4.7 Display Dashboard (Mode Presentasi / TV)
 
-Fitur khusus berupa layar interaktif *fullscreen* (layar penuh) yang cocok untuk ditampilkan di monitor besar, TV lobi pabrik, atau ruang *monitoring*.
+    Fitur khusus berupa layar interaktif *fullscreen* (layar penuh) yang cocok untuk ditampilkan di monitor besar, TV lobi pabrik, atau ruang *monitoring*.
 
-1. Anda dapat mengaksesnya dengan mengeklik menu/ikon **Display Report** atau mengakses langsung *link* `/display-report`.
-2. Layar akan menampilkan daftar APAR yang perlu diinspeksi (berdasarkan jadwal) lengkap dengan animasi teks berjalan (marquee) di bagian bawah.
-3. Tampilan ini dirancang untuk memantau aktivitas tanpa perlu berinteraksi (*view-only*).
+    1. Anda dapat mengaksesnya dengan mengeklik menu/ikon **Display Report** atau mengakses langsung *link* `/display-report`.
+    2. Layar akan menampilkan daftar APAR yang perlu diinspeksi (berdasarkan jadwal) lengkap dengan animasi teks berjalan (marquee) di bagian bawah.
+    3. Tampilan ini dirancang untuk memantau aktivitas tanpa perlu berinteraksi (*view-only*).
 
 ---
 
