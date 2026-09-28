@@ -28,8 +28,9 @@ class UserController extends Controller
         $users = $query->with('gedungs')->latest()->paginate(10)->withQueryString();
         $roles = User::select('role')->whereNotNull('role')->distinct()->pluck('role');
         $gedungs = \App\Models\Gedung::with('users:id,name')->orderBy('nama')->get();
+        $allUsersForValidation = User::select('id', 'employee_id', 'email')->get();
 
-        return view('users.index', compact('users', 'roles', 'gedungs'));
+        return view('users.index', compact('users', 'roles', 'gedungs', 'allUsersForValidation'));
     }
 
     public function exportPdf(Request $request)
@@ -160,8 +161,11 @@ class UserController extends Controller
             'gedungs' => 'nullable|array',
             'gedungs.*' => 'exists:gedung,id',
         ], [
-            'employee_id.required' => 'User ID wajib diisi.',
-            'employee_id.unique' => 'User ID ini sudah terdaftar pada akun lain. Silakan gunakan User ID yang berbeda.',
+            'employee_id.required' => __('User ID field is required.'),
+            'employee_id.unique' => __('This User ID is already registered. Please use a different User ID.'),
+            'email.required' => __('Email field is required.'),
+            'email.unique' => __('This Email is already registered. Please use a different Email.'),
+            'email.email' => __('The email format is invalid.'),
         ]);
 
         // Auto-generate unique 4-digit PIN
@@ -211,8 +215,11 @@ class UserController extends Controller
             'gedungs' => 'nullable|array',
             'gedungs.*' => 'exists:gedung,id',
         ], [
-            'employee_id.required' => 'User ID wajib diisi.',
-            'employee_id.unique' => 'User ID ini sudah terdaftar pada akun lain. Silakan gunakan User ID yang berbeda.',
+            'employee_id.required' => __('User ID field is required.'),
+            'employee_id.unique' => __('This User ID is already registered. Please use a different User ID.'),
+            'email.required' => __('Email field is required.'),
+            'email.unique' => __('This Email is already registered. Please use a different Email.'),
+            'email.email' => __('The email format is invalid.'),
         ]);
 
         $data = [

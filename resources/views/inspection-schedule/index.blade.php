@@ -41,7 +41,7 @@
             </button>
             @endif
             
-            <div x-data="{ openExport: false }" class="relative z-50">
+            <div x-data="{ openExport: false }" class="relative z-[100]">
                 <button @click="openExport = !openExport" @click.away="openExport = false" class="btn-smooth-ring bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-printer text-lg"></i>
                     <span class="hidden sm:inline">{{ __('Export Checklist') }}</span>

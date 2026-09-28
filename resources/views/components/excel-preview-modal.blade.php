@@ -23,7 +23,7 @@
     }
 }" 
 @open-excel-preview.window="openPreview($event.detail.previewUrl, $event.detail.downloadUrl)" 
-class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
 
     <!-- Background overlay -->
     <div x-show="showPreviewModal" class="fixed inset-0 bg-slate-900/40" x-cloak></div>
@@ -31,7 +31,7 @@ class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="tr
     <div x-show="showPreviewModal" class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <!-- Modal panel -->
-            <div @click.away="showPreviewModal = false" class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl sm:my-8 sm:w-full sm:max-w-5xl border border-slate-100 flex flex-col max-h-[85vh]" x-cloak>
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl sm:my-8 sm:w-full sm:max-w-5xl border border-slate-100 flex flex-col max-h-[85vh]" x-cloak>
                 
                 <!-- Header -->
                 <div class="bg-white px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">

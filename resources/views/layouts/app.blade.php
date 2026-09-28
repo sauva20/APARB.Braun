@@ -481,7 +481,7 @@
 
     <!-- Change Password Modal -->
     <div x-data="{ open: false }" @open-change-password.window="open = true" x-show="open" class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4" style="display: none;" x-cloak>
-        <div x-show="open" @click.away="open = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar border border-slate-100">
+        <div x-show="open" class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar border border-slate-100">
             <!-- Modal Header -->
             <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
                 <div class="flex items-center gap-3">
@@ -538,7 +538,7 @@
 
     <!-- Change PIN Modal -->
     <div x-data="{ open: false }" @open-change-pin.window="open = true" x-show="open" class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4" style="display: none;" x-cloak>
-        <div x-show="open" @click.away="open = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar border border-slate-100">
+        <div x-show="open" class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar border border-slate-100">
             <!-- Modal Header -->
             <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
                 <div class="flex items-center gap-3">
@@ -600,7 +600,6 @@
              class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4">
             
             <div x-show="show" 
-                 @click.away="show = false"
                  class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar">
                 
                 <!-- Modal Header -->
@@ -754,7 +753,7 @@
         
     <!-- Logout Confirmation Modal -->
     <div x-data="{ open: false }" @open-logout-modal.window="open = true" x-show="open" class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-900/40 p-4" style="display: none;" x-cloak>
-        <div x-show="open" @click.away="open = false" class="bg-white rounded-3xl shadow-xl w-full max-w-sm flex flex-col border border-slate-100 overflow-hidden">
+        <div x-show="open" class="bg-white rounded-3xl shadow-xl w-full max-w-sm flex flex-col border border-slate-100 overflow-hidden">
             <div class="p-8 text-center space-y-4">
                 <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-4 border border-rose-100">
                     <i class="ph-bold ph-sign-out text-3xl"></i>

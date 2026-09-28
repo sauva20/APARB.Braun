@@ -36,7 +36,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
 
             <!-- Right: Actions -->
             <div class="flex items-center gap-3">
-                <div x-data="{ openExport: false }" class="relative z-50">
+                <div x-data="{ openExport: false }" class="relative z-[100]">
                     <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                         <i class="ph-bold ph-download-simple text-lg"></i>
                         <span class="hidden sm:inline">{{ __('Export Data') }}</span>
@@ -646,7 +646,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     @endif
     
     <!-- Modal Tambah Lokasi -->
-    <div x-show="showModalLokasi" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showModalLokasi" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <!-- Background overlay -->
         <div x-show="showModalLokasi"
              x-transition:enter="ease-out duration-200"
@@ -660,7 +660,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                 <!-- Modal panel -->
-                <div x-show="showModalLokasi" @click.away="showModalLokasi = false"
+                <div x-show="showModalLokasi"
                      x-transition:enter="ease-out duration-200"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -754,7 +754,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
     <!-- Modal Tambah Gedung -->
-    <div x-show="showModalGedung" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showModalGedung" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <!-- Background overlay -->
         <div x-show="showModalGedung"
              x-transition:enter="ease-out duration-200"
@@ -768,7 +768,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                 <!-- Modal panel -->
-                <div x-show="showModalGedung" @click.away="showModalGedung = false"
+                <div x-show="showModalGedung"
                      x-transition:enter="ease-out duration-200"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -810,7 +810,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         </div>
     </div>
     <!-- Modal {{ __('Add PFE Type') }} -->
-    <div x-show="showModalJenis" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showModalJenis" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <div x-show="showModalJenis"
              x-transition:enter="ease-out duration-200"
              x-transition:enter-start="opacity-0"
@@ -822,7 +822,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
       
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="showModalJenis" @click.away="showModalJenis = false"
+                <div x-show="showModalJenis"
                      x-transition:enter="ease-out duration-200"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -866,7 +866,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
     <!-- Modal Tambah Kapasitas -->
-    <div x-show="showModalKapasitas" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showModalKapasitas" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <div x-show="showModalKapasitas"
              x-transition:enter="ease-out duration-200"
              x-transition:enter-start="opacity-0"
@@ -878,7 +878,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
       
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="showModalKapasitas" @click.away="showModalKapasitas = false"
+                <div x-show="showModalKapasitas"
                      x-transition:enter="ease-out duration-200"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -925,7 +925,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
 <!-- Modal Tambah APAR -->
-    <div x-show="showModalApar" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showModalApar" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <!-- Background overlay -->
         <div x-show="showModalApar"
              x-transition:enter="ease-out duration-200"
@@ -939,7 +939,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                 <!-- Modal panel -->
-                <div x-show="showModalApar" @click.away="if (!$event.target.closest('.flatpickr-calendar')) showModalApar = false"
+                <div x-show="showModalApar"
                      x-transition:enter="ease-out duration-200"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -1046,45 +1046,13 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
             </div>
 
             <!-- Lokasi -->
-            <div x-data="{
-                open: false,
-                search: '',
-                get filtered() {
-                    if (this.search === '') return this.filteredLokasi;
-                    return this.filteredLokasi.filter(l => l.nama.toLowerCase().includes(this.search.toLowerCase()));
-                },
-                init() {
-                    this.search = this.lokasiName;
-                    this.$watch('lokasiName', val => this.search = val);
-                }
-            }">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('LOCATION') }}<span class="text-[10px] text-slate-400 font-medium normal-case">({{ __('Select / Type New') }})</span></label>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('LOCATION NAME') }}</label>
                 <div class="relative">
                     <input type="hidden" name="lokasi" :value="lokasiName">
-                    <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
-                    <input type="text" x-model="lokasiName" @focus="open = true" @click.away="open = false" placeholder="{{ __('Example: Corridor') }}" required 
-                           class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none"
-                           :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                    <div x-show="open && filteredLokasi.length > 0" x-cloak
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 scale-95"
-                         x-transition:enter-end="opacity-100 scale-100"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100 scale-100"
-                         x-transition:leave-end="opacity-0 scale-95"
-                         class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top">
-                        <div class="py-1">
-                            <template x-for="lok in filtered" :key="lok.id">
-                            <button type="button" @click="lokasiName = lok.nama; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="lokasiName == lok.nama ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
-                                <span x-text="lok.nama" class="font-bold"></span>
-                                <i class="ph-bold ph-check text-[#009B77]" x-show="lokasiName == lok.nama" x-cloak></i>
-                            </button>
-                            </template>
-                            <div x-show="filtered.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
-                                {{ __('Type to add new location') }}
-                            </div>
-                        </div>
-                    </div>
+                    <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10 peer-focus:text-[#009B77]"></i>
+                    <input type="text" x-model="lokasiName" placeholder="{{ __('Example: Corridor') }}" required 
+                           class="w-full peer bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                 </div>
                 @error('lokasi') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
@@ -1265,7 +1233,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
     <!-- Modal Edit APAR -->
-    <div x-show="showModalEditApar" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showModalEditApar" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <!-- Background overlay -->
         <div x-show="showModalEditApar"
              x-transition:enter="ease-out duration-200"
@@ -1279,7 +1247,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                 <!-- Modal panel -->
-                <div x-show="showModalEditApar" @click.away="if (!$event.target.closest('.flatpickr-calendar')) showModalEditApar = false"
+                <div x-show="showModalEditApar"
                      x-transition:enter="ease-out duration-200"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -1402,24 +1370,25 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     <input type="text" x-model="editApar.lokasi" @focus="open = true" @click.away="open = false" placeholder="{{ __('Example: Corridor') }}" required 
                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none"
                            :class="open ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : ''">
-                    <div x-show="open && filteredLokasi.length > 0" x-cloak
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 scale-95"
+                    <div x-show="open && (!editApar.gedung_id || filtered.length > 0)" x-cloak
+                           x-transition:enter="transition ease-out duration-200"
+                           x-transition:enter-start="opacity-0 scale-95"
                          x-transition:enter-end="opacity-100 scale-100"
                          x-transition:leave="transition ease-in duration-100"
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top">
                         <div class="py-1">
-                            <template x-for="lok in filtered" :key="lok.id">
+                              <div x-show="!editApar.gedung_id" class="py-3 px-4 text-center text-sm font-medium text-amber-500">
+                                  <i class="ph-bold ph-warning-circle mr-1"></i>{{ __('Pilih Gedung terlebih dahulu') }}
+                              </div>
+                              <template x-for="lok in filtered" :key="lok.id">
                             <button type="button" @click="editApar.lokasi = lok.nama; open = false" class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between" :class="editApar.lokasi == lok.nama ? 'text-amber-500 bg-amber-500/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
                                 <span x-text="lok.nama" class="font-bold"></span>
                                 <i class="ph-bold ph-check text-amber-500" x-show="editApar.lokasi == lok.nama" x-cloak></i>
                             </button>
                             </template>
-                            <div x-show="filtered.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
-                                {{ __('Type to add new location') }}
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -1602,14 +1571,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
     <!-- Modal Edit Gedung -->
-    <div x-show="showEditGedung" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showEditGedung" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <div x-show="showEditGedung"
              x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
              class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="showEditGedung" @click.away="showEditGedung = false"
+                <div x-show="showEditGedung"
                      x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100" x-cloak>
@@ -1648,14 +1617,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
     <!-- Modal Edit Lokasi -->
-    <div x-show="showEditLokasi" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showEditLokasi" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <div x-show="showEditLokasi"
              x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
              class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="showEditLokasi" @click.away="showEditLokasi = false"
+                <div x-show="showEditLokasi"
                      x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100" x-cloak>
@@ -1762,14 +1731,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
     <!-- Modal Edit Jenis -->
-    <div x-show="showEditJenis" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showEditJenis" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <div x-show="showEditJenis"
              x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
              class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="showEditJenis" @click.away="showEditJenis = false"
+                <div x-show="showEditJenis"
                      x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100" x-cloak>
@@ -1808,14 +1777,14 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 
     <!-- Modal Edit Kapasitas -->
-    <div x-show="showEditKapasitas" style="display: none;" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+    <div x-show="showEditKapasitas" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
         <div x-show="showEditKapasitas"
              x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
              class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="showEditKapasitas" @click.away="showEditKapasitas = false"
+                <div x-show="showEditKapasitas"
                      x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-100" x-cloak>
@@ -1869,7 +1838,7 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
              class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                <div x-show="showQrModal" @click.away="showQrModal = false"
+                <div x-show="showQrModal"
                      x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-sm border border-slate-100" x-cloak>

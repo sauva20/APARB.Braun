@@ -157,7 +157,7 @@
                 
                 <!-- Confirm New Password -->
                 <div>
-                    <label for="password_confirmation" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Ulangi {{ __('New Password') }}</label>
+                    <label for="password_confirmation" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">{{ __('Confirm New Password') }}</label>
                     <div class="relative group" x-data="{ show: false }">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#009B77] transition-colors">
                             <i class="ph-fill ph-check-circle text-lg"></i>

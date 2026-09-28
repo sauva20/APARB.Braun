@@ -16,7 +16,22 @@
         gedungs: []
     },
     formRoleTambah: '{{ old('form_type') == 'tambah_user' ? old('role') : '' }}',
+    formEmployeeIdTambah: '{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}',
+    formEmailTambah: '{{ old('form_type') == 'tambah_user' ? old('email') : '' }}',
     formGedungs: [],
+    takenUsers: {
+        @foreach($allUsersForValidation as $u)
+            '{{ $u->id }}': { employee_id: '{{ $u->employee_id }}', email: '{{ $u->email }}' },
+        @endforeach
+    },
+    isEmployeeIdTaken(val, currentId = null) {
+        if(!val) return false;
+        return Object.entries(this.takenUsers).some(([id, data]) => data.employee_id === val && id !== String(currentId));
+    },
+    isEmailTaken(val, currentId = null) {
+        if(!val) return false;
+        return Object.entries(this.takenUsers).some(([id, data]) => data.email === val && id !== String(currentId));
+    },
     gedungAssignments: {
         @foreach($gedungs as $g)
         '{{ $g->id }}': [
@@ -36,6 +51,12 @@
             return `{{ __('Already assigned to') }}: ${names}`;
         }
         return '';
+    },
+    isTambahSubmitDisabled() {
+        return this.isEmployeeIdTaken(this.formEmployeeIdTambah) || this.isEmailTaken(this.formEmailTambah);
+    },
+    isEditSubmitDisabled() {
+        return this.isEmployeeIdTaken(this.editUser.employee_id, this.editUser.id) || this.isEmailTaken(this.editUser.email, this.editUser.id);
     }
 }">
 
@@ -54,7 +75,7 @@
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-3">
-            <div x-data="{ openExport: false }" class="relative z-50">
+            <div x-data="{ openExport: false }" class="relative z-[100]">
                 <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-download-simple text-lg"></i>
                     <span class="hidden sm:inline">{{ __('Export Data') }}</span>
@@ -212,7 +233,7 @@
     <!-- Modal {{ __('Add User') }} -->
     <div x-show="showModalUser" class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40" @click="showModalUser = false"></div>
+            <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40"></div>
 
             <div x-show="showModalUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8" style="max-height: 85vh; overflow-y: auto;">
                 
@@ -232,7 +253,8 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID <span class="text-red-500">*</span></label>
-                        <input type="text" name="employee_id" value="{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}" required placeholder="{{ __('Example: 123456') }}" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="employee_id" x-model="formEmployeeIdTambah" required placeholder="{{ __('Example: 123456') }}" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium" :class="isEmployeeIdTaken(formEmployeeIdTambah) ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''">
+                        <p x-show="isEmployeeIdTaken(formEmployeeIdTambah)" class="mt-1.5 text-xs text-red-600 font-bold leading-tight flex items-start gap-1" x-cloak><i class="ph-fill ph-warning-circle text-sm"></i> <span>{{ __('This User ID is already registered. Please use a different User ID.') }}</span></p>
                         @if(old('form_type') == 'tambah_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
@@ -244,7 +266,8 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" value="{{ old('form_type') == 'tambah_user' ? old('email') : '' }}" required placeholder="example@bbraun.com" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="email" name="email" x-model="formEmailTambah" required placeholder="example@bbraun.com" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium" :class="isEmailTaken(formEmailTambah) ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''">
+                        <p x-show="isEmailTaken(formEmailTambah)" class="mt-1.5 text-xs text-red-600 font-bold leading-tight flex items-start gap-1" x-cloak><i class="ph-fill ph-warning-circle text-sm"></i> <span>{{ __('This Email is already registered. Please use a different Email.') }}</span></p>
                         @if(old('form_type') == 'tambah_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
@@ -310,7 +333,7 @@
                         <button type="button" @click="showModalUser = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200/60 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors">
                             {{ __('Cancel') }}
                         </button>
-                        <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-[#009B77] hover:bg-[#008264] rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all hover:-translate-y-0.5">
+                        <button type="submit" :disabled="isTambahSubmitDisabled()" :class="isTambahSubmitDisabled() ? 'bg-slate-400 opacity-50 cursor-not-allowed' : 'bg-[#009B77] hover:bg-[#008264] hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(0,155,119,0.25)]'" class="px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-all">
                             {{ __('Save User') }}
                         </button>
                     </div>
@@ -322,7 +345,7 @@
     <!-- Modal Edit User -->
     <div x-show="showEditUser" class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40" @click="showEditUser = false"></div>
+            <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/40"></div>
 
             <div x-show="showEditUser" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-6 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:my-8" style="max-height: 85vh; overflow-y: auto;">
                 
@@ -344,7 +367,8 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">User ID <span class="text-red-500">*</span></label>
-                        <input type="text" name="employee_id" x-model="editUser.employee_id" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="text" name="employee_id" x-model="editUser.employee_id" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium" :class="isEmployeeIdTaken(editUser.employee_id, editUser.id) ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''">
+                        <p x-show="isEmployeeIdTaken(editUser.employee_id, editUser.id)" class="mt-1.5 text-xs text-red-600 font-bold leading-tight flex items-start gap-1" x-cloak><i class="ph-fill ph-warning-circle text-sm"></i> <span>{{ __('This User ID is already registered. Please use a different User ID.') }}</span></p>
                         @if(old('form_type') == 'edit_user') @error('employee_id') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
                     
@@ -356,7 +380,8 @@
                     
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" x-model="editUser.email" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium">
+                        <input type="email" name="email" x-model="editUser.email" required class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] block p-2.5 transition-colors font-medium" :class="isEmailTaken(editUser.email, editUser.id) ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''">
+                        <p x-show="isEmailTaken(editUser.email, editUser.id)" class="mt-1.5 text-xs text-red-600 font-bold leading-tight flex items-start gap-1" x-cloak><i class="ph-fill ph-warning-circle text-sm"></i> <span>{{ __('This Email is already registered. Please use a different Email.') }}</span></p>
                         @if(old('form_type') == 'edit_user') @error('email') <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror @endif
                     </div>
 
@@ -421,7 +446,7 @@
                         <button type="button" @click="showEditUser = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200/60 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors">
                             {{ __('Cancel') }}
                         </button>
-                        <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-[#009B77] hover:bg-[#008264] rounded-xl shadow-[0_4px_12px_rgba(0,155,119,0.25)] transition-all hover:-translate-y-0.5">
+                        <button type="submit" :disabled="isEditSubmitDisabled()" :class="isEditSubmitDisabled() ? 'bg-slate-400 opacity-50 cursor-not-allowed' : 'bg-[#009B77] hover:bg-[#008264] hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(0,155,119,0.25)]'" class="px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-all">
                             {{ __('Save Changes') }}
                         </button>
                     </div>
