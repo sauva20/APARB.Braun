@@ -388,7 +388,10 @@
                                 <span class="text-sm font-semibold text-emerald-100">{{ __('Days') }}</span>
                             </div>
                         @elseif($isCurrentMonth && $daysLeft === 0)
-                            <span class="text-2xl font-extrabold text-rose-200">{{ __('Days') }} {{ __('Last!') }}</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-2xl font-extrabold text-white">{{ __('Last Day!') }}</span>
+                                <i class="ph-fill ph-warning-circle text-rose-400 text-2xl"></i>
+                            </div>
                         @elseif($endOfMonth->isPast())
                             <span class="text-xl font-extrabold text-emerald-100">{{ __('Month Ended') }}</span>
                         @else

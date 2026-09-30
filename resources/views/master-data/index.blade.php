@@ -29,7 +29,9 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
                     <i class="ph-bold ph-list-dashes text-xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-base font-bold text-[#007A5E] leading-tight">{{ __('PFE Master Data') }}</h2>
+                    <h2 class="text-base font-bold text-[#007A5E] leading-tight">{{ __('PFE Ma
+                    
+                    ster Data') }}</h2>
                     <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ __('Manage all PFE data in the system') }}</p>
                 </div>
             </div>
@@ -1931,4 +1933,148 @@ editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}
     </div>
 </div>
     <x-excel-preview-modal />
+
+    <!-- Seamless AJAX Form Submission for Master Data -->
+    <script>
+        // Override confirmDelete to dispatch an event instead of calling form.submit() directly
+        // so our AJAX interceptor can catch it.
+        window.confirmDelete = function(event, message) {
+            event.preventDefault();
+            const form = event.target || event.currentTarget;
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: message || "Data ini akan dihapus secara permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100',
+                    title: 'text-slate-800 font-bold',
+                    htmlContainer: 'text-slate-500 font-semibold',
+                    confirmButton: 'rounded-xl font-bold px-6 py-2.5 transition-transform hover:-translate-y-0.5',
+                    cancelButton: 'rounded-xl font-bold px-6 py-2.5 transition-transform hover:-translate-y-0.5'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Dispatch a submit event that can be caught by our listener
+                    const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
+                    // Flag it so we know it's already confirmed
+                    form.dataset.confirmed = 'true';
+                    form.dispatchEvent(submitEvent);
+                }
+            });
+        };
+
+        document.addEventListener('submit', async function(e) {
+            const form = e.target;
+            
+            // Cek apakah ini form pencarian/filter (GET) atau form biasa
+            if (form.tagName === 'FORM' && form.method.toUpperCase() === 'POST') {
+                // Jika form membutuhkan konfirmasi (onsubmit="confirmDelete...") tapi belum dikonfirmasi
+                if (form.hasAttribute('onsubmit') && form.getAttribute('onsubmit').includes('confirmDelete') && form.dataset.confirmed !== 'true') {
+                    // Biarkan confirmDelete yang menangani
+                    return;
+                }
+                
+                e.preventDefault();
+                
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin mr-2"></i> Proses...';
+                    submitBtn.disabled = true;
+                }
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'Accept': 'text/html' // Kita minta HTML kembali (karena Laravel akan redirect back())
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const html = await response.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        // Simpan posisi scroll dari container yang bisa di-scroll (karena window tidak di-scroll)
+                        const currentMain = document.querySelector('main');
+                        const scrollContainer = currentMain ? currentMain.querySelector('.overflow-y-auto') : null;
+                        const scrollTop = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+                        
+                        // KUNCI TINGGI ELEMEN MAIN KARENA DIA TIDAK DI-REPLACE SECARA UTUH (HANYA INNERHTML-NYA)
+                        if (currentMain) {
+                            currentMain.style.minHeight = currentMain.clientHeight + 'px';
+                        }
+
+                        // 1. Ganti konten utama (main)
+                        const newMain = doc.querySelector('main');
+                        if (currentMain && newMain) {
+                            currentMain.innerHTML = newMain.innerHTML;
+                        }
+                        
+                        // Kembalikan posisi scroll seketika pada container BARU
+                        const newScrollContainer = document.querySelector('main .overflow-y-auto');
+                        if (newScrollContainer) {
+                            newScrollContainer.scrollTop = scrollTop;
+                        } else {
+                            window.scrollTo(0, scrollTop);
+                        }
+                        
+                        // Kembalikan posisi scroll setelah Alpine merender modal tertutup dan lepaskan kuncian tinggi MAIN
+                        setTimeout(() => {
+                            const finalContainer = document.querySelector('main .overflow-y-auto');
+                            if (finalContainer) {
+                                finalContainer.scrollTop = scrollTop;
+                            } else {
+                                window.scrollTo(0, scrollTop);
+                            }
+                            
+                            if (currentMain) {
+                                currentMain.style.minHeight = '';
+                            }
+                        }, 50);
+                        
+                        // 2. Tampilkan notifikasi toast jika ada
+                        const newToast = doc.querySelector('[x-data*="type: \'success\'"], [x-data*="type: \'error\'"]');
+                        if (newToast) {
+                            // Hapus toast lama jika ada
+                            const oldToast = document.querySelector('[x-data*="type: \'success\'"], [x-data*="type: \'error\'"]');
+                            if (oldToast) oldToast.remove();
+                            
+                            document.body.appendChild(newToast);
+                            // Eksekusi skrip Alpine yang mungkin ada di dalam elemen baru
+                            if (window.Alpine) {
+                                window.Alpine.initTree(newToast);
+                            }
+                        }
+
+                        // Re-inisialisasi flatpickr jika perlu
+                        if(typeof flatpickr !== 'undefined' && document.querySelector('.datepicker')) {
+                            flatpickr(".datepicker", { dateFormat: "Y-m-d", allowInput: true, static: true });
+                        }
+                    } else {
+                        throw new Error('Network response was not ok');
+                    }
+                } catch (error) {
+                    console.error('AJAX form submission failed:', error);
+                    // Fallback normal
+                    form.submit();
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                    if (form) {
+                        form.dataset.confirmed = 'false';
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
