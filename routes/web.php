@@ -99,11 +99,13 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/inspeksi/pedoman/{apar}', [InspeksiController::class, 'pedoman'])->name('inspeksi.pedoman');
     Route::get('/inspeksi/mulai/{apar}', [InspeksiController::class, 'create'])->name('inspeksi.mulai');
     Route::get('/inspeksi/search', [InspeksiController::class, 'search'])->name('inspeksi.search');
-    Route::get('/inspeksi/sukses/{apar}', [InspeksiController::class, 'sukses'])->name('inspeksi.sukses');
     Route::post('/inspeksi/store/{apar}', [InspeksiController::class, 'store'])->name('inspeksi.store');
 });
 
-Route::get('/scan/{kode}', [ScanController::class, 'index'])->name('scan.apar');
+Route::middleware(['prevent-back-history'])->group(function () {
+    Route::get('/scan/{kode}', [ScanController::class, 'index'])->name('scan.apar');
+    Route::get('/inspeksi/sukses/{apar}', [InspeksiController::class, 'sukses'])->name('inspeksi.sukses');
+});
 Route::post('/scan/{kode}/verify', [ScanController::class, 'verifyPin'])->name('scan.verify');
 
 Route::get('/test-email/{type}', function ($type) {

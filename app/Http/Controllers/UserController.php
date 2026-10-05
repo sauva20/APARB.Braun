@@ -169,9 +169,13 @@ class UserController extends Controller
         ]);
 
         // Auto-generate unique 4-digit PIN
+        $allUsers = User::whereNotNull('pin')->get();
         do {
             $pin = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        } while (User::where('pin', $pin)->exists());
+            $exists = $allUsers->contains(function ($u) use ($pin) {
+                return \Illuminate\Support\Facades\Hash::check($pin, $u->pin) || $u->pin === $pin;
+            });
+        } while ($exists);
 
         // Default password for all users (will be changed on setup)
         $password = \Illuminate\Support\Str::random(16);
@@ -182,7 +186,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($password),
             'role' => $request->role,
-            'pin' => $pin,
+            'pin' => Hash::make($pin),
             'jadwal_rutin_tanggal' => $request->role === 'Staff' ? $request->jadwal_rutin_tanggal : null,
         ]);
 
@@ -206,11 +210,11 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'employee_id' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'employee_id' => ['required', 'string', 'max:50', \Illuminate\Validation\Rule::unique('users')->ignore($user->id)],
             'name' => 'required|string|max:255',
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required', 'string', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users')->ignore($user->id)],
             'role' => 'required|string|in:EHSS,Staff',
-            'pin' => ['nullable', 'string', 'size:4', 'regex:/^[0-9]+$/', Rule::unique('users')->ignore($user->id)],
+            'pin' => ['nullable', 'string', 'size:4', 'regex:/^[0-9]+$/'],
             'jadwal_rutin_tanggal' => 'nullable|integer|min:1|max:31',
             'gedungs' => 'nullable|array',
             'gedungs.*' => 'exists:gedung,id',
@@ -231,7 +235,16 @@ class UserController extends Controller
         ];
 
         if ($request->filled('pin')) {
-            $data['pin'] = $request->pin;
+            $pin = $request->pin;
+            $exists = User::whereNotNull('pin')->where('id', '!=', $user->id)->get()->contains(function ($u) use ($pin) {
+                return \Illuminate\Support\Facades\Hash::check($pin, $u->pin) || $u->pin === $pin;
+            });
+            
+            if ($exists) {
+                return redirect()->back()->withErrors(['pin' => __('The PIN has already been taken.')])->withInput();
+            }
+            
+            $data['pin'] = \Illuminate\Support\Facades\Hash::make($pin);
         }
 
         $user->update($data);

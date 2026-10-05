@@ -50,13 +50,25 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- HTML5 QR Code -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Block Back Button -->
+    <!-- Block Back Button and Handle Scanner -->
     <script>
-        history.pushState(null, null, location.href);
-        window.onpopstate = function () {
-            history.go(1);
-        };
+        history.pushState({ page: 'sukses' }, null, location.href);
+        window.addEventListener('popstate', function (event) {
+            if (typeof window.isScannerOpen === 'function' && window.isScannerOpen()) {
+                // Jika scanner aktif, matikan scanner saja
+                if (typeof window.stopScannerGlobal === 'function') {
+                    window.stopScannerGlobal();
+                }
+                // Push state kembali agar tetap di halaman sukses
+                history.pushState({ page: 'sukses' }, null, location.href);
+            } else {
+                // Jika tidak aktif, blokir tombol back sama sekali (tetap di halaman sukses)
+                history.go(1);
+            }
+        });
     </script>
 </head>
 <body class="bg-[#F0F0F0] text-[#1A1A1A] relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-x-hidden overflow-y-auto">
@@ -67,6 +79,13 @@
 
     <div class="w-full min-h-[100dvh] max-w-md mx-auto relative z-10 flex flex-col items-center justify-center p-6" x-data="scannerApp()">
         
+        @if(session('error'))
+        <div class="bg-red-50/90 w-full backdrop-blur-md border border-red-100 p-4 rounded-xl mb-4 shadow-sm flex items-center justify-center gap-2">
+            <i class="ph-fill ph-warning-circle text-red-500 text-xl shrink-0"></i>
+            <p class="text-sm font-medium text-red-700 leading-tight text-center">{{ session('error') }}</p>
+        </div>
+        @endif
+
         <div x-show="!scanning" class="bg-white w-full rounded-3xl shadow-xl p-8 flex flex-col items-center text-center border border-slate-100"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 scale-95"
@@ -81,7 +100,7 @@
             
             @if(request('source') === 'schedule')
                 @if($nextApar)
-                <a href="{{ route('inspeksi.mulai', ['apar' => $nextApar->id, 'source' => 'schedule']) }}" class="w-full py-4 bg-[#009B77] hover:bg-[#008264] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#009B77]/30 transition-all flex items-center justify-center gap-2 mb-3">
+                <a href="{{ route('inspeksi.pedoman', ['apar' => $nextApar->id, 'source' => 'schedule']) }}" class="w-full py-4 bg-[#009B77] hover:bg-[#008264] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#009B77]/30 transition-all flex items-center justify-center gap-2 mb-3">
                     <i class="ph-bold ph-arrow-right text-xl"></i> {{ __('Inspect Next PFE') }} ({{ $nextApar->kode }})
                 </a>
                 @endif
@@ -104,7 +123,7 @@
                               this.searchQuery = kode;
                               this.isOpen = false;
                               this.$nextTick(() => {
-                                  $refs.searchForm.submit();
+                                this.$refs.searchForm.submit();
                               });
                           }
                       }">
@@ -210,6 +229,11 @@
                 scanning: false,
                 html5QrcodeScanner: null,
                 
+                init() {
+                    window.stopScannerGlobal = () => { this.stopScanner(); };
+                    window.isScannerOpen = () => { return this.scanning; };
+                },
+                
                 startScanner() {
                     this.scanning = true;
                     
@@ -224,7 +248,30 @@
                             { facingMode: "environment" },
                             config,
                             (decodedText, decodedResult) => {
-                                // Jika berhasil, hentikan kamera dan redirect
+                                // Cegah scan APAR yang sama secara tidak sengaja karena terlalu cepat
+                                if (decodedText.includes('{{ $apar->kode }}')) {
+                                    this.html5QrcodeScanner.pause(true);
+                                    Swal.fire({
+                                        title: 'APAR Sama Terdeteksi!',
+                                        text: 'Anda baru saja menscan APAR {{ $apar->kode }} yang baru selesai diinspeksi. Apakah Anda ingin menginspeksinya lagi?',
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Ya, Inspeksi Lagi',
+                                        cancelButtonText: 'Batal (Tutup Kamera)',
+                                        confirmButtonColor: '#009B77',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            let url = new URL(decodedText);
+                                            url.searchParams.set('source', 'system');
+                                            window.location.href = url.toString();
+                                        } else {
+                                            this.stopScanner();
+                                        }
+                                    });
+                                    return; // Hentikan eksekusi selanjutnya
+                                }
+
+                                // Jika berhasil dan itu APAR berbeda, hentikan kamera dan redirect
                                 let targetUrl = decodedText;
                                 try {
                                     let url = new URL(decodedText);
@@ -261,6 +308,30 @@
                 }
             }
         }
+    </script>
+    <!-- Anti-Inspect Script -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        window.addEventListener('keydown', function (e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, { capture: true });
     </script>
 </body>
 </html>

@@ -20,8 +20,21 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo(function (Request $request) {
-            session()->flash('auth_error', 'Anda harus login untuk mengakses sistem ini.');
+            if ($request->is('inspeksi/*')) {
+                session()->flash('error', 'Sesi inspeksi Anda telah berakhir atau tidak valid. Silakan scan ulang QR Code atau masukkan PIN kembali.');
+                
+                $aparId = $request->segment(3);
+                if ($aparId) {
+                    $apar = \App\Models\Apar::find($aparId);
+                    if ($apar) {
+                        return route('scan.apar', $apar->kode);
+                    }
+                }
+                
+                return url()->previous() ?? '/';
+            }
 
+            session()->flash('auth_error', 'Anda harus login untuk mengakses sistem ini.');
             return route('login');
         });
         $middleware->redirectUsersTo(function (Request $request) {

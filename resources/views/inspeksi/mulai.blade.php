@@ -54,6 +54,21 @@
             border-color: #009B77 !important;
         }
     </style>
+    
+    <!-- Anti BFCache & Strict History Lock -->
+    <script>
+        // Paksa reload jika dari BFCache
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || sessionStorage.getItem('form_selesai_{{ $apar->id }}')) {
+                window.location.reload();
+            }
+        });
+        
+        // Cek secara instan
+        if (sessionStorage.getItem('form_selesai_{{ $apar->id }}')) {
+            window.location.replace("{{ route('inspeksi.sukses', ['apar' => $apar->id, 'source' => request()->query('source')]) }}");
+        }
+    </script>
 </head>
 <body class="bg-[#F0F0F0] text-[#1A1A1A] relative min-h-screen w-screen overflow-x-hidden flex flex-col pb-24">
 
@@ -141,11 +156,16 @@
         <form action="{{ route('inspeksi.store', $apar->id ?? 0) }}" method="POST" enctype="multipart/form-data" 
               @submit.prevent="
                   let foto = $el.querySelector('input[name=\'foto_base64\']').value;
-                  if ('{{ request('source') }}' !== 'schedule' && (!foto || foto.trim() === '')) {
+                  if (!foto || foto.trim() === '') {
+                      let isSystem = ('{{ request('source') }}' === 'schedule' || '{{ request('source') }}' === 'system');
+                      let pesanText = isSystem 
+                          ? '{{ __('Harap lampirkan foto kondisi APAR saat inspeksi berlangsung.') }}' 
+                          : '{{ __('Ambil foto kondisi APAR secara langsung dari lokasi menggunakan kamera.') }}';
+                          
                       Swal.fire({
                           icon: 'warning',
                           title: '{{ __('Peringatan') }}',
-                          text: '{{ __('Lampirkan form saat inspeksi berlangsung!') }}',
+                          text: pesanText,
                           confirmButtonColor: '#009B77',
                           confirmButtonText: '{{ __('OK') }}',
                           customClass: {
@@ -156,6 +176,7 @@
                       return;
                   }
                   Object.keys(sessionStorage).forEach(k => { if(k.startsWith('inspeksi_')) sessionStorage.removeItem(k); });
+                  sessionStorage.setItem('form_selesai_{{ $apar->id }}', 'true');
                   $el.submit();
               ">
             <input type="hidden" name="source" value="{{ request('source') }}">
@@ -394,7 +415,10 @@
                                 break;
                             }
                         }
-                        if (isValid) step = 2;
+                        if (isValid) {
+                            step = 2;
+                            setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+                        }
                     " class="btn-smooth-ring bg-[#009B77] hover:bg-[#008264] text-white font-bold py-2 px-6 rounded-lg shadow-sm shadow-[#009B77]/25 transition-all flex items-center gap-1.5 text-xs">
                         {{ __('Lanjut (Fungsi & Kelayakan)') }} <i class="ph-bold ph-arrow-right text-base"></i>
                     </button>
@@ -609,7 +633,7 @@
             </div>
 
             <div class="p-4 sm:p-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white sticky bottom-0 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-                <button type="button" @click="step = 1" class="w-full sm:w-auto px-5 py-2 rounded-lg font-bold text-slate-600 hover:text-slate-900 bg-white border-2 border-slate-200 hover:border-slate-300 transition-all text-xs flex items-center justify-center gap-1.5">
+                <button type="button" @click="step = 1; setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);" class="w-full sm:w-auto px-5 py-2 rounded-lg font-bold text-slate-600 hover:text-slate-900 bg-white border-2 border-slate-200 hover:border-slate-300 transition-all text-xs flex items-center justify-center gap-1.5">
                     <i class="ph-bold ph-arrow-left text-base"></i>
                     {{ __('Kembali') }}
                 </button>
@@ -871,5 +895,29 @@
         </div>
     </div>
 
+    <!-- Anti-Inspect Script -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        window.addEventListener('keydown', function (e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, { capture: true });
+    </script>
 </body>
 </html>

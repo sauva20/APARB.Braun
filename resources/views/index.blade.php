@@ -31,7 +31,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body class="bg-[#F0F0F0] text-[#1A1A1A] relative overflow-hidden w-full h-screen grid place-items-center p-4">
+<body class="bg-[#F0F0F0] text-[#1A1A1A] relative overflow-hidden w-full h-screen grid place-items-center p-4"
+    oncontextmenu="return false;">
     <!-- Global Toast Notification -->
     @if(session('success') || session('error'))
         <div x-data="{ show: false, type: '{{ session('success') ? 'success' : 'error' }}', message: '{{ addslashes(session('success') ?? session('error')) }}' }"
@@ -126,13 +127,13 @@
                 <!-- Honeypot Field (Bot Trap) -->
                 <!-- 
                 CARA TEST (DEVELOPER MODE):
-                1. Ganti 'opacity-0 absolute -z-50 h-0 w-0 overflow-hidden' 
-                   menjadi 'p-3 bg-red-50 border border-red-300 rounded-xl mb-4' agar terlihat.
+                Ganti 'opacity-0 absolute -z-50 h-0 w-0 overflow-hidden' 
+                menjadi 'p-3 bg-red-50 border border-red-300 rounded-xl mb-4'
                 -->
-                <!-- <div class="opacity-0 absolute -z-50 h-0 w-0 overflow-hidden" aria-hidden="true">
+                <div class="opacity-0 absolute -z-50 h-0 w-0 overflow-hidden" aria-hidden="true">
                     <label for="_contact_number">Contact Number</label>
                     <input type="text" name="_contact_number" id="_contact_number" tabindex="-1" autocomplete="off">
-                </div> -->
+                </div>
 
                 @if ($errors->any())
                     <div class="text-red-500 text-[13px] flex items-start justify-center gap-1.5 pb-2 px-2">
@@ -215,8 +216,30 @@
             </div>
         </div>
     </div>
-    </div>
-
+    <!-- Anti-Inspect Script -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        window.addEventListener('keydown', function (e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, { capture: true });
+    </script>
 </body>
 
 </html>

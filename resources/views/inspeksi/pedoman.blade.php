@@ -50,7 +50,7 @@
         <!-- Header Area -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <a href="{{ route('scan.apar', $apar->kode) }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="{{ __('Back') }}">
+                <a href="{{ request('source') === 'schedule' ? url('/inspection-schedule') : route('scan.apar', $apar->kode) }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="{{ __('Back') }}">
                     <i class="ph-bold ph-arrow-left text-lg"></i>
                 </a>
                 <div>
@@ -199,12 +199,36 @@
     <!-- Floating Action Button -->
     <div class="fixed bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-[#F0F0F0] via-[#F0F0F0]/90 to-transparent z-40 pb-6">
         <div class="w-full max-w-xl mx-auto">
-            <a href="{{ route('inspeksi.mulai', $apar->id) }}" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-4 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-sm flex items-center justify-center gap-2 tracking-wide">
+            <a href="{{ route('inspeksi.mulai', $apar->id) . (request('source') ? '?source=' . request('source') : '') }}" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-4 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-sm flex items-center justify-center gap-2 tracking-wide">
                 <span>{{ __('Start Inspection') }}</span>
                 <i class="ph-bold ph-arrow-right"></i>
             </a>
         </div>
     </div>
 
+    <!-- Anti-Inspect Script -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        window.addEventListener('keydown', function (e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, { capture: true });
+    </script>
 </body>
 </html>
