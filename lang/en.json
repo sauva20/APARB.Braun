@@ -567,5 +567,19 @@
     "Reference Setting": "Reference Setting",
     "Last Refill": "Last Refill",
     "LOCATION NAME": "LOCATION NAME",
-    "Akun Anda diblokir sementara karena terlalu banyak percobaan masuk.": "Your account is temporarily blocked due to too many login attempts."
+    "Akun Anda diblokir sementara karena terlalu banyak percobaan masuk.": "Your account is temporarily blocked due to too many login attempts.",
+    "APAR Keseluruhan": "Total PFE",
+    "APAR Expired": "Expired PFE",
+    "Sesuai": "Good Condition",
+    "Perlu Perbaikan": "Needs Repair",
+    "Perlu Isi Ulang": "Needs Refill",
+    "Rusak / Servis": "Damaged / Service",
+    "Stok Cadangan": "Backup Stock",
+    "Resume Data APAR": "PFE Data Resume",
+    "Keterangan": "Description",
+    "Building": "Building",
+    "Type": "Type",
+    "Capacity": "Capacity",
+    "Stock Quantity": "Stock Quantity",
+    "Total": "Total"
 }

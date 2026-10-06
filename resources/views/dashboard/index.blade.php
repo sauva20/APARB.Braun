@@ -47,8 +47,11 @@
     #progressPieChart { transform: scale(0.85); transform-origin: center; margin: -10px 0 !important; }
     
     /* Force desktop grid layouts for print */
-    .grid-cols-1.xl\:grid-cols-6 {
-        grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    .grid-cols-1.xl\:grid-cols-7 {
+        grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    }
+    .xl\:col-span-2 {
+        grid-column: span 2 / span 2 !important;
     }
     .grid-cols-1.lg\:grid-cols-3 {
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -191,19 +194,36 @@
 
     
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-7 gap-3">
         
         <!-- Card 1: {{ __('TOTAL PFE') }} -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 border border-[#009B77]/40 flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden">
-            <div class="absolute -right-6 -top-6 w-24 h-24 bg-[#009B77]/5 rounded-full blur-2xl group-hover:bg-[#009B77]/10 transition-colors"></div>
-            <div class="flex items-center justify-between mb-3 relative z-10">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('TOTAL PFE') }}</h3>
-                <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 group-hover:bg-[#009B77]/20 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-[#009B77]">
-                    <i class="ph-fill ph-fire-extinguisher text-lg"></i>
-                </div>
+        <div class="bg-gradient-to-br from-[#009B77] to-[#007b5e] text-white rounded-2xl p-5 shadow-lg shadow-[#009B77]/20 hover:shadow-xl hover:-translate-y-1 border border-[#009B77] flex flex-col justify-between transition-all duration-300 group cursor-pointer report-card relative overflow-hidden xl:col-span-2">
+            <!-- Background Decorations -->
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors"></div>
+            <div class="absolute right-[5%] bottom-[-10%] text-white/5 transform -rotate-12 scale-150 pointer-events-none transition-transform group-hover:scale-125 duration-500">
+                <i class="ph-fill ph-fire-extinguisher" style="font-size: 150px;"></i>
             </div>
-            <div class="flex items-end justify-between relative z-10">
-                <h2 id="stat-totalApar" class="text-2xl font-extrabold text-slate-800 transition-colors group-hover:text-[#009B77]">{{ $totalApar }}</h2>
+            
+            <div class="relative z-10 flex h-full gap-4 items-center">
+                <!-- Left: TOTAL PFE -->
+                <div class="flex-1 flex items-center gap-4 h-full pl-2">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300 flex items-center justify-center text-white shadow-inner flex-shrink-0">
+                        <i class="ph-fill ph-fire-extinguisher text-2xl"></i>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <h3 class="text-xs font-bold text-white/90 uppercase tracking-wider mb-1">{{ __('TOTAL PFE') }}</h3>
+                        <h2 id="stat-totalApar" class="text-4xl font-extrabold text-white leading-none">{{ $totalApar }}</h2>
+                    </div>
+                </div>
+
+                <!-- Right: TOTAL STOCK (Mini Card) -->
+                <div class="w-32 bg-black/30 backdrop-blur-sm border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center shadow-inner group-hover:bg-black/40 transition-colors">
+                    <div class="flex items-center gap-1.5 mb-1 text-white">
+                        <i class="ph-bold ph-archive text-sm"></i>
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider">{{ __('STOK') }}</h3>
+                    </div>
+                    <h2 id="stat-totalStock" class="text-2xl font-extrabold text-amber-300 group-hover:text-amber-200 transition-colors">{{ $totalStock }}</h2>
+                </div>
             </div>
         </div>
 
@@ -808,6 +828,7 @@
             .then(data => {
                 // Update stats with super cool animations
                 updateStatWithAnimation('stat-totalApar', data.stats.totalApar);
+                updateStatWithAnimation('stat-totalStock', data.stats.totalStock);
                 updateStatWithAnimation('stat-kondisiBaik', data.stats.kondisiBaik);
                 updateStatWithAnimation('stat-kondisiBaikPercentage', data.stats.kondisiBaikPercentage, true);
                 

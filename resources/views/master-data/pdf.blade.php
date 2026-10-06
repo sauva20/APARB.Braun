@@ -108,17 +108,49 @@
     <table>
         <thead>
             <tr>
-                <th class="text-center" style="width: 4%;">No</th>
-                <th style="width: 10%;">{{ __('PFE ID') }}</th>
-                <th style="width: 12%;">Location</th>
-                <th style="width: 10%;">Building</th>
-                <th style="width: 12%;">Type</th>
-                <th style="width: 8%;">Capacity</th>
-                <th class="text-center" style="width: 8%;">Fire Class</th>
-                <th style="width: 10%;">{{ __('Expired DATE') }}</th>
-                <th style="width: 10%;">{{ __('Last Refill') }}</th>
-                <th class="text-center" style="width: 4%;">Qty</th>
-                <th style="width: 12%;">PIC</th>
+                <th class="text-center" style="width: 4%;">
+                    <div>No</div>
+                </th>
+                <th style="width: 10%;">
+                    <div>Fire Extinguisher Code</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Kode APAR</div>
+                </th>
+                <th style="width: 12%;">
+                    <div>Location</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Lokasi</div>
+                </th>
+                <th style="width: 10%;">
+                    <div>Building</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Gedung</div>
+                </th>
+                <th style="width: 12%;">
+                    <div>Fire Extinguisher Type</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Jenis APAR</div>
+                </th>
+                <th style="width: 8%;">
+                    <div>Fill Capacity</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Kapasitas Isi</div>
+                </th>
+                <th class="text-center" style="width: 8%;">
+                    <div>Fire Class</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Kelas Kebakaran</div>
+                </th>
+                <th style="width: 10%;">
+                    <div>Expired Date</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Tanggal Kadaluarsa</div>
+                </th>
+                <th style="width: 10%;">
+                    <div>Last Refill</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Terakhir Isi Ulang</div>
+                </th>
+                <th class="text-center" style="width: 4%;">
+                    <div>Qty</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Jml</div>
+                </th>
+                <th style="width: 12%;">
+                    <div>PIC</div>
+                    <div style="font-weight: normal; font-style: italic; font-size: 7px; margin-top: 2px; text-transform: none;">Penanggung Jawab</div>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -175,6 +207,79 @@
             @endif
         </tbody>
     </table>
+
+    @if(isset($aparCadangans) && $aparCadangans->count() > 0)
+    <div style="margin-top: 30px;">
+        <h2 style="font-size: 10px; font-weight: bold; color: #009B77; margin-bottom: 8px; text-transform: uppercase;">Stok Cadangan</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 5%;">No</th>
+                    <th style="width: 35%;">{{ __('Building') }}</th>
+                    <th style="width: 25%;">{{ __('Type') }}</th>
+                    <th style="width: 20%;">{{ __('Capacity') }}</th>
+                    <th class="text-center" style="width: 15%;">{{ __('Stock Quantity') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($aparCadangans as $index => $cadangan)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $cadangan->gedung->nama ?? '-' }}</td>
+                        <td>{{ $cadangan->jenis->nama ?? '-' }}</td>
+                        <td>{{ $cadangan->kapasitas->ukuran ?? '-' }}</td>
+                        <td class="text-center" style="font-weight: bold; color: #009B77;">{{ $cadangan->total }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align: left; padding: 8px 6px; border: 1px solid #ddd; padding-left: 12px;">Grand Total</td>
+                    <td class="text-center" style="font-weight: bold; color: #009B77; background-color: #e8f5f3; border: 1px solid #ddd;">{{ $aparCadangans->sum('total') }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    @endif
+
+    @if(isset($resumeColumns) && count($resumeColumns) > 0)
+    <div style="margin-top: 30px;">
+        <h2 style="font-size: 10px; font-weight: bold; color: #009B77; margin-bottom: 8px; text-transform: uppercase;">Resume Data APAR</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 5%;">No</th>
+                    <th rowspan="2" style="width: 30%;">Keterangan</th>
+                    @foreach($resumeColumns as $jenis => $kapasitasList)
+                    <th colspan="{{ count($kapasitasList) }}">{{ $jenis }}</th>
+                    @endforeach
+                    <th rowspan="2" style="width: 10%;">Total</th>
+                </tr>
+                <tr>
+                    @foreach($resumeColumns as $jenis => $kapasitasList)
+                        @foreach($kapasitasList as $kapasitas)
+                        <th>{{ $kapasitas }}</th>
+                        @endforeach
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($resumeTable as $index => $row)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td style="font-weight: bold;">{{ __($row['name']) }}</td>
+                    @foreach($resumeColumns as $jenis => $kapasitasList)
+                        @foreach($kapasitasList as $kapasitas)
+                        <td class="text-center">{{ $row['data'][$jenis][$kapasitas] ?? 0 }}</td>
+                        @endforeach
+                    @endforeach
+                    <td class="text-center" style="font-weight: bold; color: #009B77; background-color: #e8f5f3;">{{ $row['total'] }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
 
 </body>
 </html>

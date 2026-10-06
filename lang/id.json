@@ -204,7 +204,7 @@
     "Create Schedule": "Buat Jadwal",
     "Edit": "Edit",
     "PFE Monitoring Control System User Data Report": "Laporan Data User PFE Monitoring Control System",
-    "Good Condition": "Layak",
+    "Good Condition": "Sesuai",
     "Forgot Password?": "Lupa Password?",
     "User": "Pengguna",
     "Conclusion & Documentation": "Kesimpulan & Dokumentasi",
@@ -578,5 +578,13 @@
     "The email format is invalid.": "Format email tidak valid.",
     "Reference Setting": "Pengaturan Referensi",
     "Last Refill": "Isi Ulang Terakhir",
-    "LOCATION NAME": "NAMA LOKASI"
+    "LOCATION NAME": "NAMA LOKASI",
+    "Building": "Gedung",
+    "Type": "Jenis APAR",
+    "Capacity": "Kapasitas Isi",
+    "Stock Quantity": "Jumlah Stok",
+    "Stok Cadangan": "Stok Cadangan",
+    "Resume Data APAR": "Resume Data APAR",
+    "Keterangan": "Keterangan",
+    "Total": "Total"
 }

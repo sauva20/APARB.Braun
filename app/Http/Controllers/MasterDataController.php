@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Apar;
+use App\Models\AparCadangan;
 use App\Models\Gedung;
 use App\Models\JenisApar;
 use App\Models\KapasitasApar;
@@ -68,7 +69,60 @@ class MasterDataController extends Controller
 
         $apars = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
 
-        return view('master-data.index', compact('gedungs', 'lokasis', 'jenisApars', 'kapasitasApars', 'apars'));
+        $aparCadangans = AparCadangan::with(['gedung', 'jenis', 'kapasitas'])->get();
+
+        $allApars = Apar::with(['jenis', 'kapasitas', 'latestInspeksi'])->get();
+        
+        $resumeColumns = [];
+        foreach($allApars as $apar) {
+            $jenis = $apar->jenis->nama ?? 'Unknown';
+            $kapasitas = $apar->kapasitas->ukuran ?? 'Unknown';
+            
+            if(!isset($resumeColumns[$jenis])) {
+                $resumeColumns[$jenis] = [];
+            }
+            if(!in_array($kapasitas, $resumeColumns[$jenis])) {
+                $resumeColumns[$jenis][] = $kapasitas;
+            }
+        }
+        
+        // sort capacities logically if possible, or just leave as is
+        foreach($resumeColumns as $j => $caps) {
+            sort($resumeColumns[$j]);
+        }
+
+        $resumeRows = [
+            'APAR Keseluruhan' => fn($a) => true,
+            'APAR Expired' => fn($a) => $a->tgl_kedaluwarsa && \Carbon\Carbon::parse($a->tgl_kedaluwarsa)->isPast(),
+            'Sesuai' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'baik',
+            'Perlu Perbaikan' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'perbaikan',
+            'Perlu Isi Ulang' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'isi_ulang',
+            'Rusak / Servis' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'rusak',
+        ];
+
+        $resumeTable = [];
+        foreach($resumeRows as $rowName => $filterCallback) {
+            $rowData = [];
+            $rowTotal = 0;
+            foreach($resumeColumns as $jenis => $kapasitasList) {
+                foreach($kapasitasList as $kapasitas) {
+                    $count = $allApars->filter(function($a) use ($jenis, $kapasitas, $filterCallback) {
+                        $j = $a->jenis->nama ?? 'Unknown';
+                        $k = $a->kapasitas->ukuran ?? 'Unknown';
+                        return $j === $jenis && $k === $kapasitas && $filterCallback($a);
+                    })->count();
+                    $rowData[$jenis][$kapasitas] = $count;
+                    $rowTotal += $count;
+                }
+            }
+            $resumeTable[] = [
+                'name' => $rowName,
+                'data' => $rowData,
+                'total' => $rowTotal
+            ];
+        }
+
+        return view('master-data.index', compact('gedungs', 'lokasis', 'jenisApars', 'kapasitasApars', 'apars', 'aparCadangans', 'resumeColumns', 'resumeTable'));
     }
 
     public function exportPdf(Request $request)
@@ -107,8 +161,58 @@ class MasterDataController extends Controller
         }
 
         $apars = $query->orderBy('id', 'asc')->get();
+        
+        $aparCadangans = AparCadangan::with(['gedung', 'jenis', 'kapasitas'])->get();
+        
+        $resumeColumns = [];
+        foreach($apars as $apar) {
+            $jenis = $apar->jenis->nama ?? 'Unknown';
+            $kapasitas = $apar->kapasitas->ukuran ?? 'Unknown';
+            
+            if(!isset($resumeColumns[$jenis])) {
+                $resumeColumns[$jenis] = [];
+            }
+            if(!in_array($kapasitas, $resumeColumns[$jenis])) {
+                $resumeColumns[$jenis][] = $kapasitas;
+            }
+        }
+        
+        foreach($resumeColumns as $j => $caps) {
+            sort($resumeColumns[$j]);
+        }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('master-data.pdf', compact('apars'))->setPaper('a4', 'portrait');
+        $resumeRows = [
+            'APAR Keseluruhan' => fn($a) => true,
+            'APAR Expired' => fn($a) => $a->tgl_kedaluwarsa && \Carbon\Carbon::parse($a->tgl_kedaluwarsa)->isPast(),
+            'Sesuai' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'baik',
+            'Perlu Perbaikan' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'perbaikan',
+            'Perlu Isi Ulang' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'isi_ulang',
+            'Rusak / Servis' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'rusak',
+        ];
+
+        $resumeTable = [];
+        foreach($resumeRows as $rowName => $filterCallback) {
+            $rowData = [];
+            $rowTotal = 0;
+            foreach($resumeColumns as $jenis => $kapasitasList) {
+                foreach($kapasitasList as $kapasitas) {
+                    $count = $apars->filter(function($a) use ($jenis, $kapasitas, $filterCallback) {
+                        $j = $a->jenis->nama ?? 'Unknown';
+                        $k = $a->kapasitas->ukuran ?? 'Unknown';
+                        return $j === $jenis && $k === $kapasitas && $filterCallback($a);
+                    })->count();
+                    $rowData[$jenis][$kapasitas] = $count;
+                    $rowTotal += $count;
+                }
+            }
+            $resumeTable[] = [
+                'name' => $rowName,
+                'data' => $rowData,
+                'total' => $rowTotal
+            ];
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('master-data.pdf', compact('apars', 'aparCadangans', 'resumeColumns', 'resumeTable'))->setPaper('a4', 'portrait');
         return $pdf->stream('Data_APAR_' . date('Ymd_His') . '.pdf');
     }
 
@@ -424,6 +528,22 @@ class MasterDataController extends Controller
             'nama' => $request->lokasi,
         ]);
 
+        if ($request->filled('gunakan_cadangan') && $request->filled('cadangan_id')) {
+            $cadangan = \App\Models\AparCadangan::find($request->cadangan_id);
+            if ($cadangan) {
+                $qty = $request->input('qty', 1);
+                if ($cadangan->total < $qty) {
+                    return redirect()->back()->withErrors(['cadangan_id' => 'Stok cadangan tidak mencukupi (Sisa: ' . $cadangan->total . ').'])->withInput()->with('form_type', 'tambah_apar');
+                }
+                $cadangan->decrement('total', $qty);
+                // Force the request to use the cadangan's specs
+                $request->merge([
+                    'jenis_id' => $cadangan->jenis_id,
+                    'kapasitas_id' => $cadangan->kapasitas_id,
+                ]);
+            }
+        }
+
         $prefix = $this->generatePrefix($lokasi->id, $request->jenis_id);
         $kode = $prefix . $request->nomor_apar;
 
@@ -513,6 +633,22 @@ class MasterDataController extends Controller
             'nama' => $request->lokasi,
         ]);
 
+        if ($request->filled('gunakan_cadangan') && $request->filled('cadangan_id')) {
+            $cadangan = \App\Models\AparCadangan::find($request->cadangan_id);
+            if ($cadangan) {
+                $qty = $request->input('qty', 1);
+                // Check if qty is more than available stock
+                if ($cadangan->total < $qty) {
+                    return redirect()->back()->withErrors(['cadangan_id' => 'Stok cadangan tidak mencukupi (Sisa: ' . $cadangan->total . ').'])->withInput()->with('form_type', 'edit_apar');
+                }
+                $cadangan->decrement('total', $qty);
+                $request->merge([
+                    'jenis_id' => $cadangan->jenis_id,
+                    'kapasitas_id' => $cadangan->kapasitas_id,
+                ]);
+            }
+        }
+
         $data = $request->except(['kode', 'nomor_apar', 'form_type', 'gedung_id', 'lokasi']);
         $data['lokasi_id'] = $lokasi->id;
         $data['pic_id'] = auth()->id();
@@ -570,5 +706,37 @@ class MasterDataController extends Controller
         // Hanya ambil 1 data aktivitas terakhir (yang paling baru)
         $activities = $apar->activities()->with('causer')->latest()->take(1)->get();
         return view('master-data.history-partial', compact('apar', 'activities'));
+    }
+
+    public function storeAparCadangan(Request $request)
+    {
+        $request->validate([
+            'gedung_id' => 'required|exists:gedung,id',
+            'jenis_id' => 'required|exists:jenis_apar,id',
+            'kapasitas_id' => 'required|exists:kapasitas_apar,id',
+            'total' => 'required|integer|min:0',
+        ]);
+
+        \Illuminate\Support\Facades\Log::info("STORE: ", $request->all()); AparCadangan::create($request->all());
+        return redirect()->route('master-data.index')->with('success', __('Data APAR Cadangan berhasil ditambahkan.'));
+    }
+
+    public function updateAparCadangan(Request $request, AparCadangan $aparCadangan)
+    {
+        $request->validate([
+            'gedung_id' => 'required|exists:gedung,id',
+            'jenis_id' => 'required|exists:jenis_apar,id',
+            'kapasitas_id' => 'required|exists:kapasitas_apar,id',
+            'total' => 'required|integer|min:0',
+        ]);
+
+        \Illuminate\Support\Facades\Log::info("UPDATE: ", $request->all()); $aparCadangan->update($request->all());
+        return redirect()->route('master-data.index')->with('success', __('Data APAR Cadangan berhasil diperbarui.'));
+    }
+
+    public function destroyAparCadangan(AparCadangan $aparCadangan)
+    {
+        $aparCadangan->delete();
+        return redirect()->route('master-data.index')->with('success', __('Data APAR Cadangan berhasil dihapus.'));
     }
 }

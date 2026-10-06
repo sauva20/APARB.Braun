@@ -112,6 +112,12 @@
                     <i class="ph-bold ph-table text-lg"></i>
                     {{ __('APAR Data') }}
                 </button>
+                <button x-ref="cadangan" @click="activeTab = 'cadangan'"
+                    :class="activeTab === 'cadangan' ? 'text-[#009B77]' : 'text-slate-500 hover:text-slate-700'"
+                    class="px-5 py-2 rounded-lg font-bold text-sm transition-colors duration-300 flex items-center gap-2">
+                    <i class="ph-bold ph-archive text-lg"></i>
+                    {{ __('Stok Cadangan') }}
+                </button>
                 @if(auth()->user()->role !== 'Staff')
                     <button x-ref="referensi" @click="activeTab = 'referensi'"
                         :class="activeTab === 'referensi' ? 'text-[#009B77]' : 'text-slate-500 hover:text-slate-700'"
@@ -120,6 +126,12 @@
                         {{ __('Reference Settings') }}
                     </button>
                 @endif
+                <button x-ref="resume" @click="activeTab = 'resume'"
+                    :class="activeTab === 'resume' ? 'text-[#009B77]' : 'text-slate-500 hover:text-slate-700'"
+                    class="px-5 py-2 rounded-lg font-bold text-sm transition-colors duration-300 flex items-center gap-2">
+                    <i class="ph-bold ph-chart-pie-slice text-lg"></i>
+                    {{ __('Resume') }}
+                </button>
             </div>
         </div>
 
@@ -340,12 +352,11 @@
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('BUILDING') }}</th>
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Type') }}</th>
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Capacity') }}</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Fire Class</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">Expired Date</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Last Refill') }}
-                                </th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">Qty</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">PIC</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Fire Class') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Expired DATE') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Last Refill') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Qty') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('PIC') }}</th>
                                 @if(auth()->user()->role !== 'Staff')
                                     <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('ACTIONS') }}</th>
                                 @endif
@@ -553,6 +564,82 @@
         <!-- End Tab 1 -->
 
         <!-- Tab 2: Pengaturan Referensi -->
+        <!-- Tab Cadangan: Stok Cadangan -->
+        <div x-show="activeTab === 'cadangan'" x-cloak x-transition:enter="transition ease-out duration-400"
+            x-transition:enter-start="opacity-0 translate-y-6" x-transition:enter-end="opacity-100 translate-y-0"
+            class="space-y-6" x-cloak>
+
+            <!-- Card for Cadangan Table -->
+            <div class="bg-white rounded-2xl shadow-sm border border-[#009B77]/20 overflow-hidden">
+                <div class="px-5 py-3 border-b border-[#009B77]/10 flex items-center justify-between bg-[#009B77]/5">
+                    <h2 class="text-base font-bold text-[#009B77] uppercase tracking-wider flex items-center gap-2">
+                        <i class="ph-bold ph-archive"></i>
+                        {{ __('Stok Cadangan') }}
+                    </h2>
+                    <button type="button" @click="$dispatch('open-cadangan', { type: 'tambah_cadangan', action: '/master-data/apar-cadangan' })" class="inline-flex items-center gap-2 px-4 py-2 bg-[#009B77] hover:bg-[#007b5e] text-white text-sm font-bold rounded-xl transition-all shadow-sm">
+                        <i class="ph-bold ph-plus"></i> {{ __('Add Stock') }}
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#009B77] text-white divide-x divide-white/20 text-center">
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider w-12">No</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Building') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Type') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Capacity') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Stock Quantity') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Action') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-slate-100">
+                            @forelse($aparCadangans as $index => $cadangan)
+                            <tr class="hover:bg-slate-50 transition-colors divide-x divide-slate-100">
+                                <td class="py-4 px-5 text-center font-semibold text-slate-500">{{ $index + 1 }}</td>
+                                <td class="py-4 px-5 font-semibold text-slate-600 capitalize">{{ $cadangan->gedung->nama ?? '-' }}</td>
+                                <td class="py-4 px-5 font-semibold text-slate-600">{{ $cadangan->jenis->nama ?? '-' }}</td>
+                                <td class="py-4 px-5 font-semibold text-slate-600">{{ $cadangan->kapasitas->ukuran ?? '-' }}</td>
+                                <td class="py-4 px-5 font-bold text-[#009B77] text-center">{{ $cadangan->total }}</td>
+                                <td class="py-4 px-5 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button type="button" @click="$dispatch('open-cadangan', { type: 'edit_cadangan', action: '/master-data/apar-cadangan/{{ $cadangan->id }}', gedung: '{{ $cadangan->gedung_id }}', jenis: '{{ $cadangan->jenis_id }}', kapasitas: '{{ $cadangan->kapasitas_id }}', total: '{{ $cadangan->total }}' })"
+                                            class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
+                                            <i class="ph-bold ph-pencil-simple text-lg"></i>
+                                        </button>
+                                        <form action="/master-data/apar-cadangan/{{ $cadangan->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, '{{ __('Are you sure you want to delete this data?') }}');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                                <i class="ph-bold ph-trash text-lg"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="py-8 px-5 text-center text-sm font-medium text-slate-500">
+                                    <div class="flex flex-col items-center justify-center space-y-2">
+                                        <i class="ph-bold ph-archive text-3xl text-slate-300"></i>
+                                        <p>{{ __('No spare stock data found.') }}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                        <tfoot class="bg-[#009B77]/5 text-sm border-t-2 border-[#009B77]/20">
+                            <tr class="divide-x divide-[#009B77]/10">
+                                <td colspan="4" class="py-3 px-5 text-left text-[#009B77] font-bold uppercase tracking-wider">Grand Total</td>
+                                <td class="py-3 px-5 text-center font-bold text-[#009B77] bg-[#009B77]/10">{{ $aparCadangans->sum('total') }}</td>
+                                <td class="py-3 px-5"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         @if(auth()->user()->role !== 'Staff')
             <div x-show="activeTab === 'referensi'" x-cloak x-transition:enter="transition ease-out duration-400"
                 x-transition:enter-start="opacity-0 translate-y-6" x-transition:enter-end="opacity-100 translate-y-0"
@@ -904,7 +991,7 @@
                             </div>
 
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit" :disabled="isDuplicate || nama.trim() === ''"
                                     :class="isDuplicate || nama.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#008264]'"
                                     class="inline-flex w-full justify-center rounded-xl bg-[#009B77] px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-[#009B77]/20">{{ __('Save') }}</button>
@@ -975,7 +1062,7 @@
                             </div>
 
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit" :disabled="isDuplicate || nama.trim() === ''"
                                     :class="isDuplicate || nama.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
                                     class="inline-flex w-full justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-indigo-600/20">{{ __('Save') }}</button>
@@ -1043,7 +1130,7 @@
                             </div>
 
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit" :disabled="isDuplicate || nama.trim() === ''"
                                     :class="isDuplicate || nama.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-600'"
                                     class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save') }}</button>
@@ -1116,7 +1203,7 @@
                             </div>
 
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit" :disabled="isDuplicate || ukuran.trim() === ''"
                                     :class="isDuplicate || ukuran.trim() === '' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-700'"
                                     class="inline-flex w-full justify-center rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors shadow-purple-600/20">{{ __('Save') }}</button>
@@ -1172,6 +1259,13 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" x-data="{
                                     gedungId: '{{ old('gedung_id') }}',
                                     lokasiName: '{{ old('lokasi') }}',
+                                    gunakanCadangan: {{ old('gunakan_cadangan') ? 'true' : 'false' }},
+                                    cadanganId: '{{ old('cadangan_id') }}',
+                                    cadanganOptions: [
+                                        @foreach($aparCadangans->where('total', '>', 0) as $c)
+                                            { id: '{{ $c->id }}', name: '{{ addslashes($c->gedung->nama ?? '') }} - {{ addslashes($c->jenis->nama ?? '') }} {{ addslashes($c->kapasitas->ukuran ?? '') }} (Sisa: {{ $c->total }})', jenis_id: '{{ $c->jenis_id }}', kapasitas_id: '{{ $c->kapasitas_id }}' },
+                                        @endforeach
+                                    ],
                                     lokasiOptions: [
                                         @foreach($lokasis as $lok)
                                             { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
@@ -1182,6 +1276,62 @@
                                         return this.lokasiOptions.filter(l => l.gedung_id == this.gedungId);
                                     }
                                 }">
+                                    <!-- Stok Cadangan Option (Full Width) -->
+                                    <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-4 mb-2">
+                                        <label class="flex items-center gap-3 cursor-pointer">
+                                            <input type="checkbox" name="gunakan_cadangan" value="1" x-model="gunakanCadangan"
+                                                class="w-5 h-5 rounded border-slate-300 text-[#009B77] focus:ring-[#009B77] transition-all">
+                                            <span class="text-sm font-bold text-slate-700">Ambil dari Stok Cadangan</span>
+                                        </label>
+                                        
+                                        <div x-show="gunakanCadangan" x-collapse class="mt-4">
+                                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Sumber Stok</label>
+                                            <div class="relative" x-data="{
+                                                openCadangan: false,
+                                                searchCadangan: '',
+                                                get selectedCadanganName() {
+                                                    let sel = cadanganOptions.find(o => o.id == cadanganId);
+                                                    return sel ? sel.name : '{{ __('Select Stock') }}';
+                                                },
+                                                get filteredCadangan() {
+                                                    if (this.searchCadangan === '') return cadanganOptions;
+                                                    return cadanganOptions.filter(o => o.name.toLowerCase().includes(this.searchCadangan.toLowerCase()));
+                                                }
+                                            }">
+                                                <input type="hidden" name="cadangan_id" :value="cadanganId">
+                                                <i class="ph-bold ph-archive absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="openCadangan ? 'text-[#009B77]' : ''"></i>
+                                                <button type="button" @click="openCadangan = !openCadangan" @click.away="openCadangan = false"
+                                                    class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
+                                                    :class="openCadangan ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
+                                                    <span x-text="selectedCadanganName" :class="cadanganId ? 'font-bold text-slate-700' : 'text-slate-400 font-medium'" class="truncate block"></span>
+                                                    <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="openCadangan ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                                </button>
+                                                <div x-show="openCadangan" x-cloak x-transition
+                                                    class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-lg border border-slate-100 py-2 max-h-60 overflow-y-auto">
+                                                    <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
+                                                        <div class="relative">
+                                                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                            <input type="text" x-model="searchCadangan" placeholder="Cari stok..."
+                                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20" @click.stop>
+                                                        </div>
+                                                    </div>
+                                                    <div class="py-1">
+                                                        <template x-for="option in filteredCadangan" :key="option.id">
+                                                            <button type="button" @click="cadanganId = option.id; openCadangan = false; $dispatch('cadangan-selected', { jenis_id: option.jenis_id, kapasitas_id: option.kapasitas_id })"
+                                                                class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
+                                                                :class="cadanganId == option.id ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50'">
+                                                                <span x-text="option.name" class="font-bold"></span>
+                                                                <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganId == option.id"></i>
+                                                            </button>
+                                                        </template>
+                                                        <div x-show="filteredCadangan.length === 0" class="py-3 px-4 text-center text-sm text-slate-500">Stok tidak ditemukan</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @error('cadangan_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
+                                    
                                     <!-- {{ __('PFE NUMBER') }} -->
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
@@ -1308,7 +1458,7 @@
                                 if (this.search === '') return this.options;
                                 return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
                             }
-                        }" class="relative">
+                        }" @cadangan-selected.window="if(gunakanCadangan) selectedId = $event.detail.jenis_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="jenis_id" :value="selectedId" required>
                                             <i class="ph-bold ph-fire-extinguisher absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
                                                 :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
@@ -1385,7 +1535,7 @@
                                 if (this.search === '') return this.options;
                                 return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
                             }
-                        }" class="relative">
+                        }" @cadangan-selected.window="if(gunakanCadangan) selectedId = $event.detail.kapasitas_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="kapasitas_id" :value="selectedId" required>
                                             <i class="ph-bold ph-scales absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
                                                 :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
@@ -1466,6 +1616,16 @@
                                             <input type="text" name="tgl_kedaluwarsa"
                                                 placeholder="{{ __('Select Date...') }}"
                                                 value="{{ old('tgl_kedaluwarsa') }}"
+                                                @change="if($event.target.value) { 
+                                                    let d = new Date($event.target.value); 
+                                                    if(!isNaN(d)) { 
+                                                        d.setFullYear(d.getFullYear() - 2); 
+                                                        let prev = d.toISOString().split('T')[0];
+                                                        let input2 = $event.target.closest('form').querySelector('input[name=tgl_isi_ulang]');
+                                                        if(input2._flatpickr) input2._flatpickr.setDate(prev, false);
+                                                        else input2.value = prev;
+                                                    } 
+                                                }"
                                                 class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
                                             <i
                                                 class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
@@ -1483,6 +1643,16 @@
                                                 class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                                             <input type="text" name="tgl_isi_ulang" placeholder="{{ __('Select Date...') }}"
                                                 value="{{ old('tgl_isi_ulang') }}"
+                                                @change="if($event.target.value) { 
+                                                    let d = new Date($event.target.value); 
+                                                    if(!isNaN(d)) { 
+                                                        d.setFullYear(d.getFullYear() + 2); 
+                                                        let next = d.toISOString().split('T')[0];
+                                                        let input1 = $event.target.closest('form').querySelector('input[name=tgl_kedaluwarsa]');
+                                                        if(input1._flatpickr) input1._flatpickr.setDate(next, false);
+                                                        else input1.value = next;
+                                                    } 
+                                                }"
                                                 class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
                                             <i
                                                 class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
@@ -1546,6 +1716,13 @@
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" x-data="{
+                                    gunakanCadangan: {{ old('form_type') == 'edit_apar' && old('gunakan_cadangan') ? 'true' : 'false' }},
+                                    cadanganId: '{{ old('form_type') == 'edit_apar' ? old('cadangan_id') : '' }}',
+                                    cadanganOptions: [
+                                        @foreach($aparCadangans->where('total', '>', 0) as $c)
+                                            { id: '{{ $c->id }}', name: '{{ addslashes($c->gedung->nama ?? '') }} - {{ addslashes($c->jenis->nama ?? '') }} {{ addslashes($c->kapasitas->ukuran ?? '') }} (Sisa: {{ $c->total }})', jenis_id: '{{ $c->jenis_id }}', kapasitas_id: '{{ $c->kapasitas_id }}' },
+                                        @endforeach
+                                    ],
                                     lokasiOptions: [
                                         @foreach($lokasis as $lok)
                                             { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
@@ -1556,6 +1733,62 @@
                                         return this.lokasiOptions.filter(l => l.gedung_id == editApar.gedung_id);
                                     }
                                 }">
+                                    <!-- Stok Cadangan Option (Full Width) -->
+                                    <div class="sm:col-span-2 bg-amber-50 border border-amber-200 rounded-xl p-4 mb-2">
+                                        <label class="flex items-center gap-3 cursor-pointer">
+                                            <input type="checkbox" name="gunakan_cadangan" value="1" x-model="gunakanCadangan"
+                                                class="w-5 h-5 rounded border-amber-300 text-amber-500 focus:ring-amber-500 transition-all">
+                                            <span class="text-sm font-bold text-slate-700">Ganti dengan Stok Cadangan</span>
+                                        </label>
+                                        
+                                        <div x-show="gunakanCadangan" x-collapse class="mt-4">
+                                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Sumber Stok</label>
+                                            <div class="relative" x-data="{
+                                                openCadangan: false,
+                                                searchCadangan: '',
+                                                get selectedCadanganName() {
+                                                    let sel = cadanganOptions.find(o => o.id == cadanganId);
+                                                    return sel ? sel.name : '{{ __('Select Stock') }}';
+                                                },
+                                                get filteredCadangan() {
+                                                    if (this.searchCadangan === '') return cadanganOptions;
+                                                    return cadanganOptions.filter(o => o.name.toLowerCase().includes(this.searchCadangan.toLowerCase()));
+                                                }
+                                            }">
+                                                <input type="hidden" name="cadangan_id" :value="cadanganId">
+                                                <i class="ph-bold ph-archive absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="openCadangan ? 'text-amber-500' : ''"></i>
+                                                <button type="button" @click="openCadangan = !openCadangan" @click.away="openCadangan = false"
+                                                    class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
+                                                    :class="openCadangan ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : ''">
+                                                    <span x-text="selectedCadanganName" :class="cadanganId ? 'font-bold text-slate-700' : 'text-slate-400 font-medium'" class="truncate block"></span>
+                                                    <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="openCadangan ? 'rotate-180 text-amber-500' : ''"></i>
+                                                </button>
+                                                <div x-show="openCadangan" x-cloak x-transition
+                                                    class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-lg border border-slate-100 py-2 max-h-60 overflow-y-auto">
+                                                    <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
+                                                        <div class="relative">
+                                                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                            <input type="text" x-model="searchCadangan" placeholder="Cari stok..."
+                                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20" @click.stop>
+                                                        </div>
+                                                    </div>
+                                                    <div class="py-1">
+                                                        <template x-for="option in filteredCadangan" :key="option.id">
+                                                            <button type="button" @click="cadanganId = option.id; openCadangan = false; $dispatch('cadangan-selected-edit', { jenis_id: option.jenis_id, kapasitas_id: option.kapasitas_id })"
+                                                                class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
+                                                                :class="cadanganId == option.id ? 'text-amber-500 bg-amber-500/5' : 'text-slate-600 hover:bg-slate-50'">
+                                                                <span x-text="option.name" class="font-bold"></span>
+                                                                <i class="ph-bold ph-check text-amber-500" x-show="cadanganId == option.id"></i>
+                                                            </button>
+                                                        </template>
+                                                        <div x-show="filteredCadangan.length === 0" class="py-3 px-4 text-center text-sm text-slate-500">Stok tidak ditemukan</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @error('cadangan_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
+                                    
                                     <!-- {{ __('PFE NUMBER') }} -->
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
@@ -1724,7 +1957,7 @@
                                 if (this.search === '') return this.options;
                                 return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
                             }
-                        }" class="relative">
+                        }" @cadangan-selected-edit.window="if(gunakanCadangan) editApar.jenis_id = $event.detail.jenis_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="jenis_id" :value="editApar.jenis_id" required>
                                             <i class="ph-bold ph-fire-extinguisher absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
                                                 :class="open ? 'text-amber-500' : 'peer-focus:text-amber-500'"></i>
@@ -1802,7 +2035,7 @@
                                 if (this.search === '') return this.options;
                                 return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
                             }
-                        }" class="relative">
+                        }" @cadangan-selected-edit.window="if(gunakanCadangan) editApar.kapasitas_id = $event.detail.kapasitas_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="kapasitas_id" :value="editApar.kapasitas_id"
                                                 required>
                                             <i class="ph-bold ph-scales absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
@@ -1883,7 +2116,18 @@
                                             <i
                                                 class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                                             <input type="text" name="tgl_kedaluwarsa"
-                                                placeholder="{{ __('Select Date...') }}" x-model="editApar.tgl_kedaluwarsa"
+                                                placeholder="{{ __('Select Date...') }}" :value="editApar.tgl_kedaluwarsa"
+                                                @change="if($event.target.value) { 
+                                                    let d = new Date($event.target.value); 
+                                                    if(!isNaN(d)) { 
+                                                        d.setFullYear(d.getFullYear() - 2); 
+                                                        let prev = d.toISOString().split('T')[0];
+                                                        editApar.tgl_isi_ulang = prev;
+                                                        let input2 = $event.target.closest('form').querySelector('input[name=tgl_isi_ulang]');
+                                                        if(input2 && input2._flatpickr) input2._flatpickr.setDate(prev, false);
+                                                        else if(input2) input2.value = prev;
+                                                    } 
+                                                }"
                                                 required
                                                 class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
                                             <i
@@ -1901,7 +2145,18 @@
                                             <i
                                                 class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                                             <input type="text" name="tgl_isi_ulang" placeholder="{{ __('Select Date...') }}"
-                                                x-model="editApar.tgl_isi_ulang"
+                                                :value="editApar.tgl_isi_ulang"
+                                                @change="if($event.target.value) { 
+                                                    let d = new Date($event.target.value); 
+                                                    if(!isNaN(d)) { 
+                                                        d.setFullYear(d.getFullYear() + 2); 
+                                                        let next = d.toISOString().split('T')[0];
+                                                        editApar.tgl_kedaluwarsa = next;
+                                                        let input1 = $event.target.closest('form').querySelector('input[name=tgl_kedaluwarsa]');
+                                                        if(input1 && input1._flatpickr) input1._flatpickr.setDate(next, false);
+                                                        else if(input1) input1.value = next;
+                                                    } 
+                                                }"
                                                 class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
                                             <i
                                                 class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
@@ -1923,6 +2178,65 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Tab 4: Resume -->
+        <div x-show="activeTab === 'resume'" x-cloak x-transition:enter="transition ease-out duration-400"
+            x-transition:enter-start="opacity-0 translate-y-6" x-transition:enter-end="opacity-100 translate-y-0"
+            class="space-y-6" style="display: none;" x-cloak>
+            
+            <!-- Resume APAR Table Matrix Layout -->
+            @if(isset($resumeColumns) && count($resumeColumns) > 0)
+            <div class="bg-white rounded-2xl shadow-sm border border-[#009B77]/20 overflow-hidden">
+                <div class="px-5 py-3 border-b border-[#009B77]/10 flex items-center justify-center bg-[#009B77]/5">
+                    <h2 class="text-base font-bold text-[#009B77] uppercase tracking-wider flex items-center gap-2">
+                        <i class="ph-bold ph-table"></i>
+                        {{ __('Resume Data APAR') }}
+                    </h2>
+                </div>
+                <div class="overflow-x-auto p-4">
+                    <table class="w-full text-left border-collapse border border-[#009B77]/20">
+                        <thead>
+                            <tr class="bg-[#009B77] text-white">
+                                <th rowspan="2" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center w-12">No</th>
+                                <th rowspan="2" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center whitespace-nowrap w-56">{{ __('Keterangan') }}</th>
+                                @foreach($resumeColumns as $jenis => $kapasitasList)
+                                <th colspan="{{ count($kapasitasList) }}" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center">{{ $jenis }}</th>
+                                @endforeach
+                                <th rowspan="2" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center w-24">{{ __('Total') }}</th>
+                            </tr>
+                            <tr class="bg-[#009B77] text-white">
+                                @foreach($resumeColumns as $jenis => $kapasitasList)
+                                    @foreach($kapasitasList as $kapasitas)
+                                    <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center whitespace-nowrap">{{ $kapasitas }}</th>
+                                    @endforeach
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            @foreach($resumeTable as $index => $row)
+                            <tr class="hover:bg-[#009B77]/5 transition-colors">
+                                <td class="px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200 text-center">{{ $index + 1 }}</td>
+                                <td class="px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200 whitespace-nowrap">{{ __($row['name']) }}</td>
+                                @foreach($resumeColumns as $jenis => $kapasitasList)
+                                    @foreach($kapasitasList as $kapasitas)
+                                    <td class="px-4 py-3 text-sm text-slate-600 border border-slate-200 text-center">{{ $row['data'][$jenis][$kapasitas] ?? 0 }}</td>
+                                    @endforeach
+                                @endforeach
+                                <td class="px-4 py-3 text-sm font-bold text-[#009B77] border border-slate-200 text-center bg-[#009B77]/5">{{ $row['total'] }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @else
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-12 text-center">
+                <i class="ph-bold ph-empty text-6xl text-slate-300 mb-4 inline-block"></i>
+                <h3 class="text-lg font-bold text-slate-700">{{ __('Belum Ada Data') }}</h3>
+                <p class="text-slate-500 mt-2">{{ __('Data resume akan muncul otomatis setelah data APAR diinput.') }}</p>
+            </div>
+            @endif
         </div>
 
         <!-- Modal Edit Gedung -->
@@ -1976,7 +2290,7 @@
                                 </div>
                             </div>
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
                                     class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditGedung = false"
@@ -2114,7 +2428,7 @@
                                 </div>
                             </div>
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
                                     class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditLokasi = false"
@@ -2177,7 +2491,7 @@
                                 </div>
                             </div>
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
                                     class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditJenis = false"
@@ -2251,7 +2565,7 @@
                                 </div>
                             </div>
                             <div
-                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100">
+                                class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
                                     class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditKapasitas = false"
@@ -2375,6 +2689,293 @@
             </div>
         </div>
     </div>
+    <!-- Modal Cadangan (Add/Edit) -->
+    <div x-data="{ 
+            show: {{ (old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan') && $errors->any() ? 'true' : 'false' }}, 
+            formType: '{{ old('form_type') ?: '' }}', 
+            cadanganAction: '{{ old('cadangan_action') ?: '' }}',
+            cadanganData: {
+                gedung_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('gedung_id') : '' }}',
+                jenis_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('jenis_id') : '' }}',
+                kapasitas_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('kapasitas_id') : '' }}',
+                total: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('total') : '' }}'
+            }
+         }"
+         @open-cadangan.window="
+            show = true; 
+            formType = $event.detail.type; 
+            cadanganAction = $event.detail.action;
+            if ($event.detail.type === 'edit_cadangan') {
+                cadanganData.gedung_id = $event.detail.gedung;
+                cadanganData.jenis_id = $event.detail.jenis;
+                cadanganData.kapasitas_id = $event.detail.kapasitas;
+                cadanganData.total = $event.detail.total;
+            } else {
+                cadanganData.gedung_id = '';
+                cadanganData.jenis_id = '';
+                cadanganData.kapasitas_id = '';
+                cadanganData.total = '';
+            }
+         "
+         x-show="show" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+        <!-- Background overlay -->
+        <div x-show="show" class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
+
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <!-- Modal panel -->
+                <div x-show="show" @click.away="show = false" class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-100" x-cloak>
+                    
+                    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 rounded-t-3xl">
+                        <h3 class="text-xl font-bold text-slate-800" x-text="formType === 'edit_cadangan' ? '{{ __('Edit Spare PFE') }}' : '{{ __('Add Spare PFE') }}'"></h3>
+                        <button type="button" @click="show = false" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                            <i class="ph-bold ph-x text-xl"></i>
+                        </button>
+                    </div>
+
+                    <form :action="cadanganAction" method="POST" id="edit-cadangan-form">
+                        @csrf
+                        <input type="hidden" name="_method" value="PUT" x-bind:disabled="formType !== 'edit_cadangan'">
+                        <input type="hidden" name="form_type" :value="formType">
+                        <input type="hidden" name="cadangan_action" :value="cadanganAction">
+                        <div class="p-6 space-y-5">
+                            
+                            <div>
+                                <div x-data="{ 
+                                        open: false, 
+                                        search: '',
+                                        options: [
+                                            @foreach($gedungs as $gedung)
+                                            { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
+                                            @endforeach
+                                        ],
+                                        get selectedName() {
+                                            let sel = this.options.find(o => o.id == cadanganData.gedung_id);
+                                            return sel ? sel.name : '{{ __('Select Building') }}';
+                                        },
+                                        get filteredOptions() {
+                                            if (this.search === '') return this.options;
+                                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                        }
+                                    }" class="relative">
+
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Building') }} <span class="text-red-500">*</span></label>
+
+                                    <!-- Hidden input for form submission -->
+                                    <input type="hidden" name="gedung_id" :value="cadanganData.gedung_id" required>
+
+                                    <!-- Trigger -->
+                                    <button type="button" @click="open = !open" @click.away="open = false"
+                                        class="w-full bg-slate-50 border-2 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
+                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'border-slate-200 text-slate-700 hover:border-slate-300'">
+                                        <span x-text="selectedName" :class="cadanganData.gedung_id === '' ? 'text-slate-400' : ''"></span>
+                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                    </button>
+
+                                    <!-- Dropdown Menu -->
+                                    <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave="transition ease-in duration-100"
+                                        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                        class="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top">
+
+                                        <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
+                                            <div class="relative">
+                                                <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                <input type="text" x-model="search" placeholder="Search building..."
+                                                    class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all"
+                                                    @click.stop @keydown.enter.prevent>
+                                            </div>
+                                        </div>
+
+                                        <div class="py-1">
+                                            <template x-for="option in filteredOptions" :key="option.id">
+                                                <button type="button"
+                                                    @click="cadanganData.gedung_id = option.id; open = false"
+                                                    class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
+                                                    :class="cadanganData.gedung_id == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'text-slate-600 hover:bg-slate-50'">
+                                                    <span x-text="option.name" class="font-bold"></span>
+                                                    <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganData.gedung_id == option.id" x-cloak></i>
+                                                </button>
+                                            </template>
+                                            <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                                {{ __('No results found') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @error('gedung_id')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                            <div>
+                                <div x-data="{ 
+                                        open: false, 
+                                        search: '',
+                                        options: [
+                                            @foreach($jenisApars as $jenis)
+                                            { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
+                                            @endforeach
+                                        ],
+                                        get selectedName() {
+                                            let sel = this.options.find(o => o.id == cadanganData.jenis_id);
+                                            return sel ? sel.name : '{{ __('Select Type') }}';
+                                        },
+                                        get filteredOptions() {
+                                            if (this.search === '') return this.options;
+                                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                        }
+                                    }" class="relative">
+
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }} <span class="text-red-500">*</span></label>
+
+                                    <!-- Hidden input for form submission -->
+                                    <input type="hidden" name="jenis_id" :value="cadanganData.jenis_id" required>
+
+                                    <!-- Trigger -->
+                                    <button type="button" @click="open = !open" @click.away="open = false"
+                                        class="w-full bg-slate-50 border-2 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
+                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'border-slate-200 text-slate-700 hover:border-slate-300'">
+                                        <span x-text="selectedName" :class="cadanganData.jenis_id === '' ? 'text-slate-400' : ''"></span>
+                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                    </button>
+
+                                    <!-- Dropdown Menu -->
+                                    <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave="transition ease-in duration-100"
+                                        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                        class="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top">
+
+                                        <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
+                                            <div class="relative">
+                                                <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                <input type="text" x-model="search" placeholder="Search type..."
+                                                    class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all"
+                                                    @click.stop @keydown.enter.prevent>
+                                            </div>
+                                        </div>
+
+                                        <div class="py-1">
+                                            <template x-for="option in filteredOptions" :key="option.id">
+                                                <button type="button"
+                                                    @click="cadanganData.jenis_id = option.id; open = false"
+                                                    class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
+                                                    :class="cadanganData.jenis_id == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'text-slate-600 hover:bg-slate-50'">
+                                                    <span x-text="option.name" class="font-bold"></span>
+                                                    <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganData.jenis_id == option.id" x-cloak></i>
+                                                </button>
+                                            </template>
+                                            <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                                {{ __('No results found') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @error('jenis_id')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <div x-data="{ 
+                                        open: false, 
+                                        search: '',
+                                        options: [
+                                            @foreach($kapasitasApars as $kapasitas)
+                                            { id: '{{ $kapasitas->id }}', name: '{{ addslashes($kapasitas->ukuran) }}' },
+                                            @endforeach
+                                        ],
+                                        get selectedName() {
+                                            let sel = this.options.find(o => o.id == cadanganData.kapasitas_id);
+                                            return sel ? sel.name : '{{ __('Select Capacity') }}';
+                                        },
+                                        get filteredOptions() {
+                                            if (this.search === '') return this.options;
+                                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                        }
+                                    }" class="relative">
+
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }} <span class="text-red-500">*</span></label>
+
+                                    <!-- Hidden input for form submission -->
+                                    <input type="hidden" name="kapasitas_id" :value="cadanganData.kapasitas_id" required>
+
+                                    <!-- Trigger -->
+                                    <button type="button" @click="open = !open" @click.away="open = false"
+                                        class="w-full bg-slate-50 border-2 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
+                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'border-slate-200 text-slate-700 hover:border-slate-300'">
+                                        <span x-text="selectedName" :class="cadanganData.kapasitas_id === '' ? 'text-slate-400' : ''"></span>
+                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                    </button>
+
+                                    <!-- Dropdown Menu -->
+                                    <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave="transition ease-in duration-100"
+                                        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                        class="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-slate-100 py-2 max-h-60 overflow-y-auto origin-top">
+
+                                        <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
+                                            <div class="relative">
+                                                <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                <input type="text" x-model="search" placeholder="Search capacity..."
+                                                    class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all"
+                                                    @click.stop @keydown.enter.prevent>
+                                            </div>
+                                        </div>
+
+                                        <div class="py-1">
+                                            <template x-for="option in filteredOptions" :key="option.id">
+                                                <button type="button"
+                                                    @click="cadanganData.kapasitas_id = option.id; open = false"
+                                                    class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
+                                                    :class="cadanganData.kapasitas_id == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'text-slate-600 hover:bg-slate-50'">
+                                                    <span x-text="option.name" class="font-bold"></span>
+                                                    <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganData.kapasitas_id == option.id" x-cloak></i>
+                                                </button>
+                                            </template>
+                                            <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                                {{ __('No results found') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @error('kapasitas_id')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Stock Quantity') }} <span class="text-red-500">*</span></label>
+                                <input type="number" name="total" min="0" required x-model="cadanganData.total" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all">
+                                @error('total')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                        </div>
+                        <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 rounded-b-3xl">
+                            <button type="button" @click="show = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border-2 border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all">
+                                {{ __('Cancel') }}
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-[#009B77] hover:bg-[#007b5e] shadow-lg shadow-[#009B77]/30 rounded-xl transition-all">
+                                {{ __('Save') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <x-excel-preview-modal />
 
     <!-- Seamless AJAX Form Submission for Master Data -->
@@ -2384,6 +2985,8 @@
         window.confirmDelete = function (event, message) {
             event.preventDefault();
             const form = event.target || event.currentTarget;
+            if (form.dataset.confirmed === 'true') return;
+
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: message || "Data ini akan dihapus secara permanen!",
@@ -2432,7 +3035,11 @@
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const originalText = submitBtn ? submitBtn.innerHTML : '';
                 if (submitBtn) {
-                    submitBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin mr-2"></i> Proses...';
+                    if (submitBtn.classList.contains('w-8') || submitBtn.classList.contains('w-10')) {
+                        submitBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i>';
+                    } else {
+                        submitBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin mr-2"></i> {{ __("Proses...") }}';
+                    }
                     submitBtn.disabled = true;
                 }
 

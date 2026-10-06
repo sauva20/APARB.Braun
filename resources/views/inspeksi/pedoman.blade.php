@@ -39,11 +39,6 @@
     <div class="fixed top-[-10%] left-[-10%] w-[60%] h-[40%] bg-[#009B77] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 pointer-events-none"></div>
     <div class="fixed bottom-10 right-[-10%] w-[50%] h-[40%] bg-[#8A4B9F] rounded-full mix-blend-multiply filter blur-[100px] opacity-15 pointer-events-none"></div>
 
-    <!-- Language Switcher -->
-    <div class="fixed top-4 right-4 z-[100] flex items-center gap-1.5">
-        <a href="{{ route('set-locale', 'id') }}" class="text-[10px] font-bold px-2 py-1.5 rounded-lg {{ app()->getLocale() == 'id' ? 'bg-[#009B77] text-white border-transparent' : 'bg-white/80 text-slate-500 hover:bg-white border-slate-200/50' }} shadow-sm backdrop-blur-sm border transition-colors">ID</a>
-        <a href="{{ route('set-locale', 'en') }}" class="text-[10px] font-bold px-2 py-1.5 rounded-lg {{ app()->getLocale() == 'en' ? 'bg-[#009B77] text-white border-transparent' : 'bg-white/80 text-slate-500 hover:bg-white border-slate-200/50' }} shadow-sm backdrop-blur-sm border transition-colors">EN</a>
-    </div>
 
     <div class="w-full max-w-xl mx-auto relative z-10 flex flex-col p-4 sm:p-6 space-y-6">
         
@@ -57,6 +52,12 @@
                     <h2 class="text-base font-extrabold text-slate-800 leading-tight">{{ __('Inspection Guidelines') }}</h2>
                     <p class="text-[10px] font-semibold text-slate-500 mt-0.5">{{ __('Points to check during PFE inspection') }}</p>
                 </div>
+            </div>
+            
+            <!-- Language Switcher -->
+            <div class="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200/60 shadow-sm shrink-0">
+                <a href="{{ route('set-locale', 'id') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'id' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">ID</a>
+                <a href="{{ route('set-locale', 'en') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'en' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">EN</a>
             </div>
         </div>
 

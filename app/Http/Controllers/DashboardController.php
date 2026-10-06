@@ -116,6 +116,8 @@ class DashboardController extends Controller
         $sudahDiinspeksiBulanIni = $inspeksiBulanIniAparIds->count();
         $belumDiinspeksiBulanIni = max(0, $totalApar - $sudahDiinspeksiBulanIni);
         $persentaseInspeksi = $totalApar > 0 ? round(($sudahDiinspeksiBulanIni / $totalApar) * 100) : 0;
+        
+        $totalStock = \App\Models\AparCadangan::sum('total');
 
         $sudahDiinspeksiApars = Apar::with('lokasi.gedung')
             ->whereIn('id', $inspeksiBulanIniAparIds)
@@ -132,6 +134,7 @@ class DashboardController extends Controller
             'akanKedaluwarsa',
             'sudahKedaluwarsa',
             'aparKosong',
+            'totalStock',
             'jenisData',
             'yearlyInspections',
             'recentInspections',
@@ -159,6 +162,7 @@ class DashboardController extends Controller
                     'akanKedaluwarsa' => $data['akanKedaluwarsa'],
                     'sudahKedaluwarsa' => $data['sudahKedaluwarsa'],
                     'aparKosong' => $data['aparKosong'],
+                    'totalStock' => $data['totalStock'],
                     'sudahDiinspeksiBulanIni' => $data['sudahDiinspeksiBulanIni'],
                     'belumDiinspeksiBulanIni' => $data['belumDiinspeksiBulanIni'],
                 ],

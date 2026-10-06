@@ -90,6 +90,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::put('/master-data/apar/{apar}', [MasterDataController::class, 'updateApar']);
     Route::delete('/master-data/apar/{apar}', [MasterDataController::class, 'destroyApar']);
 
+    // APAR Cadangan Routes
+    Route::post('/master-data/apar-cadangan', [MasterDataController::class, 'storeAparCadangan']);
+    Route::put('/master-data/apar-cadangan/{aparCadangan}', [MasterDataController::class, 'updateAparCadangan']);
+    Route::delete('/master-data/apar-cadangan/{aparCadangan}', [MasterDataController::class, 'destroyAparCadangan']);
+
     Route::get('/inspection-schedule', [InspeksiController::class, 'index']);
     Route::get('/inspection-schedule/export-checklist', [InspeksiController::class, 'exportChecklist'])->name('inspection-schedule.export-checklist');
     Route::post('/inspection-schedule', [InspeksiController::class, 'storeJadwal']);
