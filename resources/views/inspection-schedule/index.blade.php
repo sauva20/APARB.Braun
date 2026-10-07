@@ -21,7 +21,7 @@
     main { overflow: hidden !important; }
 </style>
 
-<div x-data="{ showPanelHasil: false, showPanelDetail: false, showModalBuatJadwal: false, showModalEditJadwal: false, editData: null, selectedInspeksi: null }">
+<div x-data="{ showPanelHasil: false, showPanelDetail: false, showModalBuatJadwal: false, showModalEditJadwal: false, editData: null, originalEditData: null, selectedInspeksi: null }">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 flex-shrink-0">
         <div class="flex items-center gap-3">
@@ -41,7 +41,7 @@
             </button>
             @endif
             
-            <div x-data="{ openExport: false }" class="relative z-[100]">
+            <div x-data="{ openExport: false }" class="relative z-40">
                 <button @click="openExport = !openExport" @click.away="openExport = false" class="btn-smooth-ring bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-printer text-lg"></i>
                     <span class="hidden sm:inline">{{ __('Export Checklist') }}</span>
@@ -917,6 +917,7 @@
                     if (this.formTipeArea === 'gedung' && !this.formGedungId) return false;
                     if (this.formTipeArea === 'lokasi' && !this.formLokasiId) return false;
                     if (!this.formUserId) return false;
+                    if (JSON.stringify(editData) === originalEditData) return false;
                     return true;
                 }
             }">
@@ -1138,8 +1139,8 @@
                     </button>
                     <button type="submit" 
                             :disabled="!isFormValid"
-                            :class="isFormValid ? 'bg-[#009B77] hover:bg-[#008264] text-white shadow-sm' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
-                            class="font-bold py-2.5 px-6 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+                            :class="isFormValid ? 'hover:bg-[#008264] shadow-sm' : 'opacity-50 cursor-not-allowed'"
+                            class="bg-[#009B77] text-white font-bold py-2.5 px-6 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
                         <i class="ph-bold ph-floppy-disk text-lg"></i>
                         {{ __('Save Changes') }}
                     </button>

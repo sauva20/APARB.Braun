@@ -5,21 +5,22 @@
 @section('content')
     <div class="space-y-6"
         x-data="{ activeTab: localStorage.getItem('masterDataTab') || 'data', showModalApar: {{ old('form_type') == 'tambah_apar' && $errors->any() ? 'true' : 'false' }}, 
-    showQrModal: false, qrData: { id: '', kode: '', svg: '' },
-    showModalEditApar: {{ old('form_type') == 'edit_apar' && $errors->any() ? 'true' : 'false' }}, 
-    editApar: { id:'{{ old('form_type') == 'edit_apar' ? old('id') : '' }}', kode:'{{ old('form_type') == 'edit_apar' ? old('kode') : '' }}', nomor_apar:'{{ old('form_type') == 'edit_apar' ? old('nomor_apar') : '' }}', gedung_id:'{{ old('form_type') == 'edit_apar' ? old('gedung_id') : '' }}', lokasi:'{{ old('form_type') == 'edit_apar' ? old('lokasi') : '' }}', jenis_id:'{{ old('form_type') == 'edit_apar' ? old('jenis_id') : '' }}', kapasitas_id:'{{ old('form_type') == 'edit_apar' ? old('kapasitas_id') : '' }}', qty:'{{ old('form_type') == 'edit_apar' ? old('qty') : '' }}', tgl_kedaluwarsa:'{{ old('form_type') == 'edit_apar' ? old('tgl_kedaluwarsa') : '' }}', tgl_isi_ulang:'{{ old('form_type') == 'edit_apar' ? old('tgl_isi_ulang') : '' }}' },  
-    showModalLokasi: {{ old('form_type') == 'tambah_lokasi' && $errors->any() ? 'true' : 'false' }}, 
-    showModalGedung: {{ old('form_type') == 'tambah_gedung' && $errors->any() ? 'true' : 'false' }}, 
-    showModalJenis: {{ old('form_type') == 'tambah_jenis' && $errors->any() ? 'true' : 'false' }}, 
-    showModalKapasitas: {{ old('form_type') == 'tambah_kapasitas' && $errors->any() ? 'true' : 'false' }}, 
-    showEditGedung: {{ old('form_type') == 'edit_gedung' && $errors->any() ? 'true' : 'false' }}, 
-    editGedung: { id:'{{ old('form_type') == 'edit_gedung' ? old('id') : '' }}', nama:'{{ old('form_type') == 'edit_gedung' ? old('nama') : '' }}' }, 
-    showEditLokasi: {{ old('form_type') == 'edit_lokasi' && $errors->any() ? 'true' : 'false' }}, 
-    editLokasi: { id:'{{ old('form_type') == 'edit_lokasi' ? old('id') : '' }}', nama:'{{ old('form_type') == 'edit_lokasi' ? old('nama') : '' }}', gedung_id:'{{ old('form_type') == 'edit_lokasi' ? old('gedung_id') : '' }}' }, 
-    showEditJenis: {{ old('form_type') == 'edit_jenis' && $errors->any() ? 'true' : 'false' }}, 
-    editJenis: { id:'{{ old('form_type') == 'edit_jenis' ? old('id') : '' }}', nama:'{{ old('form_type') == 'edit_jenis' ? old('nama') : '' }}' }, 
-    showEditKapasitas: {{ old('form_type') == 'edit_kapasitas' && $errors->any() ? 'true' : 'false' }}, 
-    editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}', ukuran:'{{ old('form_type') == 'edit_kapasitas' ? old('ukuran') : '' }}' } }">
+            showQrModal: false, qrData: { id: '', kode: '', svg: '' },
+            showModalEditApar: {{ old('form_type') == 'edit_apar' && $errors->any() ? 'true' : 'false' }}, 
+            editApar: { id:'{{ old('form_type') == 'edit_apar' ? old('id') : '' }}', kode:'{{ old('form_type') == 'edit_apar' ? old('kode') : '' }}', nomor_apar:'{{ old('form_type') == 'edit_apar' ? old('nomor_apar') : '' }}', gedung_id:'{{ old('form_type') == 'edit_apar' ? old('gedung_id') : '' }}', lokasi:'{{ old('form_type') == 'edit_apar' ? old('lokasi') : '' }}', jenis_id:'{{ old('form_type') == 'edit_apar' ? old('jenis_id') : '' }}', kapasitas_id:'{{ old('form_type') == 'edit_apar' ? old('kapasitas_id') : '' }}', qty:'{{ old('form_type') == 'edit_apar' ? old('qty') : '' }}', tgl_kedaluwarsa:'{{ old('form_type') == 'edit_apar' ? old('tgl_kedaluwarsa') : '' }}', tgl_isi_ulang:'{{ old('form_type') == 'edit_apar' ? old('tgl_isi_ulang') : '' }}' },  
+            showModalLokasi: {{ old('form_type') == 'tambah_lokasi' && $errors->any() ? 'true' : 'false' }}, 
+            showModalGedung: {{ old('form_type') == 'tambah_gedung' && $errors->any() ? 'true' : 'false' }}, 
+            showModalJenis: {{ old('form_type') == 'tambah_jenis' && $errors->any() ? 'true' : 'false' }}, 
+            showModalKapasitas: {{ old('form_type') == 'tambah_kapasitas' && $errors->any() ? 'true' : 'false' }}, 
+            showEditGedung: {{ old('form_type') == 'edit_gedung' && $errors->any() ? 'true' : 'false' }}, 
+            editGedung: { id:'{{ old('form_type') == 'edit_gedung' ? old('id') : '' }}', nama:'{{ old('form_type') == 'edit_gedung' ? old('nama') : '' }}' }, 
+            showEditLokasi: {{ old('form_type') == 'edit_lokasi' && $errors->any() ? 'true' : 'false' }}, 
+            editLokasi: { id:'{{ old('form_type') == 'edit_lokasi' ? old('id') : '' }}', nama:'{{ old('form_type') == 'edit_lokasi' ? old('nama') : '' }}', gedung_id:'{{ old('form_type') == 'edit_lokasi' ? old('gedung_id') : '' }}' }, 
+            showEditJenis: {{ old('form_type') == 'edit_jenis' && $errors->any() ? 'true' : 'false' }}, 
+            editJenis: { id:'{{ old('form_type') == 'edit_jenis' ? old('id') : '' }}', nama:'{{ old('form_type') == 'edit_jenis' ? old('nama') : '' }}' }, 
+            showEditKapasitas: {{ old('form_type') == 'edit_kapasitas' && $errors->any() ? 'true' : 'false' }}, 
+            editKapasitas: { id:'{{ old('form_type') == 'edit_kapasitas' ? old('id') : '' }}', ukuran:'{{ old('form_type') == 'edit_kapasitas' ? old('ukuran') : '' }}' },
+            originalEditApar: '', originalEditGedung: '', originalEditLokasi: '', originalEditJenis: '', originalEditKapasitas: '' }">
 
         <!-- Header Area & Tabs -->
         <div class="flex flex-col gap-6">
@@ -40,7 +41,7 @@
 
                 <!-- Right: Actions -->
                 <div class="flex items-center gap-3">
-                    <div x-data="{ openExport: false }" class="relative z-[100]">
+                    <div x-data="{ openExport: false }" class="relative z-40">
                         <button @click="openExport = !openExport" @click.away="openExport = false"
                             class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                             <i class="ph-bold ph-download-simple text-lg"></i>
@@ -82,24 +83,24 @@
             <!-- Custom Tabs -->
             <div class="relative bg-slate-200/50 p-1.5 rounded-xl inline-flex gap-1 self-start z-0"
                 x-data="{ tabRect: { left: 0, width: 0 }, isInitialized: false }" x-init="
-                    $watch('activeTab', (val) => {
-                        localStorage.setItem('masterDataTab', val);
-                        let activeEl = $refs[activeTab];
-                        if(activeEl) {
-                            tabRect.left = activeEl.offsetLeft;
-                            tabRect.width = activeEl.offsetWidth;
-                        }
-                    });
-                    // Immediate calculation for initial render
-                    $nextTick(() => {
-                        let activeEl = $refs[activeTab];
-                        if(activeEl) {
-                            tabRect.left = activeEl.offsetLeft;
-                            tabRect.width = activeEl.offsetWidth;
-                        }
-                        setTimeout(() => isInitialized = true, 50);
-                    });
-                 ">
+                            $watch('activeTab', (val) => {
+                                localStorage.setItem('masterDataTab', val);
+                                let activeEl = $refs[activeTab];
+                                if(activeEl) {
+                                    tabRect.left = activeEl.offsetLeft;
+                                    tabRect.width = activeEl.offsetWidth;
+                                }
+                            });
+                            // Immediate calculation for initial render
+                            $nextTick(() => {
+                                let activeEl = $refs[activeTab];
+                                if(activeEl) {
+                                    tabRect.left = activeEl.offsetLeft;
+                                    tabRect.width = activeEl.offsetWidth;
+                                }
+                                setTimeout(() => isInitialized = true, 50);
+                            });
+                         ">
                 <!-- Sliding Background Pill -->
                 <div class="absolute top-1.5 bottom-1.5 bg-white rounded-lg shadow-sm ease-[cubic-bezier(0.4,0,0.2,1)] -z-10"
                     :class="isInitialized ? 'transition-all duration-300' : ''"
@@ -353,9 +354,12 @@
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Type') }}</th>
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Capacity') }}</th>
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Fire Class') }}</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Expired DATE') }}</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Last Refill') }}</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Qty') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Expired DATE') }}
+                                </th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Last Refill') }}
+                                </th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Qty') }}
+                                </th>
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('PIC') }}</th>
                                 @if(auth()->user()->role !== 'Staff')
                                     <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('ACTIONS') }}</th>
@@ -370,9 +374,11 @@
                                         <span class="font-bold text-slate-800">{{ $apar->kode }}</span>
                                     </td>
                                     <td class="py-4 px-5 font-semibold text-slate-600 capitalize">
-                                        {{ $apar->lokasi->nama ?? 'n/a' }}</td>
+                                        {{ $apar->lokasi->nama ?? 'n/a' }}
+                                    </td>
                                     <td class="py-4 px-5 font-semibold text-slate-600">
-                                        {{ $apar->lokasi->gedung->nama ?? 'n/a' }}</td>
+                                        {{ $apar->lokasi->gedung->nama ?? 'n/a' }}
+                                    </td>
                                     <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->jenis->nama ?? 'n/a' }}</td>
                                     <td class="py-4 px-5 font-semibold text-slate-600">{{ $apar->kapasitas->ukuran ?? 'n/a' }}
                                     </td>
@@ -441,7 +447,7 @@
                                         <td class="py-4 px-5">
                                             <div class="flex items-center justify-center gap-1">
                                                 <button type="button"
-                                                    @click="editApar = { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}', nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '', gedung_id: '{{ $apar->lokasi->gedung_id ?? '' }}', lokasi: '{{ addslashes($apar->lokasi->nama ?? '') }}', jenis_id: '{{ $apar->jenis_id }}', kapasitas_id: '{{ $apar->kapasitas_id }}', qty: {{ $apar->qty }}, tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}', tgl_isi_ulang: '{{ $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('Y-m-d') : '' }}' }; showModalEditApar = true"
+                                                    @click="editApar = { id: {{ $apar->id }}, kode: '{{ addslashes($apar->kode) }}', nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '', gedung_id: '{{ $apar->lokasi->gedung_id ?? '' }}', lokasi: '{{ addslashes($apar->lokasi->nama ?? '') }}', jenis_id: '{{ $apar->jenis_id }}', kapasitas_id: '{{ $apar->kapasitas_id }}', qty: {{ $apar->qty }}, tgl_kedaluwarsa: '{{ $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '' }}', tgl_isi_ulang: '{{ $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('Y-m-d') : '' }}', gunakanCadangan: false, cadanganId: '' }; originalEditApar = JSON.stringify(editApar); showModalEditApar = true"
                                                     class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors"
                                                     title="Edit">
                                                     <i class="ph-bold ph-pencil-simple text-lg"></i>
@@ -463,13 +469,14 @@
                                                     <i class="ph-bold ph-clock-counter-clockwise text-base"></i>
                                                 </button>
                                                 <button @click="
-                                                fetch('/master-data/apar/{{ $apar->id }}/qr-data')
-                                                    .then(res => res.json())
-                                                    .then(data => {
-                                                        qrData = data;
-                                                        showQrModal = true;
-                                                    });
-                                            " class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-[#009B77] hover:bg-[#009B77]/10 transition-colors"
+                                                                        fetch('/master-data/apar/{{ $apar->id }}/qr-data')
+                                                                            .then(res => res.json())
+                                                                            .then(data => {
+                                                                                qrData = data;
+                                                                                showQrModal = true;
+                                                                            });
+                                                                    "
+                                                    class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-[#009B77] hover:bg-[#009B77]/10 transition-colors"
                                                     title="QR Code">
                                                     <i class="ph-bold ph-qr-code text-base"></i>
                                                 </button>
@@ -480,7 +487,8 @@
                             @empty
                                 <tr>
                                     <td colspan="7" class="py-8 text-center text-slate-500 font-semibold">
-                                        {{ __('No PFE data available.') }}</td>
+                                        {{ __('No PFE data available.') }}
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -493,7 +501,8 @@
                         <p class="text-sm font-semibold text-slate-500">{{ __('Showing') }} <span
                                 class="font-bold text-slate-800">{{ $apars->firstItem() ?? 0 }}-{{ $apars->lastItem() ?? 0 }}</span>
                             {{ __('of') }} <span class="font-bold text-slate-800">{{ $apars->total() }}</span>
-                            {{ __('data') }}</p>
+                            {{ __('data') }}
+                        </p>
                         <div class="w-full sm:w-auto flex items-center gap-2">
                             @if ($apars->onFirstPage())
                                 <span
@@ -576,11 +585,13 @@
                         <i class="ph-bold ph-archive"></i>
                         {{ __('Stok Cadangan') }}
                     </h2>
-                    <button type="button" @click="$dispatch('open-cadangan', { type: 'tambah_cadangan', action: '/master-data/apar-cadangan' })" class="inline-flex items-center gap-2 px-4 py-2 bg-[#009B77] hover:bg-[#007b5e] text-white text-sm font-bold rounded-xl transition-all shadow-sm">
+                    <button type="button"
+                        @click="$dispatch('open-cadangan', { type: 'tambah_cadangan', action: '/master-data/apar-cadangan' })"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-[#009B77] hover:bg-[#007b5e] text-white text-sm font-bold rounded-xl transition-all shadow-sm">
                         <i class="ph-bold ph-plus"></i> {{ __('Add Stock') }}
                     </button>
                 </div>
-                
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -589,49 +600,64 @@
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Building') }}</th>
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Type') }}</th>
                                 <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider">{{ __('Capacity') }}</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Stock Quantity') }}</th>
-                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">{{ __('Action') }}</th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">
+                                    {{ __('Stock Quantity') }}
+                                </th>
+                                <th class="py-4 px-5 text-xs font-bold uppercase tracking-wider text-center">
+                                    {{ __('Action') }}
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-slate-100">
                             @forelse($aparCadangans as $index => $cadangan)
-                            <tr class="hover:bg-slate-50 transition-colors divide-x divide-slate-100">
-                                <td class="py-4 px-5 text-center font-semibold text-slate-500">{{ $index + 1 }}</td>
-                                <td class="py-4 px-5 font-semibold text-slate-600 capitalize">{{ $cadangan->gedung->nama ?? '-' }}</td>
-                                <td class="py-4 px-5 font-semibold text-slate-600">{{ $cadangan->jenis->nama ?? '-' }}</td>
-                                <td class="py-4 px-5 font-semibold text-slate-600">{{ $cadangan->kapasitas->ukuran ?? '-' }}</td>
-                                <td class="py-4 px-5 font-bold text-[#009B77] text-center">{{ $cadangan->total }}</td>
-                                <td class="py-4 px-5 text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button type="button" @click="$dispatch('open-cadangan', { type: 'edit_cadangan', action: '/master-data/apar-cadangan/{{ $cadangan->id }}', gedung: '{{ $cadangan->gedung_id }}', jenis: '{{ $cadangan->jenis_id }}', kapasitas: '{{ $cadangan->kapasitas_id }}', total: '{{ $cadangan->total }}' })"
-                                            class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
-                                            <i class="ph-bold ph-pencil-simple text-lg"></i>
-                                        </button>
-                                        <form action="/master-data/apar-cadangan/{{ $cadangan->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, '{{ __('Are you sure you want to delete this data?') }}');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                                                <i class="ph-bold ph-trash text-lg"></i>
+                                <tr class="hover:bg-slate-50 transition-colors divide-x divide-slate-100">
+                                    <td class="py-4 px-5 text-center font-semibold text-slate-500">{{ $index + 1 }}</td>
+                                    <td class="py-4 px-5 font-semibold text-slate-600 capitalize">
+                                        {{ $cadangan->gedung->nama ?? '-' }}
+                                    </td>
+                                    <td class="py-4 px-5 font-semibold text-slate-600">{{ $cadangan->jenis->nama ?? '-' }}</td>
+                                    <td class="py-4 px-5 font-semibold text-slate-600">{{ $cadangan->kapasitas->ukuran ?? '-' }}
+                                    </td>
+                                    <td class="py-4 px-5 font-bold text-[#009B77] text-center">{{ $cadangan->total }}</td>
+                                    <td class="py-4 px-5 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button type="button"
+                                                @click="$dispatch('open-cadangan', { type: 'edit_cadangan', action: '/master-data/apar-cadangan/{{ $cadangan->id }}', gedung: '{{ $cadangan->gedung_id }}', jenis: '{{ $cadangan->jenis_id }}', kapasitas: '{{ $cadangan->kapasitas_id }}', total: '{{ $cadangan->total }}' })"
+                                                class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
+                                                <i class="ph-bold ph-pencil-simple text-lg"></i>
                                             </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                                            <form action="/master-data/apar-cadangan/{{ $cadangan->id }}" method="POST"
+                                                class="inline"
+                                                onsubmit="confirmDelete(event, '{{ __('Are you sure you want to delete this data?') }}');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                                    <i class="ph-bold ph-trash text-lg"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
                             @empty
-                            <tr>
-                                <td colspan="6" class="py-8 px-5 text-center text-sm font-medium text-slate-500">
-                                    <div class="flex flex-col items-center justify-center space-y-2">
-                                        <i class="ph-bold ph-archive text-3xl text-slate-300"></i>
-                                        <p>{{ __('No spare stock data found.') }}</p>
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td colspan="6" class="py-8 px-5 text-center text-sm font-medium text-slate-500">
+                                        <div class="flex flex-col items-center justify-center space-y-2">
+                                            <i class="ph-bold ph-archive text-3xl text-slate-300"></i>
+                                            <p>{{ __('No spare stock data found.') }}</p>
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforelse
                         </tbody>
                         <tfoot class="bg-[#009B77]/5 text-sm border-t-2 border-[#009B77]/20">
                             <tr class="divide-x divide-[#009B77]/10">
-                                <td colspan="4" class="py-3 px-5 text-left text-[#009B77] font-bold uppercase tracking-wider">Grand Total</td>
-                                <td class="py-3 px-5 text-center font-bold text-[#009B77] bg-[#009B77]/10">{{ $aparCadangans->sum('total') }}</td>
+                                <td colspan="4"
+                                    class="py-3 px-5 text-left text-[#009B77] font-bold uppercase tracking-wider">Grand
+                                    Total</td>
+                                <td class="py-3 px-5 text-center font-bold text-[#009B77] bg-[#009B77]/10">
+                                    {{ $aparCadangans->sum('total') }}
+                                </td>
                                 <td class="py-3 px-5"></td>
                             </tr>
                         </tfoot>
@@ -699,7 +725,7 @@
                                             <div
                                                 class="flex items-center gap-1 opacity-0 group-hover/gedung:opacity-100 transition-opacity">
                                                 <button
-                                                    @click.stop="editGedung = { id: {{ $gedung->id }}, nama: '{{ addslashes($gedung->nama) }}' }; showEditGedung = true"
+                                                    @click.stop="editGedung = { id: {{ $gedung->id }}, nama: '{{ addslashes($gedung->nama) }}' }; originalEditGedung = JSON.stringify(editGedung); showEditGedung = true"
                                                     class="w-7 h-7 rounded bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors"
                                                     title="Edit Gedung"><i class="ph-bold ph-pencil-simple text-sm"></i></button>
                                                 <form action="/master-data/gedung/{{ $gedung->id }}" method="POST" class="inline"
@@ -732,7 +758,7 @@
                                                     <div
                                                         class="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
                                                         <button
-                                                            @click="editLokasi = { id: {{ $lok->id }}, nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' }; showEditLokasi = true"
+                                                            @click="editLokasi = { id: {{ $lok->id }}, nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' }; originalEditLokasi = JSON.stringify(editLokasi); showEditLokasi = true"
                                                             class="w-7 h-7 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 flex items-center justify-center transition-colors"><i
                                                                 class="ph-bold ph-pencil-simple text-sm"></i></button>
                                                         <form action="/master-data/lokasi/{{ $lok->id }}" method="POST" class="inline"
@@ -802,7 +828,7 @@
                                         <div
                                             class="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
                                             <button
-                                                @click="editJenis = { id: {{ $jenis->id }}, nama: '{{ addslashes($jenis->nama) }}' }; showEditJenis = true"
+                                                @click="editJenis = { id: {{ $jenis->id }}, nama: '{{ addslashes($jenis->nama) }}' }; originalEditJenis = JSON.stringify(editJenis); showEditJenis = true"
                                                 class="w-8 h-8 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 flex items-center justify-center transition-colors"><i
                                                     class="ph-bold ph-pencil-simple text-base"></i></button>
                                             <form action="/master-data/jenis/{{ $jenis->id }}" method="POST" class="inline"
@@ -855,7 +881,7 @@
                                         <div
                                             class="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
                                             <button
-                                                @click="editKapasitas = { id: {{ $kap->id }}, ukuran: '{{ addslashes($kap->ukuran) }}' }; showEditKapasitas = true"
+                                                @click="editKapasitas = { id: {{ $kap->id }}, ukuran: '{{ addslashes($kap->ukuran) }}' }; originalEditKapasitas = JSON.stringify(editKapasitas); showEditKapasitas = true"
                                                 class="w-8 h-8 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 flex items-center justify-center transition-colors"><i
                                                     class="ph-bold ph-pencil-simple text-base"></i></button>
                                             <form action="/master-data/kapasitas/{{ $kap->id }}" method="POST" class="inline"
@@ -912,7 +938,8 @@
                                             <i class="ph-bold ph-map-pin text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Add Location Data') }}</h3>
+                                            {{ __('Add Location Data') }}
+                                        </h3>
                                     </div>
                                     <button @click="showModalLokasi = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors">
@@ -934,15 +961,15 @@
                                     </div>
 
                                     <div x-data="{ 
-                                        open: false, 
-                                        selectedId: '', 
-                                        selectedName: '{{ __('Select Building') }}',
-                                        options: [
-                                            @foreach($gedungs as $ged)
-                                                { id: '{{ $ged->id }}', name: '{{ addslashes($ged->nama) }}' },
-                                            @endforeach
-                                        ] 
-                                    }" class="relative">
+                                                open: false, 
+                                                selectedId: '', 
+                                                selectedName: '{{ __('Select Building') }}',
+                                                options: [
+                                                    @foreach($gedungs as $ged)
+                                                        { id: '{{ $ged->id }}', name: '{{ addslashes($ged->nama) }}' },
+                                                    @endforeach
+                                                ] 
+                                            }" class="relative">
 
                                         <label
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Select Building') }}</label>
@@ -1038,7 +1065,8 @@
                                             <i class="ph-bold ph-buildings text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Add Building Data') }}</h3>
+                                            {{ __('Add Building Data') }}
+                                        </h3>
                                     </div>
                                     <button @click="showModalGedung = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors">
@@ -1106,7 +1134,8 @@
                                             <i class="ph-fill ph-fire-extinguisher text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Add PFE Type') }}</h3>
+                                            {{ __('Add PFE Type') }}
+                                        </h3>
                                     </div>
                                     <button @click="showModalJenis = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors">
@@ -1175,7 +1204,8 @@
                                             <i class="ph-fill ph-scales text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Add Capacity') }}</h3>
+                                            {{ __('Add Capacity') }}
+                                        </h3>
                                     </div>
                                     <button @click="showModalKapasitas = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors">
@@ -1248,7 +1278,8 @@
                                             <i class="ph-bold ph-fire-extinguisher text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Add PFE Data') }}</h3>
+                                            {{ __('Add PFE Data') }}
+                                        </h3>
                                     </div>
                                     <button type="button" @click="showModalApar = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors">
@@ -1257,81 +1288,116 @@
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" x-data="{
-                                    gedungId: '{{ old('gedung_id') }}',
-                                    lokasiName: '{{ old('lokasi') }}',
-                                    gunakanCadangan: {{ old('gunakan_cadangan') ? 'true' : 'false' }},
-                                    cadanganId: '{{ old('cadangan_id') }}',
-                                    cadanganOptions: [
-                                        @foreach($aparCadangans->where('total', '>', 0) as $c)
-                                            { id: '{{ $c->id }}', name: '{{ addslashes($c->gedung->nama ?? '') }} - {{ addslashes($c->jenis->nama ?? '') }} {{ addslashes($c->kapasitas->ukuran ?? '') }} (Sisa: {{ $c->total }})', jenis_id: '{{ $c->jenis_id }}', kapasitas_id: '{{ $c->kapasitas_id }}' },
-                                        @endforeach
-                                    ],
-                                    lokasiOptions: [
-                                        @foreach($lokasis as $lok)
-                                            { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
-                                        @endforeach
-                                    ],
-                                    get filteredLokasi() {
-                                        if (!this.gedungId) return [];
-                                        return this.lokasiOptions.filter(l => l.gedung_id == this.gedungId);
-                                    }
-                                }">
+                                            gedungId: '{{ old('gedung_id') }}',
+                                            lokasiName: '{{ old('lokasi') }}',
+                                            gunakanCadangan: {{ old('gunakan_cadangan') ? 'true' : 'false' }},
+                                            cadanganId: '{{ old('cadangan_id') }}',
+                                            cadanganOptions: [
+                                                @foreach($aparCadangans->where('total', '>', 0) as $c)
+                                                    { id: '{{ $c->id }}', name: '{{ addslashes($c->gedung->nama ?? '') }} - {{ addslashes($c->jenis->nama ?? '') }} {{ addslashes($c->kapasitas->ukuran ?? '') }} (Stock: {{ $c->total }})', gedung: '{{ addslashes($c->gedung->nama ?? '') }}', jenis: '{{ addslashes($c->jenis->nama ?? '') }}', kapasitas: '{{ addslashes($c->kapasitas->ukuran ?? '') }}', sisa: {{ $c->total }}, jenis_id: '{{ $c->jenis_id }}', kapasitas_id: '{{ $c->kapasitas_id }}' },
+                                                @endforeach
+                                            ],
+                                            lokasiOptions: [
+                                                @foreach($lokasis as $lok)
+                                                    { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
+                                                @endforeach
+                                            ],
+                                            get filteredLokasi() {
+                                                if (!this.gedungId) return [];
+                                                return this.lokasiOptions.filter(l => l.gedung_id == this.gedungId);
+                                            }
+                                        }">
                                     <!-- Stok Cadangan Option (Full Width) -->
-                                    <div class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-4 mb-2">
+                                    <div class="sm:col-span-2 rounded-xl p-4 mb-2 transition-colors border"
+                                        :class="gunakanCadangan ? 'bg-[#009B77]/5 border-[#009B77]/30' : 'bg-slate-50 border-slate-200'">
                                         <label class="flex items-center gap-3 cursor-pointer">
-                                            <input type="checkbox" name="gunakan_cadangan" value="1" x-model="gunakanCadangan"
-                                                class="w-5 h-5 rounded border-slate-300 text-[#009B77] focus:ring-[#009B77] transition-all">
-                                            <span class="text-sm font-bold text-slate-700">Ambil dari Stok Cadangan</span>
+                                            <input type="checkbox" name="gunakan_cadangan" value="1"
+                                                x-model="gunakanCadangan"
+                                                class="w-5 h-5 rounded border-slate-300 text-[#009B77] focus:ring-[#009B77] accent-[#009B77] cursor-pointer transition-all">
+                                            <span class="text-sm font-bold text-slate-700">{{ __('Take from Backup Stock') }}</span>
                                         </label>
-                                        
+
                                         <div x-show="gunakanCadangan" x-collapse class="mt-4">
-                                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Sumber Stok</label>
-                                            <div class="relative" x-data="{
-                                                openCadangan: false,
-                                                searchCadangan: '',
-                                                get selectedCadanganName() {
-                                                    let sel = cadanganOptions.find(o => o.id == cadanganId);
-                                                    return sel ? sel.name : '{{ __('Select Stock') }}';
-                                                },
-                                                get filteredCadangan() {
-                                                    if (this.searchCadangan === '') return cadanganOptions;
-                                                    return cadanganOptions.filter(o => o.name.toLowerCase().includes(this.searchCadangan.toLowerCase()));
-                                                }
-                                            }">
+                                            <label
+                                                class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Select Stock Source') }}</label>
+                                            <div class="relative" :class="openCadangan ? 'z-[60]' : 'z-10'" x-data="{
+                                                        openCadangan: false,
+                                                        searchCadangan: '',
+                                                        get selectedCadanganName() {
+                                                            let sel = cadanganOptions.find(o => o.id == cadanganId);
+                                                            return sel ? sel.name : '{{ __('Select Stock') }}';
+                                                        },
+                                                        get selectedCadangan() {
+                                                            return cadanganOptions.find(o => o.id == cadanganId);
+                                                        },
+                                                        get filteredCadangan() {
+                                                            if (this.searchCadangan === '') return cadanganOptions;
+                                                            return cadanganOptions.filter(o => o.name.toLowerCase().includes(this.searchCadangan.toLowerCase()));
+                                                        }
+                                                    }">
                                                 <input type="hidden" name="cadangan_id" :value="cadanganId">
-                                                <i class="ph-bold ph-archive absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="openCadangan ? 'text-[#009B77]' : ''"></i>
-                                                <button type="button" @click="openCadangan = !openCadangan" @click.away="openCadangan = false"
+                                                <i class="ph-bold ph-archive absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
+                                                    :class="openCadangan ? 'text-[#009B77]' : ''"></i>
+                                                <button type="button" @click="openCadangan = !openCadangan"
+                                                    @click.away="openCadangan = false"
                                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                                     :class="openCadangan ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15' : ''">
-                                                    <span x-text="selectedCadanganName" :class="cadanganId ? 'font-bold text-slate-700' : 'text-slate-400 font-medium'" class="truncate block"></span>
-                                                    <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="openCadangan ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                                    <div x-show="cadanganId" class="flex flex-col text-left truncate flex-grow">
+                                                        <span x-text="selectedCadangan?.gedung + ' - ' + selectedCadangan?.jenis" class="font-bold text-slate-700 text-sm truncate"></span>
+                                                        <div class="flex items-center gap-2 mt-0.5">
+                                                            <span class="text-[10px] font-bold text-slate-500" x-text="selectedCadangan?.kapasitas"></span>
+                                                            <span class="text-[10px] font-bold" :class="selectedCadangan?.sisa > 10 ? 'text-[#009B77]' : 'text-amber-500'" x-text="'Stock: ' + selectedCadangan?.sisa"></span>
+                                                        </div>
+                                                    </div>
+                                                    <span x-show="!cadanganId" class="text-slate-400 font-medium truncate block flex-grow">{{ __('Select Stock') }}</span>
+                                                    <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200"
+                                                        :class="openCadangan ? 'rotate-180 text-[#009B77]' : ''"></i>
                                                 </button>
-                                                <div x-show="openCadangan" x-cloak x-transition
-                                                    class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-lg border border-slate-100 py-2 max-h-60 overflow-y-auto">
-                                                    <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
+                                                <div x-show="openCadangan" x-cloak x-transition:enter="transition ease-out duration-200"
+                                                    x-transition:enter-start="opacity-0 scale-95"
+                                                    x-transition:enter-end="opacity-100 scale-100"
+                                                    x-transition:leave="transition ease-in duration-100"
+                                                    x-transition:leave-start="opacity-100 scale-100"
+                                                    x-transition:leave-end="opacity-0 scale-95"
+                                                    class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 pb-2 pt-0 max-h-60 overflow-y-auto origin-top">
+                                                    <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10 rounded-t-xl">
                                                         <div class="relative">
-                                                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                                            <input type="text" x-model="searchCadangan" placeholder="Cari stok..."
-                                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20" @click.stop>
+                                                            <i
+                                                                class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                            <input type="text" x-model="searchCadangan"
+                                                                placeholder="Cari stok..."
+                                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all"
+                                                                @click.stop>
                                                         </div>
                                                     </div>
                                                     <div class="py-1">
                                                         <template x-for="option in filteredCadangan" :key="option.id">
-                                                            <button type="button" @click="cadanganId = option.id; openCadangan = false; $dispatch('cadangan-selected', { jenis_id: option.jenis_id, kapasitas_id: option.kapasitas_id })"
-                                                                class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
-                                                                :class="cadanganId == option.id ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50'">
-                                                                <span x-text="option.name" class="font-bold"></span>
-                                                                <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganId == option.id"></i>
+                                                            <button type="button"
+                                                                @click="cadanganId = option.id; openCadangan = false; $dispatch('cadangan-selected', { jenis_id: option.jenis_id, kapasitas_id: option.kapasitas_id })"
+                                                                class="w-full text-left px-4 py-3 text-sm font-medium transition-colors flex items-center justify-between"
+                                                                :class="cadanganId == option.id ? 'text-[#009B77] bg-[#009B77]/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                                                                <div class="flex flex-col gap-1.5">
+                                                                    <span x-text="option.gedung + ' - ' + option.jenis" class="font-bold"></span>
+                                                                    <div class="flex items-center gap-2">
+                                                                        <span class="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200" x-text="option.kapasitas"></span>
+                                                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-md" :class="option.sisa > 10 ? 'text-[#009B77] bg-[#009B77]/10' : 'text-amber-500 bg-amber-500/10'" x-text="'Stock: ' + option.sisa"></span>
+                                                                    </div>
+                                                                </div>
+                                                                <i class="ph-bold ph-check text-[#009B77] text-lg"
+                                                                    x-show="cadanganId == option.id"></i>
                                                             </button>
                                                         </template>
-                                                        <div x-show="filteredCadangan.length === 0" class="py-3 px-4 text-center text-sm text-slate-500">Stok tidak ditemukan</div>
+                                                        <div x-show="filteredCadangan.length === 0"
+                                                            class="py-3 px-4 text-center text-sm text-slate-500">Stok tidak
+                                                            ditemukan</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            @error('cadangan_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                            @error('cadangan_id') <span
+                                            class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <!-- {{ __('PFE NUMBER') }} -->
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
@@ -1343,6 +1409,7 @@
                                             <input type="number" name="nomor_apar"
                                                 placeholder="{{ __('Enter number (e.g. 12)') }}" required
                                                 value="{{ old('nomor_apar') }}"
+                                                onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();"
                                                 class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all">
                                         </div>
                                         @error('nomor_apar') <span
@@ -1351,22 +1418,22 @@
 
                                     <!-- Gedung -->
                                     <div x-data="{
-                    open: false,
-                    search: '',
-                    options: [
-                        @foreach($gedungs as $gedung)
-                            { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
-                        @endforeach
-                    ],
-                    get selectedName() {
-                        let sel = this.options.find(o => o.id == gedungId);
-                        return sel ? sel.name : '{{ __('Select Building') }}';
-                    },
-                    get filteredOptions() {
-                        if (this.search === '') return this.options;
-                        return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                    }
-                }">
+                            open: false,
+                            search: '',
+                            options: [
+                                @foreach($gedungs as $gedung)
+                                    { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
+                                @endforeach
+                            ],
+                            get selectedName() {
+                                let sel = this.options.find(o => o.id == gedungId);
+                                return sel ? sel.name : '{{ __('Select Building') }}';
+                            },
+                            get filteredOptions() {
+                                if (this.search === '') return this.options;
+                                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                            }
+                        }">
                                         <label
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('BUILDING') }}</label>
                                         <div class="relative">
@@ -1430,7 +1497,9 @@
                                                 class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10 peer-focus:text-[#009B77]"></i>
                                             <input type="text" x-model="lokasiName"
                                                 placeholder="{{ __('Example: Corridor') }}" required
-                                                class="w-full peer bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                                                :disabled="!gedungId"
+                                                :class="!gedungId ? 'bg-slate-100 cursor-not-allowed opacity-70' : 'bg-white focus:border-[#009B77] focus:ring-[#009B77]/15'"
+                                                class="w-full peer border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:ring-4 transition-all outline-none">
                                         </div>
                                         @error('lokasi') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span>
                                         @enderror
@@ -1442,23 +1511,25 @@
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }}
                                             APAR</label>
                                         <div x-data="{
-                            open: false,
-                            search: '',
-                            selectedId: '{{ old('jenis_id') }}',
-                            options: [
-                                @foreach($jenisApars as $jenis)
-                                    { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
-                                @endforeach
-                            ],
-                            get selectedName() {
-                                let sel = this.options.find(o => o.id == this.selectedId);
-                                return sel ? sel.name : '{{ __('Select Type') }}';
-                            },
-                            get filteredOptions() {
-                                if (this.search === '') return this.options;
-                                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                            }
-                        }" @cadangan-selected.window="if(gunakanCadangan) selectedId = $event.detail.jenis_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
+                                    open: false,
+                                    search: '',
+                                    selectedId: '{{ old('jenis_id') }}',
+                                    options: [
+                                        @foreach($jenisApars as $jenis)
+                                            { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
+                                        @endforeach
+                                    ],
+                                    get selectedName() {
+                                        let sel = this.options.find(o => o.id == this.selectedId);
+                                        return sel ? sel.name : '{{ __('Select Type') }}';
+                                    },
+                                    get filteredOptions() {
+                                        if (this.search === '') return this.options;
+                                        return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                    }
+                                }" @cadangan-selected.window="if(gunakanCadangan) selectedId = $event.detail.jenis_id"
+                                            class="relative"
+                                            :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="jenis_id" :value="selectedId" required>
                                             <i class="ph-bold ph-fire-extinguisher absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
                                                 :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
@@ -1519,23 +1590,25 @@
                                         <label
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
                                         <div x-data="{
-                            open: false,
-                            search: '',
-                            selectedId: '{{ old('kapasitas_id') }}',
-                            options: [
-                                @foreach($kapasitasApars as $kap)
-                                    { id: '{{ $kap->id }}', name: '{{ addslashes($kap->ukuran) }}' },
-                                @endforeach
-                            ],
-                            get selectedName() {
-                                let sel = this.options.find(o => o.id == this.selectedId);
-                                return sel ? sel.name : '{{ __('Select Capacity') }}';
-                            },
-                            get filteredOptions() {
-                                if (this.search === '') return this.options;
-                                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                            }
-                        }" @cadangan-selected.window="if(gunakanCadangan) selectedId = $event.detail.kapasitas_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
+                                    open: false,
+                                    search: '',
+                                    selectedId: '{{ old('kapasitas_id') }}',
+                                    options: [
+                                        @foreach($kapasitasApars as $kap)
+                                            { id: '{{ $kap->id }}', name: '{{ addslashes($kap->ukuran) }}' },
+                                        @endforeach
+                                    ],
+                                    get selectedName() {
+                                        let sel = this.options.find(o => o.id == this.selectedId);
+                                        return sel ? sel.name : '{{ __('Select Capacity') }}';
+                                    },
+                                    get filteredOptions() {
+                                        if (this.search === '') return this.options;
+                                        return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                    }
+                                }" @cadangan-selected.window="if(gunakanCadangan) selectedId = $event.detail.kapasitas_id"
+                                            class="relative"
+                                            :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="kapasitas_id" :value="selectedId" required>
                                             <i class="ph-bold ph-scales absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
                                                 :class="open ? 'text-[#009B77]' : 'peer-focus:text-[#009B77]'"></i>
@@ -1600,7 +1673,8 @@
                                                 class="ph-bold ph-hash absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
                                             <input type="number" name="qty" min="0" placeholder="{{ __('Enter quantity') }}"
                                                 value="{{ old('qty', 1) }}"
-                                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                                                onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();"
+                                                class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-medium text-slate-700 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
                                         </div>
                                         @error('qty') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span>
                                         @enderror
@@ -1615,18 +1689,17 @@
                                                 class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                                             <input type="text" name="tgl_kedaluwarsa"
                                                 placeholder="{{ __('Select Date...') }}"
-                                                value="{{ old('tgl_kedaluwarsa') }}"
-                                                @change="if($event.target.value) { 
-                                                    let d = new Date($event.target.value); 
-                                                    if(!isNaN(d)) { 
-                                                        d.setFullYear(d.getFullYear() - 2); 
-                                                        let prev = d.toISOString().split('T')[0];
-                                                        let input2 = $event.target.closest('form').querySelector('input[name=tgl_isi_ulang]');
-                                                        if(input2._flatpickr) input2._flatpickr.setDate(prev, false);
-                                                        else input2.value = prev;
-                                                    } 
-                                                }"
-                                                class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
+                                                value="{{ old('tgl_kedaluwarsa') }}" @input.debounce.100ms="if($event.target.value) { 
+                                                            let d = new Date($event.target.value); 
+                                                            if(!isNaN(d)) { 
+                                                                d.setFullYear(d.getFullYear() - 2); 
+                                                                let prev = d.toISOString().split('T')[0];
+                                                                let input2 = $event.target.closest('form').querySelector('input[name=tgl_isi_ulang]');
+                                                                if(input2._flatpickr) input2._flatpickr.setDate(prev, false);
+                                                                else input2.value = prev;
+                                                            } 
+                                                        }"
+                                                class="datepicker w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
                                             <i
                                                 class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                                         </div>
@@ -1642,18 +1715,17 @@
                                             <i
                                                 class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                                             <input type="text" name="tgl_isi_ulang" placeholder="{{ __('Select Date...') }}"
-                                                value="{{ old('tgl_isi_ulang') }}"
-                                                @change="if($event.target.value) { 
-                                                    let d = new Date($event.target.value); 
-                                                    if(!isNaN(d)) { 
-                                                        d.setFullYear(d.getFullYear() + 2); 
-                                                        let next = d.toISOString().split('T')[0];
-                                                        let input1 = $event.target.closest('form').querySelector('input[name=tgl_kedaluwarsa]');
-                                                        if(input1._flatpickr) input1._flatpickr.setDate(next, false);
-                                                        else input1.value = next;
-                                                    } 
-                                                }"
-                                                class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
+                                                value="{{ old('tgl_isi_ulang') }}" @input.debounce.100ms="if($event.target.value) { 
+                                                            let d = new Date($event.target.value); 
+                                                            if(!isNaN(d)) { 
+                                                                d.setFullYear(d.getFullYear() + 2); 
+                                                                let next = d.toISOString().split('T')[0];
+                                                                let input1 = $event.target.closest('form').querySelector('input[name=tgl_kedaluwarsa]');
+                                                                if(input1._flatpickr) input1._flatpickr.setDate(next, false);
+                                                                else input1.value = next;
+                                                            } 
+                                                        }"
+                                                class="datepicker w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 appearance-none cursor-pointer">
                                             <i
                                                 class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                                         </div>
@@ -1707,7 +1779,8 @@
                                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Edit PFE Data') }}</h3>
+                                            {{ __('Edit PFE Data') }}
+                                        </h3>
                                     </div>
                                     <button type="button" @click="showModalEditApar = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors">
@@ -1716,79 +1789,112 @@
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" x-data="{
-                                    gunakanCadangan: {{ old('form_type') == 'edit_apar' && old('gunakan_cadangan') ? 'true' : 'false' }},
-                                    cadanganId: '{{ old('form_type') == 'edit_apar' ? old('cadangan_id') : '' }}',
-                                    cadanganOptions: [
-                                        @foreach($aparCadangans->where('total', '>', 0) as $c)
-                                            { id: '{{ $c->id }}', name: '{{ addslashes($c->gedung->nama ?? '') }} - {{ addslashes($c->jenis->nama ?? '') }} {{ addslashes($c->kapasitas->ukuran ?? '') }} (Sisa: {{ $c->total }})', jenis_id: '{{ $c->jenis_id }}', kapasitas_id: '{{ $c->kapasitas_id }}' },
-                                        @endforeach
-                                    ],
-                                    lokasiOptions: [
-                                        @foreach($lokasis as $lok)
-                                            { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
-                                        @endforeach
-                                    ],
-                                    get filteredLokasi() {
-                                        if (!editApar.gedung_id) return [];
-                                        return this.lokasiOptions.filter(l => l.gedung_id == editApar.gedung_id);
-                                    }
-                                }">
+                                            cadanganOptions: [
+                                                @foreach($aparCadangans->where('total', '>', 0) as $c)
+                                                    { id: '{{ $c->id }}', name: '{{ addslashes($c->gedung->nama ?? '') }} - {{ addslashes($c->jenis->nama ?? '') }} {{ addslashes($c->kapasitas->ukuran ?? '') }} (Stock: {{ $c->total }})', gedung: '{{ addslashes($c->gedung->nama ?? '') }}', jenis: '{{ addslashes($c->jenis->nama ?? '') }}', kapasitas: '{{ addslashes($c->kapasitas->ukuran ?? '') }}', sisa: {{ $c->total }}, jenis_id: '{{ $c->jenis_id }}', kapasitas_id: '{{ $c->kapasitas_id }}' },
+                                                @endforeach
+                                            ],
+                                            lokasiOptions: [
+                                                @foreach($lokasis as $lok)
+                                                    { id: '{{ $lok->id }}', nama: '{{ addslashes($lok->nama) }}', gedung_id: '{{ $lok->gedung_id }}' },
+                                                @endforeach
+                                            ],
+                                            get filteredLokasi() {
+                                                if (!editApar.gedung_id) return [];
+                                                return this.lokasiOptions.filter(l => l.gedung_id == editApar.gedung_id);
+                                            }
+                                        }">
                                     <!-- Stok Cadangan Option (Full Width) -->
-                                    <div class="sm:col-span-2 bg-amber-50 border border-amber-200 rounded-xl p-4 mb-2">
+                                    <div class="sm:col-span-2 rounded-xl p-4 mb-2 transition-colors border"
+                                        :class="editApar.gunakanCadangan ? 'bg-amber-50 border-amber-300' : 'bg-slate-50 border-slate-200'">
                                         <label class="flex items-center gap-3 cursor-pointer">
-                                            <input type="checkbox" name="gunakan_cadangan" value="1" x-model="gunakanCadangan"
-                                                class="w-5 h-5 rounded border-amber-300 text-amber-500 focus:ring-amber-500 transition-all">
-                                            <span class="text-sm font-bold text-slate-700">Ganti dengan Stok Cadangan</span>
+                                            <input type="checkbox" name="gunakan_cadangan" value="1"
+                                                x-model="editApar.gunakanCadangan"
+                                                class="w-5 h-5 rounded border-slate-300 text-amber-500 focus:ring-amber-500 accent-amber-500 cursor-pointer transition-all">
+                                            <span class="text-sm font-bold text-slate-700">{{ __('Replace from Backup Stock') }}</span>
                                         </label>
-                                        
-                                        <div x-show="gunakanCadangan" x-collapse class="mt-4">
-                                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Sumber Stok</label>
-                                            <div class="relative" x-data="{
-                                                openCadangan: false,
-                                                searchCadangan: '',
-                                                get selectedCadanganName() {
-                                                    let sel = cadanganOptions.find(o => o.id == cadanganId);
-                                                    return sel ? sel.name : '{{ __('Select Stock') }}';
-                                                },
-                                                get filteredCadangan() {
-                                                    if (this.searchCadangan === '') return cadanganOptions;
-                                                    return cadanganOptions.filter(o => o.name.toLowerCase().includes(this.searchCadangan.toLowerCase()));
-                                                }
-                                            }">
-                                                <input type="hidden" name="cadangan_id" :value="cadanganId">
-                                                <i class="ph-bold ph-archive absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10" :class="openCadangan ? 'text-amber-500' : ''"></i>
-                                                <button type="button" @click="openCadangan = !openCadangan" @click.away="openCadangan = false"
+
+                                        <div x-show="editApar.gunakanCadangan" x-collapse class="mt-4">
+                                            <label
+                                                class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Select Stock Source') }}</label>
+                                            <div class="relative" :class="openCadangan ? 'z-[60]' : 'z-10'" x-data="{
+                                                        openCadangan: false,
+                                                        searchCadangan: '',
+                                                        get selectedCadanganName() {
+                                                            let sel = cadanganOptions.find(o => o.id == editApar.cadanganId);
+                                                            return sel ? sel.name : '{{ __('Select Stock') }}';
+                                                        },
+                                                        get selectedCadangan() {
+                                                            return cadanganOptions.find(o => o.id == editApar.cadanganId);
+                                                        },
+                                                        get filteredCadangan() {
+                                                            if (this.searchCadangan === '') return cadanganOptions;
+                                                            return cadanganOptions.filter(o => o.name.toLowerCase().includes(this.searchCadangan.toLowerCase()));
+                                                        }
+                                                    }">
+                                                <input type="hidden" name="cadangan_id" :value="editApar.cadanganId">
+                                                <i class="ph-bold ph-archive absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
+                                                    :class="openCadangan ? 'text-amber-500' : ''"></i>
+                                                <button type="button" @click="openCadangan = !openCadangan"
+                                                    @click.away="openCadangan = false"
                                                     class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none cursor-pointer text-left flex items-center justify-between"
                                                     :class="openCadangan ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : ''">
-                                                    <span x-text="selectedCadanganName" :class="cadanganId ? 'font-bold text-slate-700' : 'text-slate-400 font-medium'" class="truncate block"></span>
-                                                    <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200" :class="openCadangan ? 'rotate-180 text-amber-500' : ''"></i>
+                                                    <div x-show="editApar.cadanganId" class="flex flex-col text-left truncate flex-grow">
+                                                        <span x-text="selectedCadangan?.gedung + ' - ' + selectedCadangan?.jenis" class="font-bold text-slate-700 text-sm truncate"></span>
+                                                        <div class="flex items-center gap-2 mt-0.5">
+                                                            <span class="text-[10px] font-bold text-slate-500" x-text="selectedCadangan?.kapasitas"></span>
+                                                            <span class="text-[10px] font-bold" :class="selectedCadangan?.sisa > 10 ? 'text-[#009B77]' : 'text-amber-500'" x-text="'Stock: ' + selectedCadangan?.sisa"></span>
+                                                        </div>
+                                                    </div>
+                                                    <span x-show="!editApar.cadanganId" class="text-slate-400 font-medium truncate block flex-grow">{{ __('Select Stock') }}</span>
+                                                    <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200"
+                                                        :class="openCadangan ? 'rotate-180 text-amber-500' : ''"></i>
                                                 </button>
-                                                <div x-show="openCadangan" x-cloak x-transition
-                                                    class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-lg border border-slate-100 py-2 max-h-60 overflow-y-auto">
-                                                    <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
+                                                <div x-show="openCadangan" x-cloak x-transition:enter="transition ease-out duration-200"
+                                                    x-transition:enter-start="opacity-0 scale-95"
+                                                    x-transition:enter-end="opacity-100 scale-100"
+                                                    x-transition:leave="transition ease-in duration-100"
+                                                    x-transition:leave-start="opacity-100 scale-100"
+                                                    x-transition:leave-end="opacity-0 scale-95"
+                                                    class="absolute left-0 z-50 w-full mt-2 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 pb-2 pt-0 max-h-60 overflow-y-auto origin-top">
+                                                    <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10 rounded-t-xl">
                                                         <div class="relative">
-                                                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                                            <input type="text" x-model="searchCadangan" placeholder="Cari stok..."
-                                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20" @click.stop>
+                                                            <i
+                                                                class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                            <input type="text" x-model="searchCadangan"
+                                                                placeholder="Cari stok..."
+                                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                                                                @click.stop>
                                                         </div>
                                                     </div>
                                                     <div class="py-1">
                                                         <template x-for="option in filteredCadangan" :key="option.id">
-                                                            <button type="button" @click="cadanganId = option.id; openCadangan = false; $dispatch('cadangan-selected-edit', { jenis_id: option.jenis_id, kapasitas_id: option.kapasitas_id })"
-                                                                class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
-                                                                :class="cadanganId == option.id ? 'text-amber-500 bg-amber-500/5' : 'text-slate-600 hover:bg-slate-50'">
-                                                                <span x-text="option.name" class="font-bold"></span>
-                                                                <i class="ph-bold ph-check text-amber-500" x-show="cadanganId == option.id"></i>
+                                                            <button type="button"
+                                                                @click="editApar.cadanganId = option.id; openCadangan = false; $dispatch('cadangan-selected-edit', { jenis_id: option.jenis_id, kapasitas_id: option.kapasitas_id })"
+                                                                class="w-full text-left px-4 py-3 text-sm font-medium transition-colors flex items-center justify-between"
+                                                                :class="editApar.cadanganId == option.id ? 'text-amber-500 bg-amber-500/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'">
+                                                                <div class="flex flex-col gap-1.5">
+                                                                    <span x-text="option.gedung + ' - ' + option.jenis" class="font-bold"></span>
+                                                                    <div class="flex items-center gap-2">
+                                                                        <span class="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200" x-text="option.kapasitas"></span>
+                                                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-md" :class="option.sisa > 10 ? 'text-[#009B77] bg-[#009B77]/10' : 'text-amber-500 bg-amber-500/10'" x-text="'Stock: ' + option.sisa"></span>
+                                                                    </div>
+                                                                </div>
+                                                                <i class="ph-bold ph-check text-amber-500 text-lg"
+                                                                    x-show="editApar.cadanganId == option.id"></i>
                                                             </button>
                                                         </template>
-                                                        <div x-show="filteredCadangan.length === 0" class="py-3 px-4 text-center text-sm text-slate-500">Stok tidak ditemukan</div>
+                                                        <div x-show="filteredCadangan.length === 0"
+                                                            class="py-3 px-4 text-center text-sm text-slate-500">Stok tidak
+                                                            ditemukan</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            @error('cadangan_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                            @error('cadangan_id') <span
+                                            class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <!-- {{ __('PFE NUMBER') }} -->
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
@@ -1800,7 +1906,8 @@
                                             <input type="number" name="nomor_apar"
                                                 placeholder="{{ __('Enter sequence number...') }}" required
                                                 x-model="editApar.nomor_apar"
-                                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none">
+                                                onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();"
+                                                class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none">
                                         </div>
                                         @error('nomor_apar') <span
                                         class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
@@ -1808,22 +1915,22 @@
 
                                     <!-- Gedung -->
                                     <div x-data="{
-                    open: false,
-                    search: '',
-                    options: [
-                        @foreach($gedungs as $gedung)
-                            { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
-                        @endforeach
-                    ],
-                    get selectedName() {
-                        let sel = this.options.find(o => o.id == editApar.gedung_id);
-                        return sel ? sel.name : '{{ __('Select Building') }}';
-                    },
-                    get filteredOptions() {
-                        if (this.search === '') return this.options;
-                        return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                    }
-                }">
+                            open: false,
+                            search: '',
+                            options: [
+                                @foreach($gedungs as $gedung)
+                                    { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
+                                @endforeach
+                            ],
+                            get selectedName() {
+                                let sel = this.options.find(o => o.id == editApar.gedung_id);
+                                return sel ? sel.name : '{{ __('Select Building') }}';
+                            },
+                            get filteredOptions() {
+                                if (this.search === '') return this.options;
+                                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                            }
+                        }">
                                         <label
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('BUILDING') }}</label>
                                         <div class="relative">
@@ -1880,17 +1987,17 @@
 
                                     <!-- Lokasi -->
                                     <div x-data="{
-                    open: false,
-                    search: '',
-                    get filtered() {
-                        if (this.search === '') return this.filteredLokasi;
-                        return this.filteredLokasi.filter(l => l.nama.toLowerCase().includes(this.search.toLowerCase()));
-                    },
-                    init() {
-                        this.search = editApar.lokasi || '';
-                        this.$watch('editApar.lokasi', val => this.search = val || '');
-                    }
-                }">
+                            open: false,
+                            search: '',
+                            get filtered() {
+                                if (this.search === '') return this.filteredLokasi;
+                                return this.filteredLokasi.filter(l => l.nama.toLowerCase().includes(this.search.toLowerCase()));
+                            },
+                            init() {
+                                this.search = editApar.lokasi || '';
+                                this.$watch('editApar.lokasi', val => this.search = val || '');
+                            }
+                        }">
                                         <label
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('LOCATION') }}<span
                                                 class="text-[10px] text-slate-400 font-medium normal-case">({{ __('Select / Type New') }})</span></label>
@@ -1901,8 +2008,9 @@
                                             <input type="text" x-model="editApar.lokasi" @focus="open = true"
                                                 @click.away="open = false" placeholder="{{ __('Example: Corridor') }}"
                                                 required
-                                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none"
-                                                :class="open ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : ''">
+                                                :disabled="!editApar.gedung_id"
+                                                :class="[!editApar.gedung_id ? 'bg-slate-100 cursor-not-allowed opacity-70' : 'bg-white focus:border-amber-500 focus:ring-amber-500/15', open ? 'bg-white border-amber-500 ring-4 ring-amber-500/15' : '']"
+                                                class="w-full border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-slate-700 focus:ring-4 transition-all outline-none">
                                             <div x-show="open && (!editApar.gedung_id || filtered.length > 0)" x-cloak
                                                 x-transition:enter="transition ease-out duration-200"
                                                 x-transition:enter-start="opacity-0 scale-95"
@@ -1941,23 +2049,25 @@
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }}
                                             APAR</label>
                                         <div x-data="{
-                            open: false,
-                            search: '',
+                                    open: false,
+                                    search: '',
 
-                            options: [
-                                @foreach($jenisApars as $jenis)
-                                    { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
-                                @endforeach
-                            ],
-                            get selectedName() {
-                                let sel = this.options.find(o => o.id == this.editApar.jenis_id);
-                                return sel ? sel.name : '{{ __('Select Type') }}';
-                            },
-                            get filteredOptions() {
-                                if (this.search === '') return this.options;
-                                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                            }
-                        }" @cadangan-selected-edit.window="if(gunakanCadangan) editApar.jenis_id = $event.detail.jenis_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
+                                    options: [
+                                        @foreach($jenisApars as $jenis)
+                                            { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
+                                        @endforeach
+                                    ],
+                                    get selectedName() {
+                                        let sel = this.options.find(o => o.id == this.editApar.jenis_id);
+                                        return sel ? sel.name : '{{ __('Select Type') }}';
+                                    },
+                                    get filteredOptions() {
+                                        if (this.search === '') return this.options;
+                                        return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                    }
+                                }" @cadangan-selected-edit.window="if(editApar.gunakanCadangan) editApar.jenis_id = $event.detail.jenis_id"
+                                            class="relative"
+                                            :class="editApar.gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="jenis_id" :value="editApar.jenis_id" required>
                                             <i class="ph-bold ph-fire-extinguisher absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
                                                 :class="open ? 'text-amber-500' : 'peer-focus:text-amber-500'"></i>
@@ -2019,23 +2129,25 @@
                                         <label
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
                                         <div x-data="{
-                            open: false,
-                            search: '',
+                                    open: false,
+                                    search: '',
 
-                            options: [
-                                @foreach($kapasitasApars as $kap)
-                                    { id: '{{ $kap->id }}', name: '{{ addslashes($kap->ukuran) }}' },
-                                @endforeach
-                            ],
-                            get selectedName() {
-                                let sel = this.options.find(o => o.id == this.editApar.kapasitas_id);
-                                return sel ? sel.name : '{{ __('Select Capacity') }}';
-                            },
-                            get filteredOptions() {
-                                if (this.search === '') return this.options;
-                                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                            }
-                        }" @cadangan-selected-edit.window="if(gunakanCadangan) editApar.kapasitas_id = $event.detail.kapasitas_id" class="relative" :class="gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
+                                    options: [
+                                        @foreach($kapasitasApars as $kap)
+                                            { id: '{{ $kap->id }}', name: '{{ addslashes($kap->ukuran) }}' },
+                                        @endforeach
+                                    ],
+                                    get selectedName() {
+                                        let sel = this.options.find(o => o.id == this.editApar.kapasitas_id);
+                                        return sel ? sel.name : '{{ __('Select Capacity') }}';
+                                    },
+                                    get filteredOptions() {
+                                        if (this.search === '') return this.options;
+                                        return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                    }
+                                }" @cadangan-selected-edit.window="if(editApar.gunakanCadangan) editApar.kapasitas_id = $event.detail.kapasitas_id"
+                                            class="relative"
+                                            :class="editApar.gunakanCadangan ? 'opacity-70 pointer-events-none' : ''">
                                             <input type="hidden" name="kapasitas_id" :value="editApar.kapasitas_id"
                                                 required>
                                             <i class="ph-bold ph-scales absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg transition-colors z-10"
@@ -2102,7 +2214,8 @@
                                                 class="ph-bold ph-hash absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
                                             <input type="number" name="qty" min="0" placeholder="{{ __('Enter quantity') }}"
                                                 x-model="editApar.qty" required
-                                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-medium text-slate-700 focus:bg-white focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none">
+                                                onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();"
+                                                class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-sm font-medium text-slate-700 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 transition-all outline-none">
                                         </div>
                                         @error('qty') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span>
                                         @enderror
@@ -2116,20 +2229,18 @@
                                             <i
                                                 class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                                             <input type="text" name="tgl_kedaluwarsa"
-                                                placeholder="{{ __('Select Date...') }}" :value="editApar.tgl_kedaluwarsa"
-                                                @change="if($event.target.value) { 
-                                                    let d = new Date($event.target.value); 
-                                                    if(!isNaN(d)) { 
-                                                        d.setFullYear(d.getFullYear() - 2); 
-                                                        let prev = d.toISOString().split('T')[0];
-                                                        editApar.tgl_isi_ulang = prev;
-                                                        let input2 = $event.target.closest('form').querySelector('input[name=tgl_isi_ulang]');
-                                                        if(input2 && input2._flatpickr) input2._flatpickr.setDate(prev, false);
-                                                        else if(input2) input2.value = prev;
-                                                    } 
-                                                }"
-                                                required
-                                                class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
+                                                placeholder="{{ __('Select Date...') }}" x-model="editApar.tgl_kedaluwarsa"
+                                                @input.debounce.100ms="if($event.target.value) { 
+                                                            let d = new Date($event.target.value); 
+                                                            if(!isNaN(d)) { 
+                                                                d.setFullYear(d.getFullYear() - 2); 
+                                                                let prev = d.toISOString().split('T')[0];
+                                                                editApar.tgl_isi_ulang = prev;
+                                                                let input2 = $event.target.closest('form').querySelector('input[name=tgl_isi_ulang]');
+                                                                if(input2 && input2._flatpickr) input2._flatpickr.setDate(prev, false);
+                                                            } 
+                                                        }" required
+                                                class="datepicker w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
                                             <i
                                                 class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                                         </div>
@@ -2145,19 +2256,17 @@
                                             <i
                                                 class="ph-bold ph-calendar-blank absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10"></i>
                                             <input type="text" name="tgl_isi_ulang" placeholder="{{ __('Select Date...') }}"
-                                                :value="editApar.tgl_isi_ulang"
-                                                @change="if($event.target.value) { 
-                                                    let d = new Date($event.target.value); 
-                                                    if(!isNaN(d)) { 
-                                                        d.setFullYear(d.getFullYear() + 2); 
-                                                        let next = d.toISOString().split('T')[0];
-                                                        editApar.tgl_kedaluwarsa = next;
-                                                        let input1 = $event.target.closest('form').querySelector('input[name=tgl_kedaluwarsa]');
-                                                        if(input1 && input1._flatpickr) input1._flatpickr.setDate(next, false);
-                                                        else if(input1) input1.value = next;
-                                                    } 
-                                                }"
-                                                class="datepicker w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
+                                                x-model="editApar.tgl_isi_ulang" @input.debounce.100ms="if($event.target.value) { 
+                                                            let d = new Date($event.target.value); 
+                                                            if(!isNaN(d)) { 
+                                                                d.setFullYear(d.getFullYear() + 2); 
+                                                                let next = d.toISOString().split('T')[0];
+                                                                editApar.tgl_kedaluwarsa = next;
+                                                                let input1 = $event.target.closest('form').querySelector('input[name=tgl_kedaluwarsa]');
+                                                                if(input1 && input1._flatpickr) input1._flatpickr.setDate(next, false);
+                                                            } 
+                                                        }"
+                                                class="datepicker w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 appearance-none cursor-pointer">
                                             <i
                                                 class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                                         </div>
@@ -2170,7 +2279,9 @@
                             <div
                                 class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
-                                    class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
+                                    :disabled="JSON.stringify(editApar) === originalEditApar"
+                                    :class="(JSON.stringify(editApar) === originalEditApar) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-600 shadow-amber-500/20'"
+                                    class="inline-flex w-full justify-center rounded-xl bg-amber-50 px-5 py-2.5 text-sm font-bold text-amber-600 sm:ml-3 sm:w-auto transition-colors" style="background-color: rgb(245 158 11); color: white;">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showModalEditApar = false"
                                     class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                             </div>
@@ -2184,58 +2295,83 @@
         <div x-show="activeTab === 'resume'" x-cloak x-transition:enter="transition ease-out duration-400"
             x-transition:enter-start="opacity-0 translate-y-6" x-transition:enter-end="opacity-100 translate-y-0"
             class="space-y-6" style="display: none;" x-cloak>
-            
+
             <!-- Resume APAR Table Matrix Layout -->
             @if(isset($resumeColumns) && count($resumeColumns) > 0)
-            <div class="bg-white rounded-2xl shadow-sm border border-[#009B77]/20 overflow-hidden">
-                <div class="px-5 py-3 border-b border-[#009B77]/10 flex items-center justify-center bg-[#009B77]/5">
-                    <h2 class="text-base font-bold text-[#009B77] uppercase tracking-wider flex items-center gap-2">
-                        <i class="ph-bold ph-table"></i>
-                        {{ __('Resume Data APAR') }}
-                    </h2>
-                </div>
-                <div class="overflow-x-auto p-4">
-                    <table class="w-full text-left border-collapse border border-[#009B77]/20">
-                        <thead>
-                            <tr class="bg-[#009B77] text-white">
-                                <th rowspan="2" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center w-12">No</th>
-                                <th rowspan="2" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center whitespace-nowrap w-56">{{ __('Keterangan') }}</th>
-                                @foreach($resumeColumns as $jenis => $kapasitasList)
-                                <th colspan="{{ count($kapasitasList) }}" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center">{{ $jenis }}</th>
-                                @endforeach
-                                <th rowspan="2" class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center w-24">{{ __('Total') }}</th>
-                            </tr>
-                            <tr class="bg-[#009B77] text-white">
-                                @foreach($resumeColumns as $jenis => $kapasitasList)
-                                    @foreach($kapasitasList as $kapasitas)
-                                    <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center whitespace-nowrap">{{ $kapasitas }}</th>
+                <div class="bg-white rounded-2xl shadow-sm border border-[#009B77]/20 overflow-hidden">
+                    <div class="px-5 py-3 border-b border-[#009B77]/10 flex items-center justify-center bg-[#009B77]/5">
+                        <h2 class="text-base font-bold text-[#009B77] uppercase tracking-wider flex items-center gap-2">
+                            <i class="ph-bold ph-table"></i>
+                            {{ __('Resume Data APAR') }}
+                        </h2>
+                    </div>
+                    <div class="overflow-x-auto p-4">
+                        <table class="w-full text-left border-collapse border border-[#009B77]/20">
+                            <thead>
+                                <tr class="bg-[#009B77] text-white">
+                                    <th rowspan="2"
+                                        class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center w-12">
+                                        No</th>
+                                    <th rowspan="2"
+                                        class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center whitespace-nowrap w-56">
+                                        {{ __('Keterangan') }}
+                                    </th>
+                                    @foreach($resumeColumns as $jenis => $kapasitasList)
+                                        <th colspan="{{ count($kapasitasList) }}"
+                                            class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center">
+                                            {{ $jenis }}
+                                        </th>
                                     @endforeach
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200">
-                            @foreach($resumeTable as $index => $row)
-                            <tr class="hover:bg-[#009B77]/5 transition-colors">
-                                <td class="px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200 text-center">{{ $index + 1 }}</td>
-                                <td class="px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200 whitespace-nowrap">{{ __($row['name']) }}</td>
-                                @foreach($resumeColumns as $jenis => $kapasitasList)
-                                    @foreach($kapasitasList as $kapasitas)
-                                    <td class="px-4 py-3 text-sm text-slate-600 border border-slate-200 text-center">{{ $row['data'][$jenis][$kapasitas] ?? 0 }}</td>
+                                    <th rowspan="2"
+                                        class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center w-24">
+                                        {{ __('Total') }}
+                                    </th>
+                                </tr>
+                                <tr class="bg-[#009B77] text-white">
+                                    @foreach($resumeColumns as $jenis => $kapasitasList)
+                                        @foreach($kapasitasList as $kapasitas)
+                                            <th
+                                                class="px-4 py-3 text-xs font-bold uppercase tracking-wider border border-[#007f60] text-center whitespace-nowrap">
+                                                {{ $kapasitas }}
+                                            </th>
+                                        @endforeach
                                     @endforeach
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                @foreach($resumeTable as $index => $row)
+                                    <tr class="hover:bg-[#009B77]/5 transition-colors">
+                                        <td
+                                            class="px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200 text-center">
+                                            {{ $index + 1 }}
+                                        </td>
+                                        <td
+                                            class="px-4 py-3 text-sm font-semibold text-slate-700 border border-slate-200 whitespace-nowrap">
+                                            {{ __($row['name']) }}
+                                        </td>
+                                        @foreach($resumeColumns as $jenis => $kapasitasList)
+                                            @foreach($kapasitasList as $kapasitas)
+                                                <td class="px-4 py-3 text-sm text-slate-600 border border-slate-200 text-center">
+                                                    {{ $row['data'][$jenis][$kapasitas] ?? 0 }}
+                                                </td>
+                                            @endforeach
+                                        @endforeach
+                                        <td
+                                            class="px-4 py-3 text-sm font-bold text-[#009B77] border border-slate-200 text-center bg-[#009B77]/5">
+                                            {{ $row['total'] }}
+                                        </td>
+                                    </tr>
                                 @endforeach
-                                <td class="px-4 py-3 text-sm font-bold text-[#009B77] border border-slate-200 text-center bg-[#009B77]/5">{{ $row['total'] }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             @else
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-12 text-center">
-                <i class="ph-bold ph-empty text-6xl text-slate-300 mb-4 inline-block"></i>
-                <h3 class="text-lg font-bold text-slate-700">{{ __('Belum Ada Data') }}</h3>
-                <p class="text-slate-500 mt-2">{{ __('Data resume akan muncul otomatis setelah data APAR diinput.') }}</p>
-            </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-12 text-center">
+                    <i class="ph-bold ph-empty text-6xl text-slate-300 mb-4 inline-block"></i>
+                    <h3 class="text-lg font-bold text-slate-700">{{ __('Belum Ada Data') }}</h3>
+                    <p class="text-slate-500 mt-2">{{ __('Data resume akan muncul otomatis setelah data APAR diinput.') }}</p>
+                </div>
             @endif
         </div>
 
@@ -2270,7 +2406,8 @@
                                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Edit Building Data') }}</h3>
+                                            {{ __('Edit Building Data') }}
+                                        </h3>
                                     </div>
                                     <button type="button" @click="showEditGedung = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors"><i
@@ -2292,7 +2429,9 @@
                             <div
                                 class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
-                                    class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
+                                    :disabled="JSON.stringify(editGedung) === originalEditGedung"
+                                    :class="(JSON.stringify(editGedung) === originalEditGedung) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-600 shadow-amber-500/20'"
+                                    class="inline-flex w-full justify-center rounded-xl bg-amber-50 px-5 py-2.5 text-sm font-bold text-amber-600 sm:ml-3 sm:w-auto transition-colors" style="background-color: rgb(245 158 11); color: white;">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditGedung = false"
                                     class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                             </div>
@@ -2333,7 +2472,8 @@
                                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Edit Location Data') }}</h3>
+                                            {{ __('Edit Location Data') }}
+                                        </h3>
                                     </div>
                                     <button type="button" @click="showEditLokasi = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors"><i
@@ -2351,22 +2491,22 @@
                                         @endif
                                     </div>
                                     <div x-data="{ 
-                                            open: false, 
-                                            search: '',
-                                            options: [
-                                                @foreach(\App\Models\Gedung::all() as $ged)
-                                                    { id: '{{ $ged->id }}', name: '{{ addslashes($ged->nama) }}' },
-                                                @endforeach
-                                            ],
-                                            get selectedName() {
-                                                let sel = this.options.find(o => o.id == editLokasi.gedung_id);
-                                                return sel ? sel.name : '{{ __('Select Building') }}';
-                                            },
-                                            get filteredOptions() {
-                                                if (this.search === '') return this.options;
-                                                return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                                            }
-                                        }" class="relative">
+                                                    open: false, 
+                                                    search: '',
+                                                    options: [
+                                                        @foreach(\App\Models\Gedung::all() as $ged)
+                                                            { id: '{{ $ged->id }}', name: '{{ addslashes($ged->nama) }}' },
+                                                        @endforeach
+                                                    ],
+                                                    get selectedName() {
+                                                        let sel = this.options.find(o => o.id == editLokasi.gedung_id);
+                                                        return sel ? sel.name : '{{ __('Select Building') }}';
+                                                    },
+                                                    get filteredOptions() {
+                                                        if (this.search === '') return this.options;
+                                                        return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                                    }
+                                                }" class="relative">
 
                                         <label
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Select Building') }}</label>
@@ -2430,7 +2570,9 @@
                             <div
                                 class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
-                                    class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
+                                    :disabled="JSON.stringify(editLokasi) === originalEditLokasi"
+                                    :class="(JSON.stringify(editLokasi) === originalEditLokasi) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-600 shadow-amber-500/20'"
+                                    class="inline-flex w-full justify-center rounded-xl bg-amber-50 px-5 py-2.5 text-sm font-bold text-amber-600 sm:ml-3 sm:w-auto transition-colors" style="background-color: rgb(245 158 11); color: white;">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditLokasi = false"
                                     class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                             </div>
@@ -2471,7 +2613,8 @@
                                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Edit PFE Type') }}</h3>
+                                            {{ __('Edit PFE Type') }}
+                                        </h3>
                                     </div>
                                     <button type="button" @click="showEditJenis = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors"><i
@@ -2493,7 +2636,9 @@
                             <div
                                 class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
-                                    class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
+                                    :disabled="JSON.stringify(editJenis) === originalEditJenis"
+                                    :class="(JSON.stringify(editJenis) === originalEditJenis) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-600 shadow-amber-500/20'"
+                                    class="inline-flex w-full justify-center rounded-xl bg-amber-50 px-5 py-2.5 text-sm font-bold text-amber-600 sm:ml-3 sm:w-auto transition-colors" style="background-color: rgb(245 158 11); color: white;">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditJenis = false"
                                     class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                             </div>
@@ -2534,7 +2679,8 @@
                                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                                         </div>
                                         <h3 class="text-lg font-bold leading-6 text-slate-800" id="modal-title">
-                                            {{ __('Edit Capacity') }}</h3>
+                                            {{ __('Edit Capacity') }}
+                                        </h3>
                                     </div>
                                     <button type="button" @click="showEditKapasitas = false"
                                         class="text-slate-400 hover:text-slate-500 transition-colors"><i
@@ -2546,10 +2692,10 @@
                                             class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}</label>
                                         <div class="relative flex items-center">
                                             <!-- Remove ' Kg' from the model value for display, but keep the input name as ukuran. 
-                                                 We use a computed property or just x-effect to strip Kg when modal opens, but easier is just allowing Alpine to display the raw value, 
-                                                 wait, editKapasitas.ukuran already has " Kg" in it from the backend. 
-                                                 Let's strip it using x-bind:value and x-on:input, or just let the backend handle the 'Kg' part. 
-                                                 Actually, if we just set x-model="editKapasitas.ukuran_num" and populate it on click. -->
+                                                         We use a computed property or just x-effect to strip Kg when modal opens, but easier is just allowing Alpine to display the raw value, 
+                                                         wait, editKapasitas.ukuran already has " Kg" in it from the backend. 
+                                                         Let's strip it using x-bind:value and x-on:input, or just let the backend handle the 'Kg' part. 
+                                                         Actually, if we just set x-model="editKapasitas.ukuran_num" and populate it on click. -->
                                             <input type="number" step="any" name="ukuran"
                                                 :value="editKapasitas.ukuran.replace(/[^0-9.]/g, '')"
                                                 @keydown="['e', 'E', '+', '-'].includes($event.key) && $event.preventDefault()"
@@ -2567,7 +2713,9 @@
                             <div
                                 class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
                                 <button type="submit"
-                                    class="inline-flex w-full justify-center rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-amber-600 sm:ml-3 sm:w-auto transition-colors shadow-amber-500/20">{{ __('Save Changes') }}</button>
+                                    :disabled="JSON.stringify(editKapasitas) === originalEditKapasitas"
+                                    :class="(JSON.stringify(editKapasitas) === originalEditKapasitas) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-600 shadow-amber-500/20'"
+                                    class="inline-flex w-full justify-center rounded-xl bg-amber-50 px-5 py-2.5 text-sm font-bold text-amber-600 sm:ml-3 sm:w-auto transition-colors" style="background-color: rgb(245 158 11); color: white;">{{ __('Save Changes') }}</button>
                                 <button type="button" @click="showEditKapasitas = false"
                                     class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">{{ __('Cancel') }}</button>
                             </div>
@@ -2631,23 +2779,24 @@
 
     <!-- Modal History -->
     <div x-data="{ 
-            show: false, 
-            loading: false, 
-            htmlContent: '', 
-            aparKode: '',
-            openModal(e) { 
-                this.show = true; 
-                this.loading = true;
-                this.aparKode = e.detail.kode;
-                this.htmlContent = '';
-                fetch('/master-data/apar/' + e.detail.id + '/history')
-                    .then(res => res.text())
-                    .then(html => {
-                        this.htmlContent = html;
-                        this.loading = false;
-                    });
-            }
-        }" @open-history.window="openModal($event)" x-show="show" class="fixed inset-0 z-[100] overflow-y-auto" x-cloak>
+                    show: false, 
+                    loading: false, 
+                    htmlContent: '', 
+                    aparKode: '',
+                    openModal(e) { 
+                        this.show = true; 
+                        this.loading = true;
+                        this.aparKode = e.detail.kode;
+                        this.htmlContent = '';
+                        fetch('/master-data/apar/' + e.detail.id + '/history')
+                            .then(res => res.text())
+                            .then(html => {
+                                this.htmlContent = html;
+                                this.loading = false;
+                            });
+                    }
+                }" @open-history.window="openModal($event)" x-show="show" class="fixed inset-0 z-[100] overflow-y-auto"
+        x-cloak>
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div x-show="show" class="fixed inset-0 bg-slate-900/40" @click="show = false"></div>
 
@@ -2664,7 +2813,8 @@
                             <h3 class="text-xl font-black text-slate-800 tracking-tight">{{ __('Data Change History') }}
                             </h3>
                             <p class="text-sm font-semibold text-slate-500 mt-0.5">{{ __('Activity timeline for PFE') }}
-                                <span class="text-indigo-600 font-bold" x-text="aparKode"></span></p>
+                                <span class="text-indigo-600 font-bold" x-text="aparKode"></span>
+                            </p>
                         </div>
                     </div>
                     <button @click="show = false"
@@ -2691,44 +2841,55 @@
     </div>
     <!-- Modal Cadangan (Add/Edit) -->
     <div x-data="{ 
-            show: {{ (old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan') && $errors->any() ? 'true' : 'false' }}, 
-            formType: '{{ old('form_type') ?: '' }}', 
-            cadanganAction: '{{ old('cadangan_action') ?: '' }}',
-            cadanganData: {
-                gedung_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('gedung_id') : '' }}',
-                jenis_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('jenis_id') : '' }}',
-                kapasitas_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('kapasitas_id') : '' }}',
-                total: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('total') : '' }}'
-            }
-         }"
-         @open-cadangan.window="
-            show = true; 
-            formType = $event.detail.type; 
-            cadanganAction = $event.detail.action;
-            if ($event.detail.type === 'edit_cadangan') {
-                cadanganData.gedung_id = $event.detail.gedung;
-                cadanganData.jenis_id = $event.detail.jenis;
-                cadanganData.kapasitas_id = $event.detail.kapasitas;
-                cadanganData.total = $event.detail.total;
-            } else {
-                cadanganData.gedung_id = '';
-                cadanganData.jenis_id = '';
-                cadanganData.kapasitas_id = '';
-                cadanganData.total = '';
-            }
-         "
-         x-show="show" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+                    show: {{ (old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan') && $errors->any() ? 'true' : 'false' }}, 
+                    formType: '{{ old('form_type') ?: '' }}', 
+                    cadanganAction: '{{ old('cadangan_action') ?: '' }}',
+                    cadanganData: {
+                        gedung_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('gedung_id') : '' }}',
+                        jenis_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('jenis_id') : '' }}',
+                        kapasitas_id: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('kapasitas_id') : '' }}',
+                        total: '{{ old('form_type') == 'tambah_cadangan' || old('form_type') == 'edit_cadangan' ? old('total') : '' }}'
+                    },
+                    originalCadanganData: ''
+                 }" @open-cadangan.window="
+                    show = true; 
+                    formType = $event.detail.type; 
+                    cadanganAction = $event.detail.action;
+                    if ($event.detail.type === 'edit_cadangan') {
+                        cadanganData.gedung_id = $event.detail.gedung;
+                        cadanganData.jenis_id = $event.detail.jenis;
+                        cadanganData.kapasitas_id = $event.detail.kapasitas;
+                        cadanganData.total = $event.detail.total;
+                        originalCadanganData = JSON.stringify(cadanganData);
+                    } else {
+                        cadanganData.gedung_id = '';
+                        cadanganData.jenis_id = '';
+                        cadanganData.kapasitas_id = '';
+                        cadanganData.total = '';
+                    }
+                 " x-show="show" style="display: none;" class="relative z-[100]" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true" x-cloak>
         <!-- Background overlay -->
         <div x-show="show" class="fixed inset-0 bg-slate-900/40 transition-opacity" x-cloak></div>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                 <!-- Modal panel -->
-                <div x-show="show" @click.away="show = false" class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-100" x-cloak>
-                    
-                    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 rounded-t-3xl">
-                        <h3 class="text-xl font-bold text-slate-800" x-text="formType === 'edit_cadangan' ? '{{ __('Edit Spare PFE') }}' : '{{ __('Add Spare PFE') }}'"></h3>
-                        <button type="button" @click="show = false" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                <div x-show="show"
+                    class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-100"
+                    x-cloak>
+
+                    <div class="px-6 pb-6 pt-6 sm:p-8 border-b border-slate-100 flex items-center justify-between bg-white rounded-t-3xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#009B77]/10 text-[#009B77] flex items-center justify-center">
+                                <i class="ph-bold text-xl" :class="formType === 'edit_cadangan' ? 'ph-pencil-simple' : 'ph-plus'"></i>
+                            </div>
+                            <h3 class="text-xl font-bold leading-6 text-slate-800"
+                                x-text="formType === 'edit_cadangan' ? '{{ __('Edit Spare PFE') }}' : '{{ __('Add Spare PFE') }}'">
+                            </h3>
+                        </div>
+                        <button type="button" @click="show = false"
+                            class="text-slate-400 hover:text-slate-500 transition-colors">
                             <i class="ph-bold ph-x text-xl"></i>
                         </button>
                     </div>
@@ -2739,37 +2900,41 @@
                         <input type="hidden" name="form_type" :value="formType">
                         <input type="hidden" name="cadangan_action" :value="cadanganAction">
                         <div class="p-6 space-y-5">
-                            
+
                             <div>
                                 <div x-data="{ 
-                                        open: false, 
-                                        search: '',
-                                        options: [
-                                            @foreach($gedungs as $gedung)
-                                            { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
-                                            @endforeach
-                                        ],
-                                        get selectedName() {
-                                            let sel = this.options.find(o => o.id == cadanganData.gedung_id);
-                                            return sel ? sel.name : '{{ __('Select Building') }}';
-                                        },
-                                        get filteredOptions() {
-                                            if (this.search === '') return this.options;
-                                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                                        }
-                                    }" class="relative">
+                                                open: false, 
+                                                search: '',
+                                                options: [
+                                                    @foreach($gedungs as $gedung)
+                                                        { id: '{{ $gedung->id }}', name: '{{ addslashes($gedung->nama) }}' },
+                                                    @endforeach
+                                                ],
+                                                get selectedName() {
+                                                    let sel = this.options.find(o => o.id == cadanganData.gedung_id);
+                                                    return sel ? sel.name : '{{ __('Select Building') }}';
+                                                },
+                                                get filteredOptions() {
+                                                    if (this.search === '') return this.options;
+                                                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                                }
+                                            }" class="relative">
 
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Building') }} <span class="text-red-500">*</span></label>
+                                    <label
+                                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Building') }}
+                                        <span class="text-red-500">*</span></label>
 
                                     <!-- Hidden input for form submission -->
                                     <input type="hidden" name="gedung_id" :value="cadanganData.gedung_id" required>
 
                                     <!-- Trigger -->
                                     <button type="button" @click="open = !open" @click.away="open = false"
-                                        class="w-full bg-slate-50 border-2 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
-                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'border-slate-200 text-slate-700 hover:border-slate-300'">
-                                        <span x-text="selectedName" :class="cadanganData.gedung_id === '' ? 'text-slate-400' : ''"></span>
-                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                        class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
+                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'text-slate-700 hover:border-slate-300'">
+                                        <span x-text="selectedName"
+                                            :class="cadanganData.gedung_id === '' ? 'text-slate-400' : ''"></span>
+                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300"
+                                            :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                                     </button>
 
                                     <!-- Dropdown Menu -->
@@ -2783,7 +2948,8 @@
 
                                         <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
                                             <div class="relative">
-                                                <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                <i
+                                                    class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                                 <input type="text" x-model="search" placeholder="Search building..."
                                                     class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all"
                                                     @click.stop @keydown.enter.prevent>
@@ -2797,10 +2963,12 @@
                                                     class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
                                                     :class="cadanganData.gedung_id == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'text-slate-600 hover:bg-slate-50'">
                                                     <span x-text="option.name" class="font-bold"></span>
-                                                    <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganData.gedung_id == option.id" x-cloak></i>
+                                                    <i class="ph-bold ph-check text-[#009B77]"
+                                                        x-show="cadanganData.gedung_id == option.id" x-cloak></i>
                                                 </button>
                                             </template>
-                                            <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                            <div x-show="filteredOptions.length === 0"
+                                                class="py-3 px-4 text-center text-sm font-medium text-slate-500">
                                                 {{ __('No results found') }}
                                             </div>
                                         </div>
@@ -2810,37 +2978,41 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <div>
                                 <div x-data="{ 
-                                        open: false, 
-                                        search: '',
-                                        options: [
-                                            @foreach($jenisApars as $jenis)
-                                            { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
-                                            @endforeach
-                                        ],
-                                        get selectedName() {
-                                            let sel = this.options.find(o => o.id == cadanganData.jenis_id);
-                                            return sel ? sel.name : '{{ __('Select Type') }}';
-                                        },
-                                        get filteredOptions() {
-                                            if (this.search === '') return this.options;
-                                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                                        }
-                                    }" class="relative">
+                                                open: false, 
+                                                search: '',
+                                                options: [
+                                                    @foreach($jenisApars as $jenis)
+                                                        { id: '{{ $jenis->id }}', name: '{{ addslashes($jenis->nama) }}' },
+                                                    @endforeach
+                                                ],
+                                                get selectedName() {
+                                                    let sel = this.options.find(o => o.id == cadanganData.jenis_id);
+                                                    return sel ? sel.name : '{{ __('Select Type') }}';
+                                                },
+                                                get filteredOptions() {
+                                                    if (this.search === '') return this.options;
+                                                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                                }
+                                            }" class="relative">
 
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }} <span class="text-red-500">*</span></label>
+                                    <label
+                                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Type') }}
+                                        <span class="text-red-500">*</span></label>
 
                                     <!-- Hidden input for form submission -->
                                     <input type="hidden" name="jenis_id" :value="cadanganData.jenis_id" required>
 
                                     <!-- Trigger -->
                                     <button type="button" @click="open = !open" @click.away="open = false"
-                                        class="w-full bg-slate-50 border-2 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
-                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'border-slate-200 text-slate-700 hover:border-slate-300'">
-                                        <span x-text="selectedName" :class="cadanganData.jenis_id === '' ? 'text-slate-400' : ''"></span>
-                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                        class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
+                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'text-slate-700 hover:border-slate-300'">
+                                        <span x-text="selectedName"
+                                            :class="cadanganData.jenis_id === '' ? 'text-slate-400' : ''"></span>
+                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300"
+                                            :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                                     </button>
 
                                     <!-- Dropdown Menu -->
@@ -2854,7 +3026,8 @@
 
                                         <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
                                             <div class="relative">
-                                                <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                <i
+                                                    class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                                 <input type="text" x-model="search" placeholder="Search type..."
                                                     class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all"
                                                     @click.stop @keydown.enter.prevent>
@@ -2868,10 +3041,12 @@
                                                     class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
                                                     :class="cadanganData.jenis_id == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'text-slate-600 hover:bg-slate-50'">
                                                     <span x-text="option.name" class="font-bold"></span>
-                                                    <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganData.jenis_id == option.id" x-cloak></i>
+                                                    <i class="ph-bold ph-check text-[#009B77]"
+                                                        x-show="cadanganData.jenis_id == option.id" x-cloak></i>
                                                 </button>
                                             </template>
-                                            <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                            <div x-show="filteredOptions.length === 0"
+                                                class="py-3 px-4 text-center text-sm font-medium text-slate-500">
                                                 {{ __('No results found') }}
                                             </div>
                                         </div>
@@ -2884,34 +3059,38 @@
 
                             <div>
                                 <div x-data="{ 
-                                        open: false, 
-                                        search: '',
-                                        options: [
-                                            @foreach($kapasitasApars as $kapasitas)
-                                            { id: '{{ $kapasitas->id }}', name: '{{ addslashes($kapasitas->ukuran) }}' },
-                                            @endforeach
-                                        ],
-                                        get selectedName() {
-                                            let sel = this.options.find(o => o.id == cadanganData.kapasitas_id);
-                                            return sel ? sel.name : '{{ __('Select Capacity') }}';
-                                        },
-                                        get filteredOptions() {
-                                            if (this.search === '') return this.options;
-                                            return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                                        }
-                                    }" class="relative">
+                                                open: false, 
+                                                search: '',
+                                                options: [
+                                                    @foreach($kapasitasApars as $kapasitas)
+                                                        { id: '{{ $kapasitas->id }}', name: '{{ addslashes($kapasitas->ukuran) }}' },
+                                                    @endforeach
+                                                ],
+                                                get selectedName() {
+                                                    let sel = this.options.find(o => o.id == cadanganData.kapasitas_id);
+                                                    return sel ? sel.name : '{{ __('Select Capacity') }}';
+                                                },
+                                                get filteredOptions() {
+                                                    if (this.search === '') return this.options;
+                                                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                                }
+                                            }" class="relative">
 
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }} <span class="text-red-500">*</span></label>
+                                    <label
+                                        class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Capacity') }}
+                                        <span class="text-red-500">*</span></label>
 
                                     <!-- Hidden input for form submission -->
                                     <input type="hidden" name="kapasitas_id" :value="cadanganData.kapasitas_id" required>
 
                                     <!-- Trigger -->
                                     <button type="button" @click="open = !open" @click.away="open = false"
-                                        class="w-full bg-slate-50 border-2 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
-                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'border-slate-200 text-slate-700 hover:border-slate-300'">
-                                        <span x-text="selectedName" :class="cadanganData.kapasitas_id === '' ? 'text-slate-400' : ''"></span>
-                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300" :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
+                                        class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-left transition-all flex items-center justify-between"
+                                        :class="open ? 'bg-white border-[#009B77] ring-4 ring-[#009B77]/15 text-slate-800' : 'text-slate-700 hover:border-slate-300'">
+                                        <span x-text="selectedName"
+                                            :class="cadanganData.kapasitas_id === '' ? 'text-slate-400' : ''"></span>
+                                        <i class="ph-bold ph-caret-down text-slate-400 transition-transform duration-300"
+                                            :class="open ? 'rotate-180 text-[#009B77]' : ''"></i>
                                     </button>
 
                                     <!-- Dropdown Menu -->
@@ -2925,7 +3104,8 @@
 
                                         <div class="sticky top-0 bg-white p-2 border-b border-slate-100 z-10">
                                             <div class="relative">
-                                                <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                <i
+                                                    class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                                 <input type="text" x-model="search" placeholder="Search capacity..."
                                                     class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-2 focus:ring-[#009B77]/20 transition-all"
                                                     @click.stop @keydown.enter.prevent>
@@ -2939,10 +3119,12 @@
                                                     class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between"
                                                     :class="cadanganData.kapasitas_id == option.id ? 'bg-[#009B77]/10 text-[#009B77]' : 'text-slate-600 hover:bg-slate-50'">
                                                     <span x-text="option.name" class="font-bold"></span>
-                                                    <i class="ph-bold ph-check text-[#009B77]" x-show="cadanganData.kapasitas_id == option.id" x-cloak></i>
+                                                    <i class="ph-bold ph-check text-[#009B77]"
+                                                        x-show="cadanganData.kapasitas_id == option.id" x-cloak></i>
                                                 </button>
                                             </template>
-                                            <div x-show="filteredOptions.length === 0" class="py-3 px-4 text-center text-sm font-medium text-slate-500">
+                                            <div x-show="filteredOptions.length === 0"
+                                                class="py-3 px-4 text-center text-sm font-medium text-slate-500">
                                                 {{ __('No results found') }}
                                             </div>
                                         </div>
@@ -2954,20 +3136,29 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Stock Quantity') }} <span class="text-red-500">*</span></label>
-                                <input type="number" name="total" min="0" required x-model="cadanganData.total" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all">
+                                <label
+                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Stock Quantity') }}
+                                    <span class="text-red-500">*</span></label>
+                                <input type="number" name="total" min="0" required x-model="cadanganData.total"
+                                    onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();"
+                                    class="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-4 text-sm font-medium text-slate-700 focus:outline-none focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all">
                                 @error('total')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                         </div>
-                        <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 rounded-b-3xl">
-                            <button type="button" @click="show = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border-2 border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all">
-                                {{ __('Cancel') }}
+                        <div
+                            class="bg-slate-50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 rounded-b-3xl">
+                            <button type="submit"
+                                :disabled="formType === 'edit_cadangan' && JSON.stringify(cadanganData) === originalCadanganData"
+                                :class="(formType === 'edit_cadangan' && JSON.stringify(cadanganData) === originalCadanganData) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#007b5e] shadow-[#009B77]/20 shadow-sm'"
+                                class="inline-flex w-full justify-center rounded-xl bg-[#009B77] px-5 py-2.5 text-sm font-bold text-white sm:ml-3 sm:w-auto transition-colors">
+                                {{ __('Save Changes') }}
                             </button>
-                            <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-[#009B77] hover:bg-[#007b5e] shadow-lg shadow-[#009B77]/30 rounded-xl transition-all">
-                                {{ __('Save') }}
+                            <button type="button" @click="show = false"
+                                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">
+                                {{ __('Cancel') }}
                             </button>
                         </div>
                     </form>

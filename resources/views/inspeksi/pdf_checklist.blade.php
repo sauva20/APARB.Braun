@@ -56,11 +56,14 @@
                     <tr>
                         <th style="width: 25%; text-align:left; padding-left:6px;">Item Pemeriksaan / Pertanyaan</th>
                         @foreach($aparChunk as $apar)
-                            <th style="width: {{ 75 / $aparChunk->count() }}%;">
+                            <th style="width: 9.375%;">
                                 <div class="apar-header">{{ $apar->kode }}</div>
                                 <div class="apar-sub">{{ $apar->lokasi->nama ?? '' }}</div>
                             </th>
                         @endforeach
+                        @for($i = 0; $i < (8 - $aparChunk->count()); $i++)
+                            <th style="width: 9.375%;"></th>
+                        @endfor
                     </tr>
                 </thead>
                 <tbody>
@@ -89,6 +92,9 @@
                                     @endif
                                 </td>
                             @endforeach
+                            @for($i = 0; $i < (8 - $aparChunk->count()); $i++)
+                                <td></td>
+                            @endfor
                         </tr>
                     @endforeach
                     <tr>
@@ -96,12 +102,18 @@
                         @foreach($aparChunk as $apar)
                             <td style="height: 25px;"></td>
                         @endforeach
+                        @for($i = 0; $i < (8 - $aparChunk->count()); $i++)
+                            <td style="height: 25px;"></td>
+                        @endfor
                     </tr>
                     <tr>
                         <td style="font-weight:bold; padding: 6px;">Catatan (Notes)</td>
                         @foreach($aparChunk as $apar)
                             <td style="height: 25px;"></td>
                         @endforeach
+                        @for($i = 0; $i < (8 - $aparChunk->count()); $i++)
+                            <td style="height: 25px;"></td>
+                        @endfor
                     </tr>
                 </tbody>
             </table>

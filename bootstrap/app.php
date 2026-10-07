@@ -24,8 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('inspeksi/*')) {
                 session()->flash('error', 'Sesi inspeksi Anda telah berakhir atau tidak valid. Silakan scan ulang QR Code atau masukkan PIN kembali.');
                 
-                $aparId = $request->segment(3);
-                if ($aparId) {
+                $aparId = $request->segment(2);
+                if ($aparId && is_numeric($aparId)) {
                     $apar = \App\Models\Apar::find($aparId);
                     if ($apar) {
                         return route('scan.apar', $apar->kode);

@@ -91,12 +91,21 @@
              x-transition:enter-start="opacity-0 scale-95"
              x-transition:enter-end="opacity-100 scale-100">
             
+            @if(request('restricted'))
+            <div class="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6">
+                <i class="ph-fill ph-lock-key text-5xl text-amber-500"></i>
+            </div>
+            
+            <h1 class="text-2xl font-bold text-slate-800 mb-2">{{ __('Session Locked') }}</h1>
+            <p class="text-sm font-medium text-slate-500 mb-8">{{ __('For security reasons, you cannot access the main system without a full login. Please scan another PFE to continue inspecting.') }}</p>
+            @else
             <div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mb-6">
                 <i class="ph-fill ph-check-circle text-5xl text-[#009B77]"></i>
             </div>
             
             <h1 class="text-2xl font-bold text-slate-800 mb-2">{{ __('Inspection Completed!') }}</h1>
             <p class="text-sm font-medium text-slate-500 mb-8">{{ __('Inspection data for PFE') }} <span class="font-bold text-slate-800">{{ $apar->kode }}</span> {{ __('has been successfully saved.') }}</p>
+            @endif
             
             @if(request('source') === 'schedule')
                 @if($nextApar)
@@ -226,12 +235,16 @@
     <script>
         function scannerApp() {
             return {
-                scanning: false,
+                scanning: {{ request('restricted') ? 'true' : 'false' }},
                 html5QrcodeScanner: null,
                 
                 init() {
                     window.stopScannerGlobal = () => { this.stopScanner(); };
                     window.isScannerOpen = () => { return this.scanning; };
+                    
+                    if (this.scanning) {
+                        this.startScanner();
+                    }
                 },
                 
                 startScanner() {

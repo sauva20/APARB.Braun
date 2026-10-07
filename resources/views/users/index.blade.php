@@ -15,6 +15,7 @@
         jadwal_rutin_tanggal:'{{ old('form_type') == 'edit_user' ? old('jadwal_rutin_tanggal') : '' }}',
         gedungs: []
     },
+    originalEditUser: null,
     formRoleTambah: '{{ old('form_type') == 'tambah_user' ? old('role') : '' }}',
     formEmployeeIdTambah: '{{ old('form_type') == 'tambah_user' ? old('employee_id') : '' }}',
     formEmailTambah: '{{ old('form_type') == 'tambah_user' ? old('email') : '' }}',
@@ -56,7 +57,7 @@
         return this.isEmployeeIdTaken(this.formEmployeeIdTambah) || this.isEmailTaken(this.formEmailTambah);
     },
     isEditSubmitDisabled() {
-        return this.isEmployeeIdTaken(this.editUser.employee_id, this.editUser.id) || this.isEmailTaken(this.editUser.email, this.editUser.id);
+        return this.isEmployeeIdTaken(this.editUser.employee_id, this.editUser.id) || this.isEmailTaken(this.editUser.email, this.editUser.id) || JSON.stringify(this.editUser) === this.originalEditUser;
     }
 }">
 
@@ -75,7 +76,7 @@
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-3">
-            <div x-data="{ openExport: false }" class="relative z-[100]">
+            <div x-data="{ openExport: false }" class="relative z-40">
                 <button @click="openExport = !openExport" @click.away="openExport = false" class="bg-white border border-slate-200/60 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm hover:-translate-y-0.5">
                     <i class="ph-bold ph-download-simple text-lg"></i>
                     <span class="hidden sm:inline">{{ __('Export Data') }}</span>
@@ -201,7 +202,7 @@
                         </td>
                         <td class="py-4 px-5">
                             <div class="flex items-center justify-center gap-1">
-                                <button @click="showEditUser = true; editUser = { id: '{{ $user->id }}', employee_id: '{{ addslashes($user->employee_id) }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', role: '{{ addslashes($user->role) }}', jadwal_rutin_tanggal: '{{ $user->jadwal_rutin_tanggal }}', gedungs: {{ json_encode($user->gedungs->pluck('id')) }} }" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="{{ __('Edit') }}">
+                                <button @click="editUser = { id: '{{ $user->id }}', employee_id: '{{ addslashes($user->employee_id) }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', role: '{{ addslashes($user->role) }}', jadwal_rutin_tanggal: '{{ $user->jadwal_rutin_tanggal }}', gedungs: {{ json_encode($user->gedungs->pluck('id')) }} }; originalEditUser = JSON.stringify(editUser); showEditUser = true;" class="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-colors" title="{{ __('Edit') }}">
                                     <i class="ph-bold ph-pencil-simple text-base"></i>
                                 </button>
                                 <form action="/users/{{ $user->id }}" method="POST" class="inline" onsubmit="confirmDelete(event, '{{ __('This user will be permanently deleted!') }}')">
@@ -446,7 +447,7 @@
                         <button type="button" @click="showEditUser = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200/60 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors">
                             {{ __('Cancel') }}
                         </button>
-                        <button type="submit" :disabled="isEditSubmitDisabled()" :class="isEditSubmitDisabled() ? 'bg-slate-400 opacity-50 cursor-not-allowed' : 'bg-[#009B77] hover:bg-[#008264] hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(0,155,119,0.25)]'" class="px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-all">
+                        <button type="submit" :disabled="isEditSubmitDisabled()" :class="isEditSubmitDisabled() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#008264] hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(0,155,119,0.25)]'" class="px-5 py-2.5 text-sm font-bold text-white bg-[#009B77] rounded-xl transition-all">
                             {{ __('Save Changes') }}
                         </button>
                     </div>
