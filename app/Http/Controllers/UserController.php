@@ -251,6 +251,10 @@ class UserController extends Controller
 
         if ($request->role === 'Staff') {
             $user->gedungs()->sync($request->gedungs ?? []);
+            
+            // Kirim email notifikasi ke user setelah perubahan profil/jadwal/gedung
+            $buildings = \App\Models\Gedung::whereIn('id', $request->gedungs ?? [])->get();
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserScheduleUpdated($user, $buildings));
         } else {
             $user->gedungs()->detach();
         }

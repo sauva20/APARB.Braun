@@ -68,6 +68,9 @@ class ScanController extends Controller
 
         // Log the user in so they can access the inspection form
         Auth::login($user);
+        
+        // Tandai bahwa ini adalah login via PIN (inspeksi)
+        session(['is_pin_login' => true]);
 
         if ($request->input('action') === 'update') {
             return redirect()->route('scan.apar', ['kode' => $apar->kode, 'edit' => 1]);

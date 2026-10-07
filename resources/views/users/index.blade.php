@@ -274,7 +274,7 @@
                     <div x-data="{ open: false }" class="relative">
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Role / Position') }} <span class="text-red-500">*</span></label>
                         <!-- Hidden input to submit the value -->
-                        <input type="hidden" name="role" x-model="formRoleTambah" required>
+                        <input type="hidden" name="role" x-model="formRoleTambah">
                         
                         <button type="button" @click="open = !open" @click.away="open = false" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] p-2.5 transition-colors font-medium flex items-center justify-between">
                             <span x-text="formRoleTambah === '' ? '{{ __('Select Role') }}' : formRoleTambah" :class="formRoleTambah === '' ? 'text-slate-500' : 'text-slate-800'"></span>
@@ -388,7 +388,7 @@
                     <div x-data="{ open: false }" class="relative">
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">{{ __('Role / Position') }} <span class="text-red-500">*</span></label>
                         <!-- Hidden input to submit the value -->
-                        <input type="hidden" name="role" x-model="editUser.role" required>
+                        <input type="hidden" name="role" x-model="editUser.role">
                         
                         <button type="button" @click="open = !open" @click.away="open = false" class="w-full bg-slate-50 border border-slate-200/60 text-slate-800 text-sm rounded-xl focus:outline-none focus:ring-[#009B77] focus:border-[#009B77] p-2.5 transition-colors font-medium flex items-center justify-between">
                             <span x-text="editUser.role === '' ? '{{ __('Select Role') }}' : editUser.role" :class="editUser.role === '' ? 'text-slate-500' : 'text-slate-800'"></span>

@@ -37,6 +37,7 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\RateLimiter::clear($throttleKey);
 
             $request->session()->regenerate();
+            $request->session()->forget('is_pin_login');
 
             return redirect()->intended('/dashboard')->with('success', __('Login berhasil! Selamat datang.'));
         }

@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
+
+class UserScheduleUpdated extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    public $user;
+    public $buildings;
+
+    /**
+     * Create a new message instance.
+     */
+    public function __construct($user, $buildings)
+    {
+        $this->user = $user;
+        $this->buildings = $buildings;
+    }
+
+    /**
+     * Get the message envelope.
+     */
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject: 'Pembaruan Jadwal Inspeksi Rutin - B. Braun',
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.user-schedule-updated',
+        );
+    }
+
+    /**
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
+    }
+}

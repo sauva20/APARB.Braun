@@ -36,8 +36,9 @@ Route::post('/reset-password/{user}', [ForgotPasswordController::class, 'reset']
 Route::get('/display-report', [\App\Http\Controllers\DashboardController::class, 'displayReport'])->name('display-report');
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
-    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change-password');
-    Route::post('/profile/change-pin', [ProfileController::class, 'updatePin'])->name('profile.change-pin');
+    Route::middleware(['restrict-pin-login'])->group(function () {
+        Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change-password');
+        Route::post('/profile/change-pin', [ProfileController::class, 'updatePin'])->name('profile.change-pin');
 
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index']);
 
@@ -99,7 +100,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/inspection-schedule/export-checklist', [InspeksiController::class, 'exportChecklist'])->name('inspection-schedule.export-checklist');
     Route::post('/inspection-schedule', [InspeksiController::class, 'storeJadwal']);
     Route::put('/inspection-schedule/{jadwal}', [InspeksiController::class, 'updateJadwal']);
-    Route::delete('/inspection-schedule/{jadwal}', [InspeksiController::class, 'destroyJadwal']);
+        Route::delete('/inspection-schedule/{jadwal}', [InspeksiController::class, 'destroyJadwal']);
+    });
 
     Route::get('/inspeksi/pedoman/{apar}', [InspeksiController::class, 'pedoman'])->name('inspeksi.pedoman');
     Route::get('/inspeksi/mulai/{apar}', [InspeksiController::class, 'create'])->name('inspeksi.mulai');

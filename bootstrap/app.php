@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
+            'restrict-pin-login' => \App\Http\Middleware\RestrictPinLogin::class,
         ]);
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo(function (Request $request) {
