@@ -33,6 +33,8 @@
         
         [x-cloak] { display: none !important; }
     </style>
+        <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- AlpineJS -->
@@ -52,7 +54,7 @@
     <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[40%] bg-[#009B77] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 pointer-events-none"></div>
     <div class="absolute bottom-10 right-[-10%] w-[50%] h-[40%] bg-[#8A4B9F] rounded-full mix-blend-multiply filter blur-[100px] opacity-15 pointer-events-none"></div>
 
-    <div class="w-full h-full max-w-md mx-auto relative z-10 flex flex-col p-4 overflow-hidden" x-data="{ showPinModal: false, pinAction: 'inspeksi', showModalEditApar: {{ request('edit') == 1 && !session('success') ? 'true' : 'false' }}, editApar: {
+    <div class="w-full h-full max-w-md mx-auto relative z-10 flex flex-col p-4 overflow-hidden" x-data="{ showPinModal: false, showImagePreview: false, pinAction: 'inspeksi', showModalEditApar: {{ request('edit') == 1 && !session('success') ? 'true' : 'false' }}, editApar: {
         id: {{ $apar->id }},
         kode: '{{ addslashes($apar->kode) }}',
         nomor_apar: '{{ addslashes($apar->kode) }}'.match(/\d+$/) ? '{{ addslashes($apar->kode) }}'.match(/\d+$/)[0] : '',
@@ -76,18 +78,24 @@
         <div class="bg-white rounded-[24px] shadow-[0_10px_30px_-15px_rgba(0,155,119,0.15)] overflow-hidden border border-slate-100 mb-4 shrink-0 relative group">
             
             @if($apar->foto)
-            <div class="w-full h-56 relative overflow-hidden bg-slate-100">
-                <img src="{{ Storage::url($apar->foto) }}" alt="Foto APAR {{ $apar->kode }}" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+            <div class="w-full h-56 relative overflow-hidden bg-slate-900 cursor-pointer group/photo" @click="showImagePreview = true" title="{{ __('Klik untuk memperbesar foto APAR & watermark') }}">
+                <img src="{{ Storage::url($apar->foto) }}" alt="Foto APAR {{ $apar->kode }}" class="w-full h-full object-cover transition-transform duration-300 group-hover/photo:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none"></div>
+                
+                <!-- Badge & Hint Klik Perbesar di Pojok Kiri Atas Foto -->
+                <div class="absolute top-3 left-3 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-md transition-all">
+                    <i class="bi bi-arrows-fullscreen text-[11px] text-[#009B77]"></i>
+                    <span>{{ __('Klik Foto untuk Perbesar') }}</span>
+                </div>
             </div>
-            <div class="absolute bottom-4 left-5 right-5">
+            <div class="absolute bottom-4 left-5 right-5 pointer-events-none">
                 <div class="flex justify-between items-end">
                     <div>
                         <p class="text-white/80 text-[10px] font-bold tracking-widest uppercase mb-0.5 drop-shadow-md">{{ __('PFE ID') }}</p>
                         <h1 class="text-2xl font-bold text-white drop-shadow-md tracking-tight">{{ $apar->kode }}</h1>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-lg">
-                        <i class="ph-light ph-fire-extinguisher text-xl"></i>
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-lg pointer-events-auto cursor-pointer hover:bg-white/30 transition-colors" @click="showImagePreview = true" title="{{ __('Lihat Foto Ukuran Penuh') }}">
+                        <i class="bi bi-zoom-in text-lg"></i>
                     </div>
                 </div>
             </div>
@@ -244,6 +252,55 @@
                 </div>
             </div>
         </div>
+
+                <!-- Modal Lightbox Pratinjau Foto APAR -->
+        @if($apar->foto)
+        <div x-show="showImagePreview" 
+             class="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md" 
+             x-cloak 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             @keydown.escape.window="showImagePreview = false">
+             
+            <div class="relative max-w-4xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[92vh]" @click.outside="showImagePreview = false">
+                <!-- Header Modal -->
+                <div class="flex items-center justify-between px-4 py-3 bg-slate-950/90 border-b border-white/10 text-white z-10">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-[#009B77]/20 border border-[#009B77]/40 flex items-center justify-center text-[#009B77]">
+                            <i class="bi bi-shield-check text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs sm:text-sm font-bold leading-tight">{{ $apar->kode }} • {{ __('Foto Kondisi Terkini') }}</h3>
+                            <p class="text-[10px] text-slate-400 leading-none mt-0.5">{{ $apar->lokasi->gedung->nama ?? '' }} - {{ $apar->lokasi->nama ?? '' }}</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="showImagePreview = false" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer">
+                        <i class="bi bi-x-lg text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Body Gambar -->
+                <div class="flex-1 overflow-auto bg-black flex items-center justify-center p-2 sm:p-4">
+                    <img src="{{ Storage::url($apar->foto) }}" alt="Foto APAR {{ $apar->kode }}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg">
+                </div>
+
+                <!-- Footer Info -->
+                <div class="px-4 py-2.5 bg-slate-950/90 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-info-circle text-[#009B77]"></i>
+                        <span class="text-slate-400">{{ __('Foto bukti fisik APAR Realtime GPS location') }}</span>
+                    </div>
+                    <button type="button" @click="showImagePreview = false" class="px-4 py-1.5 rounded-lg bg-[#009B77] hover:bg-[#008264] text-white font-bold text-xs transition-colors cursor-pointer">
+                        {{ __('Tutup') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <!-- PIN Modal -->
         <div x-show="showPinModal" class="fixed inset-0 z-[100] flex items-center justify-center pointer-events-auto px-4" x-cloak>

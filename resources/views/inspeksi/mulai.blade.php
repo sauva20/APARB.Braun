@@ -33,6 +33,8 @@
         
         [x-cloak] { display: none !important; }
     </style>
+        <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Alpine Plugins -->
@@ -76,7 +78,7 @@
     <div class="fixed top-[-10%] left-[-10%] w-[60%] h-[40%] bg-[#009B77] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 pointer-events-none"></div>
     <div class="fixed bottom-10 right-[-10%] w-[50%] h-[40%] bg-[#8A4B9F] rounded-full mix-blend-multiply filter blur-[100px] opacity-15 pointer-events-none"></div>
 
-    <div class="w-full max-w-xl mx-auto relative z-10 flex flex-col p-4 sm:p-6 space-y-6" x-data="{
+    <div class="w-full {{ (request('source') === 'schedule' || request('source') === 'system') ? 'max-w-6xl' : 'max-w-xl' }} mx-auto relative z-10 flex flex-col p-4 sm:p-6 lg:p-8 space-y-6" x-data="{
     statusAkhir: $persist('{{ old('status', 'layak') }}').using(sessionStorage).as('inspeksi_status_{{ $apar->id }}'),
     qty: $persist('{{ old('qty', $apar->qty ?? 0) }}').using(sessionStorage).as('inspeksi_qty_{{ $apar->id }}'),
     tgl_kedaluwarsa: $persist('{{ old('tgl_kedaluwarsa', $apar->tgl_kedaluwarsa ? $apar->tgl_kedaluwarsa->format('Y-m-d') : '') }}').using(sessionStorage).as('inspeksi_tgl_{{ $apar->id }}'),
@@ -95,45 +97,68 @@
     }
 }" x-init="$watch('qty', value => { if (value !== '' && value <= 0) statusAkhir = 'isi_ulang'; }); if (qty !== '' && qty <= 0) statusAkhir = 'isi_ulang';">
     <!-- Header Area -->
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-            <a href="{{ $backUrl }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="{{ __('Back') }}">
-                <i class="ph-bold ph-arrow-left text-lg"></i>
+    <div class="flex items-center justify-between gap-4 {{ (request('source') === 'schedule' || request('source') === 'system') ? 'bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm' : '' }}">
+        <div class="flex items-center gap-3">
+            <a href="{{ $backUrl }}" class="px-3 py-2 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center gap-2 text-slate-600 hover:text-[#009B77] hover:border-[#009B77] transition-all text-xs font-bold" title="{{ __('Back') }}">
+                <i class="ph-bold ph-arrow-left text-base"></i>
+                <span class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'inline' : 'hidden sm:inline' }}">{{ __('Kembali') }}</span>
             </a>
             <div>
-                <h2 class="text-base font-extrabold text-slate-800 leading-tight">{{ __('PFE Inspection Form') }}</h2>
-                <p class="text-[10px] font-semibold text-slate-500 mt-0.5 hidden sm:block">{{ __('Record physical and functional check results of PFE components') }}</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h2 class="text-base sm:text-lg font-black text-slate-800 leading-tight">{{ __('Formulir Inspeksi APAR') }}</h2>
+                    @if(request('source') === 'schedule' || request('source') === 'system')
+                    <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+                        <i class="bi bi-pc-display"></i> {{ __('Mode Sistem Desktop') }}
+                    </span>
+                    @endif
+                </div>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5 hidden sm:block">{{ __('Catat hasil pengecekan fisik dan fungsi komponen APAR secara akurat.') }}</p>
             </div>
         </div>
         
         <!-- Language Switcher -->
-        <div class="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200/60 shadow-sm shrink-0">
-            <a href="{{ route('set-locale', 'id') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'id' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">ID</a>
-            <a href="{{ route('set-locale', 'en') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'en' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">EN</a>
+        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200/80 shadow-sm shrink-0">
+            <a href="{{ route('set-locale', 'id') }}" class="text-[11px] font-bold px-2.5 py-1 rounded-lg {{ app()->getLocale() == 'id' ? 'bg-[#009B77] text-white shadow-sm' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">ID</a>
+            <a href="{{ route('set-locale', 'en') }}" class="text-[11px] font-bold px-2.5 py-1 rounded-lg {{ app()->getLocale() == 'en' ? 'bg-[#009B77] text-white shadow-sm' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">EN</a>
         </div>
     </div>
 
     <!-- Info Card -->
-    <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 overflow-hidden p-4 flex flex-col md:flex-row md:items-center gap-4 justify-between relative">
-        <div class="absolute -right-10 -top-10 w-40 h-40 bg-[#009B77]/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/80 overflow-hidden p-4 sm:p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between relative">
+        <div class="absolute -right-10 -top-10 w-48 h-48 bg-[#009B77]/5 rounded-full blur-3xl pointer-events-none"></div>
         <div class="flex items-center gap-4 relative z-10">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#009B77] to-teal-800 text-white flex items-center justify-center shadow-md shadow-[#009B77]/20 flex-shrink-0 border border-white/20">
+            <div class="w-13 h-13 rounded-2xl bg-gradient-to-br from-[#009B77] to-teal-800 text-white flex items-center justify-center shadow-md shadow-[#009B77]/20 flex-shrink-0 border border-white/20">
                 <i class="ph-fill ph-fire-extinguisher text-2xl drop-shadow-md"></i>
             </div>
             <div>
-                <h3 class="font-black text-slate-800 text-lg tracking-tight mb-0.5">{{ $apar->kode ?? 'APAR-XXX' }}</h3>
-                <p class="text-xs font-semibold text-slate-500 flex items-center gap-1"><i class="ph-fill ph-map-pin text-[#009B77]"></i> {{ $apar->lokasi->nama ?? 'n/a' }}</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h3 class="font-black text-slate-800 text-lg sm:text-xl tracking-tight">{{ $apar->kode ?? 'APAR-XXX' }}</h3>
+                    @if(isset($apar->lokasi->gedung->nama))
+                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        {{ $apar->lokasi->gedung->nama }}
+                    </span>
+                    @endif
+                </div>
+                <p class="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mt-0.5">
+                    <i class="ph-fill ph-map-pin text-[#009B77]"></i> {{ $apar->lokasi->nama ?? 'n/a' }}
+                </p>
             </div>
         </div>
-        <div class="flex flex-wrap gap-3 relative z-10">
-            <div class="px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100 flex flex-col items-center min-w-[80px] hover:bg-white hover:shadow-sm transition-all cursor-default">
+        <div class="flex flex-wrap items-center gap-3 relative z-10">
+            <div class="px-3.5 py-2 bg-slate-50 rounded-xl border border-slate-100 flex flex-col items-center min-w-[85px]">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{{ __('Type') }}</span>
-                <span class="text-xs font-bold text-[#009B77]">{{ $apar->jenis->nama ?? 'n/a' }}</span>
+                <span class="text-xs font-black text-[#009B77]">{{ $apar->jenis->nama ?? 'n/a' }}</span>
             </div>
-            <div class="px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100 flex flex-col items-center min-w-[80px] hover:bg-white hover:shadow-sm transition-all cursor-default">
+            <div class="px-3.5 py-2 bg-slate-50 rounded-xl border border-slate-100 flex flex-col items-center min-w-[85px]">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{{ __('Capacity') }}</span>
-                <span class="text-xs font-bold text-[#009B77]">{{ $apar->kapasitas->ukuran ?? 'n/a' }}</span>
+                <span class="text-xs font-black text-[#009B77]">{{ $apar->kapasitas->ukuran ?? 'n/a' }}</span>
             </div>
+            @if($apar->tgl_kedaluwarsa)
+            <div class="px-3.5 py-2 bg-slate-50 rounded-xl border border-slate-100 flex flex-col items-center min-w-[85px]">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{{ __('Expired') }}</span>
+                <span class="text-xs font-black {{ \Carbon\Carbon::parse($apar->tgl_kedaluwarsa)->isPast() ? 'text-red-500' : 'text-slate-700' }}">{{ \Carbon\Carbon::parse($apar->tgl_kedaluwarsa)->format('d M Y') }}</span>
+            </div>
+            @endif
         </div>
     </div>
 
@@ -152,7 +177,11 @@
     @endif
 
     <!-- Checklist Section -->
-    <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-200/60 overflow-hidden" x-data="{ step: $persist(1).using(sessionStorage).as('inspeksi_step_{{ $apar->id }}') }">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden" 
+         x-data="{ 
+             step: $persist(1).using(sessionStorage).as('inspeksi_step_{{ $apar->id }}'),
+             isDesktop: @json(request('source') === 'schedule' || request('source') === 'system')
+         }">
         <form action="{{ route('inspeksi.store', $apar->id ?? 0) }}" method="POST" enctype="multipart/form-data" 
               @submit.prevent="
                   let foto = $el.querySelector('input[name=\'foto_base64\']').value;
@@ -183,24 +212,24 @@
             @csrf
             
             <!-- Step 1: Pemeriksaan Fisik -->
-            <div x-show="step === 1">
+            <div x-show="isDesktop || step === 1">
                 <div class="p-4 sm:p-5">
                     <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2.5 border-b border-slate-100 pb-3">
                         <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 flex items-center justify-center text-[#009B77]">
                             <i class="ph-bold ph-magnifying-glass text-lg"></i>
                         </div>
                         <div>
-                            <span class="block text-base">{{ __('Pemeriksaan Fisik (Langkah 1 dari 2)') }}</span>
+                            <span class="block text-base" x-text="isDesktop ? '{{ __('1. Pemeriksaan Fisik APAR') }}' : '{{ __('Pemeriksaan Fisik (Langkah 1 dari 2)') }}'"></span>
                             <span class="block text-[10px] text-slate-500 font-medium mt-0.5">{{ __('Cek ketersediaan dan kondisi fisik tiap bagian APAR.') }}</span>
                         </div>
                     </h4>
                     
-                    <div class="space-y-3">
+                    <div class="space-y-3 {{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:grid lg:grid-cols-2 lg:gap-3.5 lg:space-y-0' : '' }}">
                         @foreach($pertanyaan as $index => $tanya)
                         @if($index >= 15)
                         
                         @if($index === 15)
-                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
+                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm {{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-span-2' : '' }}" 
                              x-data="{ 
                                  selectedJenis: $persist('{{ old('jenis_id', $apar->jenis_id) }}').using(sessionStorage).as('inspeksi_jenis_{{ $apar->id }}'), 
                                  expectedJenis: '{{ $apar->jenis_id }}',
@@ -244,7 +273,7 @@
                             </div>
                         </div>
                         @elseif($index === 16)
-                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
+                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm {{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-span-2' : '' }}" 
                              x-data="{ 
                                  selectedKapasitas: $persist('{{ old('kapasitas_id', $apar->kapasitas_id) }}').using(sessionStorage).as('inspeksi_kapasitas_{{ $apar->id }}'), 
                                  expectedKapasitas: '{{ $apar->kapasitas_id }}',
@@ -291,7 +320,7 @@
                         @php
                             $tglIsiUlangStr = $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('Y-m-d') : '';
                         @endphp
-                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
+                        <div class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm {{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-span-2' : '' }}" 
                              x-data="{ 
                                  selectedTgl: $persist('{{ old('tgl_isi_ulang', $tglIsiUlangStr) }}').using(sessionStorage).as('inspeksi_tglisiulang_{{ $apar->id }}'), 
                                  expectedTgl: '{{ $tglIsiUlangStr }}',
@@ -339,15 +368,15 @@
                                 expected: '{{ $expected }}' 
                              }" 
                              @if($index === 24)
-                             x-effect="if ($refs.lokasiInput) {
+                              x-effect="if ($refs.lokasiInput) {
                                 if (jawaban === 'tidak ada' && keterangan.trim().toLowerCase() === '{{ strtolower($apar->lokasi->nama) }}') {
                                     $refs.lokasiInput.setCustomValidity('Lokasi yang dimasukkan sama dengan lokasi saat ini.');
                                 } else {
                                     $refs.lokasiInput.setCustomValidity('');
                                 }
-                             }"
+                              }"
                              @endif
-                             class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm" 
+                             class="group flex flex-col sm:flex-row gap-3 p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-sm {{ ($index === 24 && (request('source') === 'schedule' || request('source') === 'system')) ? 'lg:col-span-2' : '' }}" 
                              :class="jawaban === expected ? 'bg-teal-50/50 border-teal-200/60' : (jawaban !== '' ? 'bg-red-50/80 border-red-200' : 'bg-white border-slate-100 hover:border-slate-200')">
                              
                             <!-- Number & Question -->
@@ -403,11 +432,11 @@
                     </div>
                 </div>
 
-                <!-- Lanjut Button Step 1 -->
-                <div class="p-4 sm:p-5 border-t border-slate-100 flex items-center justify-end bg-white sticky bottom-0 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+                <!-- Lanjut Button Step 1 (Mobile only) -->
+                <div x-show="!isDesktop && step === 1" class="p-4 sm:p-5 border-t border-slate-100 flex items-center justify-end bg-white sticky bottom-0 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
                     <button type="button" @click="
                         let isValid = true;
-                        let inputs = $el.closest('div[x-show=\'step === 1\']').querySelectorAll('input, select, textarea');
+                        let inputs = $el.closest('div[x-show=\'isDesktop || step === 1\']').querySelectorAll('input, select, textarea');
                         for (let input of inputs) {
                             if (!input.checkValidity()) {
                                 input.reportValidity();
@@ -426,19 +455,19 @@
             </div>
 
             <!-- Step 2: Pemeriksaan Fungsi & Kesimpulan -->
-            <div x-show="step === 2" style="display: none;">
+            <div x-show="isDesktop || step === 2" :class="isDesktop ? 'border-t-4 border-slate-100' : ''" style="display: none;">
                 <div class="p-4 sm:p-5">
                     <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2.5 border-b border-slate-100 pb-3">
                         <div class="w-8 h-8 rounded-lg bg-[#009B77]/10 flex items-center justify-center text-[#009B77]">
                             <i class="ph-bold ph-list-checks text-lg"></i>
                         </div>
                         <div>
-                            <span class="block text-base">{{ __('Pemeriksaan Fungsi (Langkah 2 dari 2)') }}</span>
+                            <span class="block text-base" x-text="isDesktop ? '{{ __('2. Pemeriksaan Fungsi & Kelayakan') }}' : '{{ __('Pemeriksaan Fungsi (Langkah 2 dari 2)') }}'"></span>
                             <span class="block text-[10px] text-slate-500 font-medium mt-0.5">{{ __('Jawab setiap poin sesuai kondisi aktual di lapangan.') }}</span>
                         </div>
                     </h4>
                     
-                    <div class="space-y-3">
+                    <div class="space-y-3 {{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:grid lg:grid-cols-2 lg:gap-3.5 lg:space-y-0' : '' }}">
                         @foreach($pertanyaan as $index => $tanya)
                         @if($index < 15)
                         <div x-data="{ 
@@ -496,9 +525,9 @@
                 </h4>
                 
                 <div class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 {{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:grid-cols-12 lg:gap-6 items-start' : 'md:grid-cols-2 gap-6' }}">
                         <!-- Status Akhir -->
-                        <div class="md:col-span-2">
+                        <div class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-span-6' : 'md:col-span-2' }}">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Overall Status') }}</label>
                             <div x-data="{ open: false, options: { 'layak': '{{ __('Good Condition') }}', 'perbaikan': '{{ __('Needs Repair') }}', 'isi_ulang': '{{ __('Needs Refill') }}', 'rusak': '{{ __('Broken / Service') }}' } }" class="relative">
                                 <input type="hidden" name="status" :value="statusAkhir">
@@ -530,7 +559,7 @@
                             </div>
                         </div>
                         <!-- Qty -->
-                        <div>
+                        <div class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-span-3' : '' }}">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Qty</label>
                             <div class="relative">
                                 <i class="ph-bold ph-hash absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
@@ -540,7 +569,7 @@
                         </div>
                         
                         <!-- Tgl Kedaluwarsa -->
-                        <div>
+                        <div class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-span-3' : '' }}">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Expired</label>
                             <div class="relative">
                                 <input type="text" name="tgl_kedaluwarsa" x-model="tgl_kedaluwarsa" required
@@ -549,95 +578,231 @@
                             </div>
                         </div>
 
-                        <!-- Upload Foto -->
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-                                {{ __('Condition Photo') }}
-                                <span class="text-[10px] text-red-500 ml-1">
-                                    {{ __('(Wajib)') }}
-                                </span>
-                            </label>
+                        <!-- Upload Foto & Watermark Lokasi Real -->
+                        <div class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-start-7 lg:col-span-6 lg:row-start-1 lg:row-span-4' : 'md:col-span-2' }}">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    {{ __('Condition Photo') }}
+                                    <span class="text-[10px] text-red-500 ml-1">
+                                        {{ __('(Wajib)') }}
+                                    </span>
+                                </label>
+                            </div>
                             @if(request('source') === 'schedule')
                             <p class="text-[10px] text-slate-500 mb-3 leading-relaxed">
-                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Silakan unggah foto bukti form ceklis (kertas) yang telah diisi secara manual di lapangan.') }}
+                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Inspeksi by Sistem: Unggah foto kondisi APAR / form fisik. Watermark resmi berbasis data sistem & master APAR akan dicetak otomatis seketika.') }}
                             </p>
                             @else
                             <p class="text-[10px] text-slate-500 mb-3 leading-relaxed">
-                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Lampirkan form saat inspeksi berlangsung.') }}
+                                <i class="ph-bold ph-info text-[#009B77] mr-0.5"></i> {{ __('Inspeksi Langsung Lapangan: Ambil foto kondisi APAR. Watermark lokasi terdaftar, koordinat GPS riil, & peta akan dicetak di pojok kiri atas.') }}
                             </p>
                             @endif
-                            <div class="relative w-full rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 hover:border-[#009B77] transition-all min-h-[180px] flex items-center justify-center group" x-data="{ fileName: '', photoPreview: null }">
-                                <input type="hidden" name="foto_base64" :value="photoPreview">
-                                <input type="file" id="foto" class="hidden" accept="image/*" capture="environment"
-                                       @change="
-                                           const file = $event.target.files[0];
-                                           if(!file) { photoPreview = null; fileName = ''; return; }
-                                           fileName = file.name;
-                                           const reader = new FileReader();
-                                           reader.onload = (e) => {
-                                               const img = new Image();
-                                               img.onload = () => {
-                                                   const canvas = document.createElement('canvas');
-                                                   let width = img.width;
-                                                   let height = img.height;
-                                                   const MAX_WIDTH = 1280;
-                                                   if (width > MAX_WIDTH) {
-                                                       height = Math.round(height *= MAX_WIDTH / width);
-                                                       width = MAX_WIDTH;
-                                                   }
-                                                   canvas.width = width;
-                                                   canvas.height = height;
-                                                   const ctx = canvas.getContext('2d');
-                                                   ctx.drawImage(img, 0, 0, width, height);
-                                                   photoPreview = canvas.toDataURL('image/jpeg', 0.7);
-                                               };
-                                               img.src = e.target.result;
-                                           };
-                                           reader.readAsDataURL(file);
-                                       ">
-                                
-                                <label for="foto" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 p-4 cursor-pointer transition-all" x-show="!photoPreview">
-                                    <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-[#009B77] group-hover:scale-110 transition-all flex-shrink-0">
-                                        <i class="ph-bold ph-camera text-xl"></i>
+                            <div class="space-y-3" x-data="photoUploader">
+                                <div class="relative w-full rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 hover:border-[#009B77] transition-all min-h-[220px] flex items-center justify-center group">
+                                    <input type="hidden" name="foto_base64" :value="photoPreview">
+                                    <input type="file" id="foto" class="hidden" accept="image/*" {{ request('source') === 'schedule' ? '' : 'capture="environment"' }}
+                                           @change="processImage($event.target.files[0])">
+                                    
+                                    <!-- Loading State -->
+                                    <div x-show="isProcessing" class="absolute inset-0 z-30 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-2">
+                                        <i class="bi bi-arrow-repeat animate-spin text-3xl text-[#009B77]"></i>
+                                        <span class="text-xs font-bold text-slate-700" x-text="isSystemSource ? '{{ __('Mencetak Watermark Data Sistem...') }}' : '{{ __('Mencetak Watermark Lokasi & Maps...') }}'"></span>
+                                        <span class="text-[10px] text-slate-400" x-text="isSystemSource ? '{{ __('Menyematkan data master & verifikasi sistem...') }}' : '{{ __('Menyematkan koordinat dan nama area riil...') }}'"></span>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-500 group-hover:text-[#009B77] text-center leading-none">{{ __('Take Photo') }}</span>
-                                    <span class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-1.5 border border-red-200 rounded-md uppercase tracking-widest text-center leading-tight">{{ __('TAKE PHOTO IN LANDSCAPE') }}</span>
-                                </label>
 
-                                <template x-if="photoPreview">
-                                    <div class="absolute inset-0 w-full h-full">
-                                        <img :src="photoPreview" class="w-full h-full object-cover">
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
-                                        <label for="foto" class="absolute bottom-3 right-3 bg-white/90 hover:bg-white backdrop-blur px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer transition-colors flex items-center gap-1.5 z-20">
-                                            <i class="ph-bold ph-arrows-clockwise"></i> {{ __('Change Photo') }}
-                                        </label>
+                                    <!-- Tombol Take Photo saat belum ada foto -->
+                                    <label for="foto" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2.5 p-4 cursor-pointer transition-all" x-show="!photoPreview && !isProcessing">
+                                        <div class="w-13 h-13 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-[#009B77] group-hover:scale-110 transition-all flex-shrink-0 border border-slate-200">
+                                            <i class="bi" :class="isSystemSource ? 'bi-cloud-arrow-up text-2xl' : 'bi-camera text-2xl'"></i>
+                                        </div>
+                                        <span class="text-sm font-bold text-slate-600 group-hover:text-[#009B77] text-center leading-none" x-text="isSystemSource ? '{{ __('Pilih / Unggah Foto Kondisi APAR') }}' : '{{ __('Take Photo') }}'"></span>
+                                        <span class="text-[10px] font-bold text-red-600 bg-red-50 px-3 py-1.5 border border-red-200 rounded-md uppercase tracking-wider text-center leading-tight">
+                                            <i class="bi bi-aspect-ratio mr-1"></i>{{ __('TAKE PHOTO IN LANDSCAPE') }}
+                                        </span>
+                                        
+                                        <!-- Status Live GPS & Maps / Sistem Terkoneksi -->
+                                        <template x-if="isSystemSource">
+                                            <div class="flex items-center gap-1.5 text-[10px] font-bold px-3 py-1 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 mt-1">
+                                                <i class="bi bi-shield-check text-emerald-600"></i>
+                                                <span>{{ __('Mode Sistem: Watermark Instan Tanpa GPS') }}</span>
+                                            </div>
+                                        </template>
+                                        <template x-if="!isSystemSource">
+                                            <div class="flex items-center gap-1.5 text-[10px] font-bold px-3 py-1 rounded-full cursor-pointer hover:opacity-90 transition-opacity mt-1 border"
+                                                 @click.stop="requestLocation()"
+                                                 :class="{
+                                                     'bg-emerald-50 text-emerald-700 border-emerald-200': gpsStatus === 'success',
+                                                     'bg-amber-50 text-amber-700 border-amber-200': gpsStatus === 'locating',
+                                                     'bg-red-50 text-red-600 border-red-200': gpsStatus === 'error' || gpsStatus === 'idle'
+                                                 }">
+                                                <i class="bi" :class="gpsStatus === 'success' ? 'bi-check-circle-fill text-emerald-600' : (gpsStatus === 'locating' ? 'bi-arrow-repeat animate-spin text-amber-600' : 'bi-geo-alt-fill text-red-500')"></i>
+                                                <span x-text="gpsStatus === 'success' ? (mapAddress ? 'Maps: ' + mapAddress : 'GPS Terhubung') : (gpsStatus === 'locating' ? 'Mencari sinyal GPS...' : 'GPS belum terhubung (Klik untuk aktifkan)')"></span>
+                                            </div>
+                                        </template>
+                                    </label>
+
+                                    <!-- Preview Image Display (Klik untuk Zoom/Modal) -->
+                                    <template x-if="photoPreview">
+                                        <div class="absolute inset-0 w-full h-full cursor-pointer group/img" @click="showFullPhoto = true" title="{{ __('Klik untuk melihat foto ukuran penuh') }}">
+                                            <img :src="photoPreview" class="w-full h-full object-cover transition-transform duration-300 group-hover/img:scale-105">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
+                                            
+                                            <!-- Badge Status Verifikasi di Pojok Kiri Atas Preview -->
+                                            <div class="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-md">
+                                                <i class="bi bi-shield-fill-check text-emerald-400"></i>
+                                                <span>{{ __('Foto Berwatermark') }}</span>
+                                            </div>
+
+                                            <!-- Tombol & Hint Zoom di Tengah/Bawah -->
+                                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/30 pointer-events-none">
+                                                <div class="px-3.5 py-1.5 rounded-full bg-white/90 text-slate-800 text-xs font-bold flex items-center gap-1.5 shadow-lg backdrop-blur">
+                                                    <i class="bi bi-zoom-in text-base text-[#009B77]"></i>
+                                                    {{ __('Klik untuk Perbesar') }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Tombol Ambil Ulang Foto -->
+                                            <label for="foto" @click.stop class="absolute bottom-3 right-3 bg-white/95 hover:bg-white backdrop-blur px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 shadow-md cursor-pointer transition-colors flex items-center gap-1.5 z-20 border border-slate-200 hover:text-[#009B77]">
+                                                <i class="bi bi-arrow-repeat text-[#009B77]"></i> {{ __('Ambil Ulang Foto') }}
+                                            </label>
+
+                                            <!-- Petunjuk Kecil di Pojok Kiri Bawah -->
+                                            <div class="absolute bottom-3 left-3 text-[10px] text-white/90 font-medium flex items-center gap-1 drop-shadow pointer-events-none">
+                                                <i class="bi bi-arrows-fullscreen text-[11px]"></i> {{ __('Ketuk foto untuk pratinjau penuh') }}
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                
+                                <!-- Modal Lightbox Fullscreen Preview Foto (Ringan Tanpa Animasi) -->
+                                <div x-show="showFullPhoto" 
+                                     class="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6 bg-black/85" 
+                                     x-cloak 
+                                     @keydown.escape.window="showFullPhoto = false">
+                                     
+                                    <div class="relative max-w-4xl w-full bg-slate-900 rounded-xl overflow-hidden shadow-xl border border-white/10 flex flex-col max-h-[92vh]" @click.outside="showFullPhoto = false">
+                                        <!-- Header Modal -->
+                                        <div class="flex items-center justify-between px-4 py-3 bg-slate-950/80 border-b border-white/10 text-white z-10">
+                                            <div class="flex items-center gap-2">
+                                                <i class="bi bi-patch-check-fill text-[#009B77] text-lg"></i>
+                                                <div>
+                                                    <h3 class="text-xs sm:text-sm font-bold leading-tight" x-text="kodeApar + ' • Pratinjau Foto Asli Watermark'"></h3>
+                                                    <p class="text-[10px] text-slate-400 leading-none mt-0.5" x-text="lokasiTerdaftar"></p>
+                                                </div>
+                                            </div>
+                                            <button type="button" @click="showFullPhoto = false" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer">
+                                                <i class="bi bi-x-lg text-sm"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Body Gambar -->
+                                        <div class="flex-1 overflow-auto bg-black flex items-center justify-center p-2 sm:p-4">
+                                            <img :src="photoPreview" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg">
+                                        </div>
+
+                                        <!-- Footer Info -->
+                                        <div class="px-4 py-2.5 bg-slate-950/80 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+                                            <div class="flex items-center gap-3">
+                                                <span class="flex items-center gap-1"><i class="bi bi-person-fill text-slate-400"></i> <strong x-text="picName"></strong></span>
+                                                <span class="hidden sm:inline-flex items-center gap-1 text-slate-400"><i class="bi bi-clock-fill"></i> <span x-text="capturedTime"></span></span>
+                                            </div>
+                                            <button type="button" @click="showFullPhoto = false" class="px-4 py-1.5 rounded-lg bg-[#009B77] hover:bg-[#008264] text-white font-bold text-xs transition-colors">
+                                                {{ __('Tutup') }}
+                                            </button>
+                                        </div>
                                     </div>
-                                </template>
+                                </div>
+
+                                <!-- Preview Data Watermark di Bagian Form (Tanpa Emoticon, dengan Bootstrap Icons) -->
+                                <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-2 text-xs transition-all" x-show="photoPreview" x-cloak>
+                                    <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                                        <span class="font-bold text-slate-700 flex items-center gap-1.5">
+                                            <i class="bi bi-file-earmark-check text-[#009B77] text-sm"></i>
+                                            {{ __('Detail Watermark Tersemat') }}
+                                        </span>
+                                        <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                            <i class="bi bi-patch-check-fill text-emerald-600"></i> {{ __('Tercetak di Pojok Kiri Atas') }}
+                                        </span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                                        <!-- Lokasi Terdaftar -->
+                                        <div class="bg-white p-2 rounded-lg border border-slate-200/70 flex items-start gap-2">
+                                            <i class="bi bi-building text-[#009B77] mt-0.5 text-sm"></i>
+                                            <div>
+                                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ __('Lokasi APAR') }}</span>
+                                                <span class="font-bold text-slate-800" x-text="lokasiTerdaftar"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Metode / Lokasi Riil -->
+                                        <div class="bg-white p-2 rounded-lg border border-slate-200/70 flex items-start gap-2">
+                                            <i class="bi" :class="isSystemSource ? 'bi-pc-display text-blue-600' : 'bi-geo-alt-fill text-emerald-600'" mt-0.5 text-sm></i>
+                                            <div>
+                                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider" x-text="isSystemSource ? '{{ __('Metode Inspeksi') }}' : '{{ __('Lokasi GPS Riil') }}'"></span>
+                                                <span class="font-bold text-slate-800" x-text="isSystemSource ? '{{ __('System Record / Desktop Entry') }}' : (mapAddress || 'Lokasi tidak terjangkau')"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Status Validasi / Koordinat -->
+                                        <div class="bg-white p-2 rounded-lg border border-slate-200/70 flex items-start gap-2">
+                                            <i class="bi" :class="isSystemSource ? 'bi-shield-check text-[#009B77]' : 'bi-crosshair text-amber-600'" mt-0.5 text-sm></i>
+                                            <div>
+                                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider" x-text="isSystemSource ? '{{ __('Validasi') }}' : '{{ __('Koordinat GPS') }}'"></span>
+                                                <span class="font-bold text-slate-700" :class="!isSystemSource ? 'font-mono' : ''" x-text="isSystemSource ? '{{ __('Verified by System Data') }}' : (gpsLat && gpsLng ? `${gpsLat.toFixed(6)}, ${gpsLng.toFixed(6)} (±${gpsAccuracy}m)` : 'GPS tidak aktif')"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- PIC -->
+                                        <div class="bg-white p-2 rounded-lg border border-slate-200/70 flex items-start gap-2">
+                                            <i class="bi bi-person-badge-fill text-indigo-600 mt-0.5 text-sm"></i>
+                                            <div>
+                                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ __('Petugas (PIC)') }}</span>
+                                                <span class="font-bold text-slate-800" x-text="picName"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Waktu Pengambilan -->
+                                        <div class="bg-white p-2 rounded-lg border border-slate-200/70 flex items-start gap-2 sm:col-span-2">
+                                            <i class="bi bi-clock-history text-slate-600 mt-0.5 text-sm"></i>
+                                            <div>
+                                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ __('Waktu Pencatatan') }}</span>
+                                                <span class="font-bold text-slate-800" x-text="capturedTime || 'Waktu Real-time'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             @error('foto_base64')
                                 <p class="text-xs text-red-500 font-bold mt-2"><i class="ph-bold ph-warning-circle mr-1"></i>{{ $message }}</p>
                             @enderror
                         </div>
-                    </div>
 
-                    <!-- Catatan -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Additional Notes (Optional)') }}</label>
-                        <div class="relative">
-                            <i class="ph-bold ph-note-pencil absolute left-4 top-4 text-slate-400 text-lg"></i>
-                            <textarea rows="3" name="catatan_tambahan" placeholder="{{ __('Write other general observation notes...') }}" x-model="catatan_tambahan"
-                                      class="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium resize-none"></textarea>
+                        <!-- Catatan Tambahan -->
+                        <div class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'lg:col-span-6' : 'md:col-span-2' }}">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('Additional Notes (Optional)') }}</label>
+                            <div class="relative">
+                                <i class="ph-bold ph-note-pencil absolute left-4 top-4 text-slate-400 text-lg"></i>
+                                <textarea rows="{{ (request('source') === 'schedule' || request('source') === 'system') ? '4' : '3' }}" name="catatan_tambahan" placeholder="{{ __('Write other general observation notes...') }}" x-model="catatan_tambahan"
+                                          class="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 focus:border-[#009B77] focus:ring-4 focus:ring-[#009B77]/15 transition-all outline-none placeholder:text-slate-400 placeholder:font-medium resize-none"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="p-4 sm:p-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white sticky bottom-0 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-                <button type="button" @click="step = 1; setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);" class="w-full sm:w-auto px-5 py-2 rounded-lg font-bold text-slate-600 hover:text-slate-900 bg-white border-2 border-slate-200 hover:border-slate-300 transition-all text-xs flex items-center justify-center gap-1.5">
+                <!-- Tombol Kembali: Hanya muncul di mobile saat step 2 -->
+                <button x-show="!isDesktop && step === 2" type="button" @click="step = 1; setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);" class="w-full sm:w-auto px-5 py-2 rounded-lg font-bold text-slate-600 hover:text-slate-900 bg-white border-2 border-slate-200 hover:border-slate-300 transition-all text-xs flex items-center justify-center gap-1.5">
                     <i class="ph-bold ph-arrow-left text-base"></i>
-                    {{ __('Kembali') }}
+                    {{ __('Kembali ke Langkah 1') }}
                 </button>
-                <div class="flex items-center gap-2 w-full sm:w-auto">
+                <div x-show="isDesktop || step === 1" class="text-xs text-slate-500 font-medium hidden sm:flex items-center gap-2">
+                    <i class="ph-bold ph-shield-check text-[#009B77] text-base"></i>
+                    <span>{{ __('Pastikan seluruh checklist fisik, fungsi, dan foto APAR telah dilengkapi.') }}</span>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto ml-auto">
                     <a href="{{ $backUrl }}" class="flex-1 sm:flex-none px-5 py-2 text-center rounded-lg font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 border border-transparent transition-all text-xs">
                         {{ __('Cancel') }}
                     </a>
@@ -918,6 +1083,304 @@
                 return false;
             }
         }, { capture: true });
+    </script>
+
+    <!-- Photo Uploader with GPS & Real Maps Watermark Script -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('photoUploader', () => ({
+                isSystemSource: @json(request('source') === 'schedule' || request('source') === 'system'),
+                fileName: '',
+                photoPreview: null,
+                isProcessing: false,
+                gpsStatus: 'idle',
+                gpsLat: null,
+                gpsLng: null,
+                gpsAccuracy: null,
+                mapAddress: null,
+                lokasiTerdaftar: @json(($apar->lokasi->gedung->nama ?? '') . ' - ' . ($apar->lokasi->nama ?? '')),
+                kodeApar: @json($apar->kode ?? 'APAR'),
+                picName: @json(auth()->user()->name ?? 'Petugas'),
+                capturedTime: null,
+                showFullPhoto: false,
+
+                init() {
+                    if (this.isSystemSource) {
+                        this.gpsStatus = 'system';
+                    } else {
+                        this.requestLocation();
+                    }
+                },
+
+                requestLocation() {
+                    if (this.isSystemSource) return;
+                    if ('geolocation' in navigator) {
+                        this.gpsStatus = 'locating';
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                this.gpsLat = pos.coords.latitude;
+                                this.gpsLng = pos.coords.longitude;
+                                this.gpsAccuracy = Math.round(pos.coords.accuracy);
+                                this.gpsStatus = 'success';
+                                this.fetchMapAddress(this.gpsLat, this.gpsLng);
+                            },
+                            (err) => {
+                                console.warn('GPS Notice/Error:', err.message);
+                                this.gpsStatus = 'error';
+                            },
+                            { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+                        );
+                    } else {
+                        this.gpsStatus = 'error';
+                    }
+                },
+
+                async fetchMapAddress(lat, lon) {
+                    if (this.isSystemSource) return;
+                    try {
+                        let res = await fetch(`/inspeksi/reverse-geocode?lat=${lat}&lon=${lon}`);
+                        if (res.ok) {
+                            let data = await res.json();
+                            if (data && data.address) {
+                                this.mapAddress = data.address;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Reverse geocode error:', e);
+                    }
+                },
+
+                processImage(file) {
+                    if (!file) {
+                        this.photoPreview = null;
+                        this.fileName = '';
+                        return;
+                    }
+                    this.fileName = file.name;
+                    this.isProcessing = true;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            const MAX_WIDTH = 1280;
+                            if (width > MAX_WIDTH) {
+                                height = Math.round(height * (MAX_WIDTH / width));
+                                width = MAX_WIDTH;
+                            }
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+
+                            // 1. Gambar foto asli
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            // 2. Skala adaptif watermark agar proporsional di resolusi foto apapun
+                            const scale = Math.max(width / 1000, 0.85);
+                            const padding = 16 * scale;
+                            const lineHeight = 21 * scale;
+                            const headerFontSize = Math.round(15 * scale);
+                            const bodyFontSize = Math.round(12 * scale);
+                            const smallFontSize = Math.round(10.5 * scale);
+
+                            // Format waktu real-time
+                            const now = new Date();
+                            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
+                                            now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
+
+                            // Batas lebar box watermark & posisi pojok kiri atas
+                            const boxWidth = Math.min(width * 0.64, 490 * scale);
+                            const boxMargin = 16 * scale;
+                            const boxX = boxMargin;
+                            const boxY = boxMargin;
+
+                            if (this.isSystemSource) {
+                                // ==========================================
+                                // MODE SISTEM / DESKTOP RECORD
+                                // ==========================================
+                                const boxHeight = (padding * 2) + (lineHeight * 5.2);
+
+                                ctx.save();
+                                ctx.fillStyle = 'rgba(15, 23, 42, 0.88)'; // Slate-900 88%
+                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+                                ctx.lineWidth = 1.5 * scale;
+                                
+                                const radius = 10 * scale;
+                                ctx.beginPath();
+                                ctx.moveTo(boxX + radius, boxY);
+                                ctx.lineTo(boxX + boxWidth - radius, boxY);
+                                ctx.quadraticCurveTo(boxX + boxWidth, boxY, boxX + boxWidth, boxY + radius);
+                                ctx.lineTo(boxX + boxWidth, boxY + boxHeight - radius);
+                                ctx.quadraticCurveTo(boxX + boxWidth, boxY + boxHeight, boxX + boxWidth - radius, boxY + boxHeight);
+                                ctx.lineTo(boxX + radius, boxY + boxHeight);
+                                ctx.quadraticCurveTo(boxX, boxY + boxHeight, boxX, boxY + boxHeight - radius);
+                                ctx.lineTo(boxX, boxY + radius);
+                                ctx.quadraticCurveTo(boxX, boxY, boxX + radius, boxY);
+                                ctx.closePath();
+                                ctx.fill();
+                                ctx.stroke();
+
+                                // Aksen Hijau Brand B.Braun di sisi kiri badge
+                                ctx.fillStyle = '#009B77';
+                                ctx.fillRect(boxX, boxY + radius, 4.5 * scale, boxHeight - (radius * 2));
+
+                                let textY = boxY + padding + (lineHeight * 0.7);
+                                const textX = boxX + padding + (4 * scale);
+
+                                // Baris 1: Kode APAR & Header Mode Sistem
+                                ctx.font = `bold ${headerFontSize}px sans-serif`;
+                                ctx.fillStyle = '#FFFFFF';
+                                ctx.fillText(`${this.kodeApar} | SYSTEM VERIFIED`, textX, textY);
+                                textY += lineHeight;
+
+                                // Baris 2: Lokasi Master APAR Terdaftar
+                                ctx.font = `bold ${bodyFontSize}px sans-serif`;
+                                ctx.fillStyle = '#34D399'; // Emerald-400
+                                ctx.fillText(`LOKASI: ${this.lokasiTerdaftar}`, textX, textY);
+                                textY += lineHeight;
+
+                                // Baris 3: Metode Inspeksi
+                                ctx.font = `normal ${smallFontSize}px sans-serif`;
+                                ctx.fillStyle = '#93C5FD'; // Blue-300
+                                ctx.fillText(`METODE: SYSTEM RECORD / DESKTOP ENTRY`, textX, textY);
+                                textY += lineHeight;
+
+                                // Baris 4: Validasi Master Sistem
+                                ctx.font = `bold ${smallFontSize}px sans-serif`;
+                                ctx.fillStyle = '#FCD34D'; // Amber-300
+                                ctx.fillText(`VALIDASI: VERIFIED BY SYSTEM DATA`, textX, textY);
+                                textY += lineHeight;
+
+                                // Baris 5: PIC
+                                ctx.font = `bold ${smallFontSize}px sans-serif`;
+                                ctx.fillStyle = '#E2E8F0'; // Slate-200
+                                ctx.fillText(`PIC: ${this.picName}`, textX, textY);
+                                textY += lineHeight * 0.95;
+
+                                // Baris 6: Waktu Realtime
+                                ctx.font = `normal ${smallFontSize}px sans-serif`;
+                                ctx.fillStyle = '#94A3B8'; // Slate-400
+                                ctx.fillText(`WAKTU: ${dateStr}`, textX, textY);
+
+                                ctx.restore();
+                            } else {
+                                // ==========================================
+                                // MODE LANGSUNG LAPANGAN (GPS & MAPS)
+                                // ==========================================
+                                let coordStr = 'Menunggu sinyal GPS';
+                                if (this.gpsLat && this.gpsLng) {
+                                    coordStr = `${this.gpsLat.toFixed(6)}, ${this.gpsLng.toFixed(6)} (±${this.gpsAccuracy || 0}m)`;
+                                }
+
+                                let realMapLocation = this.mapAddress ? this.mapAddress : (this.gpsStatus === 'success' ? 'Memproses nama lokasi...' : 'Lokasi tidak terjangkau');
+
+                                ctx.font = `normal ${smallFontSize}px sans-serif`;
+                                const wrapText = (text, maxWidth) => {
+                                    let words = text.split(' ');
+                                    let lines = [];
+                                    let currentLine = '';
+                                    for (let w of words) {
+                                        let testLine = currentLine ? currentLine + ' ' + w : w;
+                                        if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+                                            lines.push(currentLine);
+                                            currentLine = w;
+                                        } else {
+                                            currentLine = testLine;
+                                        }
+                                    }
+                                    if (currentLine) lines.push(currentLine);
+                                    return lines;
+                                };
+
+                                let mapLines = wrapText(realMapLocation, boxWidth - (padding * 2) - (8 * scale));
+                                if (mapLines.length > 2) {
+                                    mapLines = mapLines.slice(0, 2);
+                                    mapLines[1] += '...';
+                                }
+
+                                const boxHeight = (padding * 2) + (lineHeight * 5.3) + ((mapLines.length - 1) * (lineHeight * 0.95));
+
+                                ctx.save();
+                                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)'; // Slate-900 85%
+                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+                                ctx.lineWidth = 1.5 * scale;
+                                
+                                const radius = 10 * scale;
+                                ctx.beginPath();
+                                ctx.moveTo(boxX + radius, boxY);
+                                ctx.lineTo(boxX + boxWidth - radius, boxY);
+                                ctx.quadraticCurveTo(boxX + boxWidth, boxY, boxX + boxWidth, boxY + radius);
+                                ctx.lineTo(boxX + boxWidth, boxY + boxHeight - radius);
+                                ctx.quadraticCurveTo(boxX + boxWidth, boxY + boxHeight, boxX + boxWidth - radius, boxY + boxHeight);
+                                ctx.lineTo(boxX + radius, boxY + boxHeight);
+                                ctx.quadraticCurveTo(boxX, boxY + boxHeight, boxX, boxY + boxHeight - radius);
+                                ctx.lineTo(boxX, boxY + radius);
+                                ctx.quadraticCurveTo(boxX, boxY, boxX + radius, boxY);
+                                ctx.closePath();
+                                ctx.fill();
+                                ctx.stroke();
+
+                                ctx.fillStyle = '#009B77';
+                                ctx.fillRect(boxX, boxY + radius, 4.5 * scale, boxHeight - (radius * 2));
+
+                                let textY = boxY + padding + (lineHeight * 0.7);
+                                const textX = boxX + padding + (4 * scale);
+
+                                // Baris 1: Kode APAR & Verified Inspection Header
+                                ctx.font = `bold ${headerFontSize}px sans-serif`;
+                                ctx.fillStyle = '#FFFFFF';
+                                ctx.fillText(`${this.kodeApar} | REALTIME GPS INSPECTION`, textX, textY);
+                                textY += lineHeight;
+
+                                // Baris 2: Lokasi Terdaftar Sistem
+                                ctx.font = `bold ${bodyFontSize}px sans-serif`;
+                                ctx.fillStyle = '#34D399'; // Emerald-400
+                                ctx.fillText(`LOKASI TERDAFTAR: ${this.lokasiTerdaftar}`, textX, textY);
+                                textY += lineHeight;
+
+                                // Baris 3: Lokasi Riil Maps
+                                ctx.font = `normal ${smallFontSize}px sans-serif`;
+                                ctx.fillStyle = '#E2E8F0'; // Slate-200
+                                for (let i = 0; i < mapLines.length; i++) {
+                                    let prefix = i === 0 ? 'LOKASI: ' : '        ';
+                                    ctx.fillText(prefix + mapLines[i], textX, textY);
+                                    textY += lineHeight * 0.95;
+                                }
+
+                                // Baris 4: Koordinat GPS
+                                ctx.font = `bold ${smallFontSize}px monospace`;
+                                ctx.fillStyle = '#FCD34D'; // Amber-300
+                                ctx.fillText(`KOORDINAT: ${coordStr}`, textX, textY);
+                                textY += lineHeight;
+
+                                // Baris 5: PIC
+                                ctx.font = `bold ${smallFontSize}px sans-serif`;
+                                ctx.fillStyle = '#93C5FD'; // Blue-300
+                                ctx.fillText(`PIC: ${this.picName}`, textX, textY);
+                                textY += lineHeight * 0.95;
+
+                                // Baris 6: WAKTU
+                                ctx.font = `normal ${smallFontSize}px sans-serif`;
+                                ctx.fillStyle = '#94A3B8'; // Slate-400
+                                ctx.fillText(`WAKTU: ${dateStr}`, textX, textY);
+
+                                ctx.restore();
+                            }
+
+                            // Simpan hasil render ke photoPreview (Base64 JPEG)
+                            this.capturedTime = dateStr;
+                            this.photoPreview = canvas.toDataURL('image/jpeg', 0.82);
+                            this.isProcessing = false;
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }));
+        });
     </script>
 </body>
 </html>

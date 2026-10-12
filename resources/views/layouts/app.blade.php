@@ -17,6 +17,7 @@
     <!-- Alpine Core -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Phosphor Icons -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web"></script>
     
@@ -819,6 +820,87 @@
             }
         }, { capture: true });
     </script>
+        <!-- Global Lightbox Modal Preview Foto Inspeksi (Admin) -->
+    <div id="global-admin-photo-modal" 
+         class="fixed inset-0 z-[9999] items-center justify-center p-3 sm:p-6 bg-black/85" 
+         style="display: none;"
+         onclick="if(event.target === this) closeGlobalPhotoModal();">
+         
+        <div class="relative max-w-4xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[92vh]" onclick="event.stopPropagation();">
+            <!-- Header Modal -->
+            <div class="flex items-center justify-between px-4 py-3 bg-slate-950/90 border-b border-white/10 text-white z-10">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#009B77]/20 border border-[#009B77]/40 flex items-center justify-center text-[#009B77]">
+                        <i class="ph-fill ph-fire-extinguisher text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs sm:text-sm font-bold leading-tight flex items-center gap-1.5">
+                            <span id="global-photo-apar-kode"></span>
+                            <span class="text-slate-400">•</span>
+                            <span>Foto Bukti Fisik Inspeksi Realtime</span>
+                        </h3>
+                        <p class="text-[10px] text-slate-400 leading-none mt-0.5" id="global-photo-apar-lokasi"></p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeGlobalPhotoModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer">
+                    <i class="ph-bold ph-x text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Body Gambar Resolusi Penuh -->
+            <div class="flex-1 overflow-auto bg-black flex items-center justify-center p-2 sm:p-4">
+                <img id="global-photo-img" src="" alt="Inspection Photo" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg">
+            </div>
+
+            <!-- Footer Info Modal -->
+            <div class="px-4 py-2.5 bg-slate-950/90 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-1.5">
+                        <i class="ph-fill ph-user text-slate-400"></i>
+                        <span class="text-slate-400">PIC:</span>
+                        <strong id="global-photo-pic"></strong>
+                    </span>
+                    <span class="hidden sm:inline-flex items-center gap-1.5 text-slate-400">
+                        <i class="ph-fill ph-clock"></i>
+                        <span id="global-photo-waktu"></span>
+                    </span>
+                </div>
+                <button type="button" onclick="closeGlobalPhotoModal()" class="px-4 py-1.5 rounded-lg bg-[#009B77] hover:bg-[#008264] text-white font-bold text-xs transition-colors cursor-pointer">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openGlobalPhotoModal(data) {
+            const modal = document.getElementById('global-admin-photo-modal');
+            if (!modal) return;
+            
+            let photoSrc = data.foto || '';
+            if (photoSrc && !photoSrc.startsWith('http') && !photoSrc.startsWith('/storage/')) {
+                photoSrc = '/storage/' + photoSrc;
+            }
+            
+            document.getElementById('global-photo-img').src = photoSrc;
+            document.getElementById('global-photo-apar-kode').textContent = data.apar_kode || 'APAR';
+            document.getElementById('global-photo-apar-lokasi').textContent = data.lokasi || '';
+            document.getElementById('global-photo-pic').textContent = data.petugas || '-';
+            document.getElementById('global-photo-waktu').textContent = data.waktu || '';
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeGlobalPhotoModal() {
+            const modal = document.getElementById('global-admin-photo-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeGlobalPhotoModal();
+        });
+    </script>
+    @stack('scripts')
 </body>
 </html>
 

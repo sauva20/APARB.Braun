@@ -486,8 +486,20 @@
 
                                         <!-- {{ __('Inspection Photo') }} -->
                                         <template x-if="selectedInspeksi.foto">
-                                            <div class="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-slate-900 flex items-center justify-center">
-                                                <img :src="'/storage/' + selectedInspeksi.foto" alt="{{ __('Inspection Photo') }}" class="w-full h-auto max-h-80 object-contain">
+                                            <div class="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-slate-900 flex items-center justify-center relative group/img cursor-pointer"
+                                                 @click="openGlobalPhotoModal(selectedInspeksi)"
+                                                 title="{{ __('Klik untuk memperbesar foto inspeksi & watermark') }}">
+                                                <img :src="'/storage/' + selectedInspeksi.foto" alt="{{ __('Inspection Photo') }}" class="w-full h-auto max-h-80 object-contain transition-transform duration-300 group-hover/img:scale-105">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                                    <div class="px-3.5 py-1.5 rounded-full bg-white/95 text-slate-800 text-xs font-bold flex items-center gap-1.5 shadow-lg backdrop-blur">
+                                                        <i class="ph-bold ph-magnifying-glass-plus text-base text-[#009B77]"></i>
+                                                        {{ __('Perbesar Foto Watermark') }}
+                                                    </div>
+                                                </div>
+                                                <div class="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                    <i class="ph-bold ph-arrows-out text-xs text-[#009B77]"></i>
+                                                    <span>{{ __('Klik untuk Zoom') }}</span>
+                                                </div>
                                             </div>
                                         </template>
                                         
@@ -1146,7 +1158,6 @@
                     </button>
                 </div>
             </form>
-        </div>
         </div>
     </div>
 </div>

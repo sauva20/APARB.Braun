@@ -6,8 +6,16 @@ use App\Mail\InspectionAssigned;
 use App\Models\Apar;
 use App\Models\Gedung;
 use App\Models\JadwalInspeksi;
+use App\Models\JenisApar;
+use App\Models\KapasitasApar;
+use App\Models\Lokasi;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -46,7 +54,7 @@ class InspeksiController extends Controller
         ];
     }
 
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $currentMonth = (int) $request->input('month', now()->month);
         $currentYear = (int) $request->input('year', now()->year);
@@ -67,7 +75,7 @@ class InspeksiController extends Controller
                     ->whereYear('created_at', $currentYear)
                     ->latest();
             },
-            'lokasi.apar.inspeksis.user'
+            'lokasi.apar.inspeksis.user',
         ])->get();
 
         // Filter out empty gedungs and lokasis for cleaner UI
@@ -75,6 +83,7 @@ class InspeksiController extends Controller
             $gedung->lokasi = $gedung->lokasi->filter(function ($lokasi) {
                 return $lokasi->apar->isNotEmpty();
             });
+
             return $gedung->lokasi->isNotEmpty();
         });
 
@@ -105,11 +114,11 @@ class InspeksiController extends Controller
         // Hitung progres untuk jadwal asli (Ad-Hoc)
         foreach ($jadwals as $jadwal) {
             $aparsInSchedule = $jadwal->tipe_area === 'gedung'
-                ? Apar::whereHas('lokasi', fn($q) => $q->where('gedung_id', $jadwal->gedung_id))->get()
+                ? Apar::whereHas('lokasi', fn ($q) => $q->where('gedung_id', $jadwal->gedung_id))->get()
                 : Apar::where('lokasi_id', $jadwal->lokasi_id)->get();
 
-            $jadwalMonth = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->month;
-            $jadwalYear = \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->year;
+            $jadwalMonth = Carbon::parse($jadwal->tanggal_inspeksi)->month;
+            $jadwalYear = Carbon::parse($jadwal->tanggal_inspeksi)->year;
 
             $totalAparInArea = $aparsInSchedule->count();
             $inspectedCount = 0;
@@ -133,9 +142,9 @@ class InspeksiController extends Controller
         // Gabungkan jadwal rutin dari profil Staff ke dalam daftar jadwal
         foreach ($users as $user) {
             if ($user->role === 'Staff' && $user->jadwal_rutin_tanggal) {
-                $maxDays = \Carbon\Carbon::create($currentYear, $currentMonth, 1)->daysInMonth;
+                $maxDays = Carbon::create($currentYear, $currentMonth, 1)->daysInMonth;
                 $tgl = min($user->jadwal_rutin_tanggal, $maxDays);
-                $tanggalRutin = \Carbon\Carbon::create($currentYear, $currentMonth, $tgl)->format('Y-m-d');
+                $tanggalRutin = Carbon::create($currentYear, $currentMonth, $tgl)->format('Y-m-d');
 
                 foreach ($user->gedungs as $gedung) {
                     $mockJadwal = new JadwalInspeksi([
@@ -145,9 +154,9 @@ class InspeksiController extends Controller
                         'gedung_id' => $gedung->id,
                         'user_id' => $user->id,
                         'catatan_tambahan' => 'Jadwal rutin bulanan otomatis',
-                        'status' => 'menunggu'
+                        'status' => 'menunggu',
                     ]);
-                    $mockJadwal->id = 'rutin_' . $user->id . '_' . $gedung->id;
+                    $mockJadwal->id = 'rutin_'.$user->id.'_'.$gedung->id;
                     $mockJadwal->setRelation('gedung', $gedung);
                     $mockJadwal->setRelation('user', $user);
                     $mockJadwal->is_rutin_virtual = true;
@@ -186,11 +195,11 @@ class InspeksiController extends Controller
     public function exportChecklist(Request $request)
     {
         $request->validate([
-            'gedung_id' => 'required|exists:gedung,id'
+            'gedung_id' => 'required|exists:gedung,id',
         ]);
 
         $gedungId = $request->gedung_id;
-        $gedung = \App\Models\Gedung::findOrFail($gedungId);
+        $gedung = Gedung::findOrFail($gedungId);
 
         $query = Apar::with(['lokasi.gedung', 'jenis', 'kapasitas'])
             ->whereHas('lokasi', function ($q) use ($gedungId) {
@@ -210,16 +219,18 @@ class InspeksiController extends Controller
         $pertanyaan = $this->getPertanyaan();
         app()->setLocale($originalLocale);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('inspeksi.pdf_checklist', compact('apars', 'pertanyaan'))->setPaper('a4', 'landscape');
+        $pdf = Pdf::loadView('inspeksi.pdf_checklist', compact('apars', 'pertanyaan'))->setPaper('a4', 'landscape');
 
         $safeGedungName = preg_replace('/[^A-Za-z0-9\-]/', '_', $gedung->nama);
-        return $pdf->stream('Checklist_' . $safeGedungName . '_' . date('Ymd') . '.pdf');
+
+        return $pdf->stream('Checklist_'.$safeGedungName.'_'.date('Ymd').'.pdf');
     }
 
     public function pedoman(Apar $apar)
     {
         // Set penanda bahwa user sedang memulai alur inspeksi baru
-        session()->put('active_inspection_' . $apar->id, true);
+        session()->put('active_inspection_'.$apar->id, true);
+
         return view('inspeksi.pedoman', compact('apar'));
     }
 
@@ -227,15 +238,15 @@ class InspeksiController extends Controller
     {
         // Mengecek apakah ada sesi inspeksi aktif (di-set dari halaman pedoman)
         // Jika tidak ada, berarti pengguna menekan "Kembali" setelah menyelesaikan inspeksi
-        if (!session('active_inspection_' . $apar->id)) {
+        if (! session('active_inspection_'.$apar->id)) {
             return redirect()->route('inspeksi.sukses', ['apar' => $apar->id, 'source' => $request->query('source')])
                 ->with('error', 'Sesi form telah selesai. Silakan scan ulang jika ingin melakukan inspeksi kembali.');
         }
 
         $pertanyaan = $this->getPertanyaan();
-        $gedungs = \App\Models\Gedung::with('lokasi')->get();
-        $jenisApars = \App\Models\JenisApar::all();
-        $kapasitasApars = \App\Models\KapasitasApar::all();
+        $gedungs = Gedung::with('lokasi')->get();
+        $jenisApars = JenisApar::all();
+        $kapasitasApars = KapasitasApar::all();
 
         $backUrl = route('inspeksi.pedoman', $apar->id);
         if ($request->query('source') === 'schedule') {
@@ -248,13 +259,13 @@ class InspeksiController extends Controller
     public function store(Request $request, Apar $apar)
     {
         // KUNCI: Mencegah submit ulang jika user berhasil back ke halaman form dari cache browser
-        if (!session('active_inspection_' . $apar->id)) {
+        if (! session('active_inspection_'.$apar->id)) {
             return redirect()->route('inspeksi.sukses', ['apar' => $apar->id, 'source' => $request->query('source')])
                 ->with('error', 'Sesi form telah selesai dan terkunci. Form tidak dapat disubmit ulang.');
         }
 
         $isSystem = in_array($request->query('source') ?? $request->source, ['schedule', 'system']);
-        $pesanFoto = $isSystem 
+        $pesanFoto = $isSystem
             ? 'Harap lampirkan foto kondisi APAR saat inspeksi berlangsung.'
             : 'Ambil foto kondisi APAR secara langsung dari lokasi menggunakan kamera.';
 
@@ -281,7 +292,7 @@ class InspeksiController extends Controller
             'tgl_isi_ulang' => $request->tgl_isi_ulang ?? $apar->tgl_isi_ulang,
             'pic_id' => auth()->id(),
             'jenis_id' => $request->jenis_id,
-            'kapasitas_id' => $request->kapasitas_id
+            'kapasitas_id' => $request->kapasitas_id,
         ];
 
         if ($request->hasFile('foto')) {
@@ -293,19 +304,19 @@ class InspeksiController extends Controller
             if ($apar->foto && Storage::disk('public')->exists($apar->foto)) {
                 Storage::disk('public')->delete($apar->foto);
             }
-            $image_parts = explode(";base64,", $request->foto_base64);
-            $image_type_aux = explode("image/", $image_parts[0]);
+            $image_parts = explode(';base64,', $request->foto_base64);
+            $image_type_aux = explode('image/', $image_parts[0]);
             $image_type = $image_type_aux[1] ?? 'jpeg';
             $image_base64 = base64_decode($image_parts[1]);
-            $path = 'foto-apar/' . uniqid() . '.' . $image_type;
+            $path = 'foto-apar/'.uniqid().'.'.$image_type;
             Storage::disk('public')->put($path, $image_base64);
             $updateData['foto'] = $path;
         }
 
         // Jika Lokasi APAR (index 24) "Tidak Sesuai", update master data lokasi
-        if (isset($request->checklist[24]) && $request->checklist[24]['jawaban'] === 'tidak ada' && !empty($request->checklist[24]['keterangan'])) {
+        if (isset($request->checklist[24]) && $request->checklist[24]['jawaban'] === 'tidak ada' && ! empty($request->checklist[24]['keterangan'])) {
             $newLokasiName = trim($request->checklist[24]['keterangan']);
-            $lokasi = \App\Models\Lokasi::firstOrCreate([
+            $lokasi = Lokasi::firstOrCreate([
                 'nama' => $newLokasiName,
                 'gedung_id' => $apar->lokasi->gedung_id,
             ]);
@@ -339,13 +350,13 @@ class InspeksiController extends Controller
 
         foreach ($jadwals as $jadwal) {
             $aparsInSchedule = $jadwal->tipe_area === 'gedung'
-                ? Apar::whereHas('lokasi', fn($q) => $q->where('gedung_id', $jadwal->gedung_id))->get()
+                ? Apar::whereHas('lokasi', fn ($q) => $q->where('gedung_id', $jadwal->gedung_id))->get()
                 : Apar::where('lokasi_id', $jadwal->lokasi_id)->get();
 
             $allInspected = $aparsInSchedule->every(function ($a) use ($jadwal) {
                 return $a->inspeksis()
-                    ->whereMonth('created_at', \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->month)
-                    ->whereYear('created_at', \Carbon\Carbon::parse($jadwal->tanggal_inspeksi)->year)
+                    ->whereMonth('created_at', Carbon::parse($jadwal->tanggal_inspeksi)->month)
+                    ->whereYear('created_at', Carbon::parse($jadwal->tanggal_inspeksi)->year)
                     ->exists();
             });
 
@@ -355,11 +366,11 @@ class InspeksiController extends Controller
         }
 
         // Hapus penanda sesi aktif agar jika memencet kembali (back) tidak bisa masuk form lagi
-        session()->forget('active_inspection_' . $apar->id);
+        session()->forget('active_inspection_'.$apar->id);
 
         // KUNCI KREDENSIAL: Logout paksa jika ini dari Direct Scan (agar kredensial tidak nyangkut)
-        if (!$isSystem) {
-            \Illuminate\Support\Facades\Auth::logout();
+        if (! $isSystem) {
+            Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
         }
@@ -372,7 +383,7 @@ class InspeksiController extends Controller
         $request->validate(['kode' => 'required|string']);
         $apar = Apar::where('kode', $request->kode)->first();
 
-        if (!$apar) {
+        if (! $apar) {
             return back()->withErrors(['kode' => 'APAR dengan ID tersebut tidak ditemukan.']);
         }
 
@@ -385,7 +396,7 @@ class InspeksiController extends Controller
         if ($request->source === 'schedule') {
             $currentMonth = now()->month;
             $currentYear = now()->year;
-            
+
             // Cari APAR selanjutnya yang belum diinspeksi di gedung yang sama, dengan ID > ID saat ini
             $nextApar = Apar::whereHas('lokasi', function ($q) use ($apar) {
                 $q->where('gedung_id', $apar->lokasi->gedung_id);
@@ -395,7 +406,7 @@ class InspeksiController extends Controller
             })->where('id', '>', $apar->id)->orderBy('id', 'asc')->first();
 
             // Jika tidak ada yang ID-nya lebih besar, cari dari awal (ID yang lebih kecil) di gedung yang sama
-            if (!$nextApar) {
+            if (! $nextApar) {
                 $nextApar = Apar::whereHas('lokasi', function ($q) use ($apar) {
                     $q->where('gedung_id', $apar->lokasi->gedung_id);
                 })->whereDoesntHave('inspeksis', function ($q) use ($currentMonth, $currentYear) {
@@ -409,7 +420,7 @@ class InspeksiController extends Controller
             return [
                 'kode' => $a->kode,
                 'lokasi' => $a->lokasi->nama ?? '-',
-                'gedung' => $a->lokasi->gedung->nama ?? '-'
+                'gedung' => $a->lokasi->gedung->nama ?? '-',
             ];
         });
 
@@ -437,7 +448,7 @@ class InspeksiController extends Controller
                 'tanggal_inspeksi' => $request->tanggal,
                 'tipe_area' => $isGedung ? 'gedung' : 'lokasi',
                 'gedung_id' => $isGedung ? $id : null,
-                'lokasi_id' => !$isGedung ? $id : null,
+                'lokasi_id' => ! $isGedung ? $id : null,
                 'user_id' => $request->user_id,
                 'catatan_tambahan' => $request->catatan_tambahan,
                 'status' => 'menunggu',
@@ -485,9 +496,76 @@ class InspeksiController extends Controller
 
         if ($jadwal) {
             $jadwal->delete();
+
             return redirect('/inspection-schedule')->with('success', __('Jadwal inspeksi berhasil dihapus!'));
         }
 
         return redirect('/inspection-schedule');
+    }
+
+    public function reverseGeocode(Request $request)
+    {
+        $lat = $request->query('lat');
+        $lon = $request->query('lon');
+
+        if (! $lat || ! $lon) {
+            return response()->json(['address' => null], 400);
+        }
+
+        $cacheKey = 'geocode_'.round((float) $lat, 4).'_'.round((float) $lon, 4);
+
+        $address = Cache::remember($cacheKey, 86400, function () use ($lat, $lon) {
+            try {
+                $response = Http::withHeaders([
+                    'User-Agent' => 'APAR-Monitoring-System/1.0 (contact@bbraun.com)',
+                ])->timeout(3)->get('https://nominatim.openstreetmap.org/reverse', [
+                    'format' => 'jsonv2',
+                    'lat' => $lat,
+                    'lon' => $lon,
+                    'zoom' => 18,
+                    'addressdetails' => 1,
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    // Buat format alamat yang ringkas dan informatif
+                    $addr = $data['address'] ?? [];
+                    $parts = [];
+
+                    $buildingOrPoi = $addr['amenity'] ?? $addr['building'] ?? $addr['industrial'] ?? $addr['commercial'] ?? null;
+                    if ($buildingOrPoi) {
+                        $parts[] = $buildingOrPoi;
+                    }
+
+                    $road = $addr['road'] ?? $addr['suburb'] ?? $addr['village'] ?? null;
+                    if ($road) {
+                        $parts[] = $road;
+                    }
+
+                    $city = $addr['city'] ?? $addr['county'] ?? $addr['regency'] ?? $addr['town'] ?? null;
+                    if ($city) {
+                        $parts[] = $city;
+                    }
+
+                    $state = $addr['state'] ?? null;
+                    if ($state && count($parts) < 3) {
+                        $parts[] = $state;
+                    }
+
+                    if (! empty($parts)) {
+                        return implode(', ', array_unique($parts));
+                    }
+
+                    return $data['display_name'] ?? null;
+                }
+            } catch (\Exception $e) {
+                // Ignore error, return null
+            }
+
+            return null;
+        });
+
+        return response()->json(['address' => $address]);
     }
 }

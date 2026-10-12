@@ -40,155 +40,168 @@
     <div class="fixed bottom-10 right-[-10%] w-[50%] h-[40%] bg-[#8A4B9F] rounded-full mix-blend-multiply filter blur-[100px] opacity-15 pointer-events-none"></div>
 
 
-    <div class="w-full max-w-xl mx-auto relative z-10 flex flex-col p-4 sm:p-6 space-y-6">
+    <div class="w-full {{ (request('source') === 'schedule' || request('source') === 'system') ? 'max-w-6xl' : 'max-w-xl' }} mx-auto relative z-10 flex flex-col p-4 sm:p-6 lg:p-8 space-y-6">
         
         <!-- Header Area -->
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <a href="{{ request('source') === 'schedule' ? url('/inspection-schedule') : route('scan.apar', $apar->kode) }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-500 hover:text-[#009B77] hover:border-[#009B77] transition-all" title="{{ __('Back') }}">
-                    <i class="ph-bold ph-arrow-left text-lg"></i>
+        <div class="flex items-center justify-between gap-4 {{ (request('source') === 'schedule' || request('source') === 'system') ? 'bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm' : '' }}">
+            <div class="flex items-center gap-3">
+                <a href="{{ request('source') === 'schedule' ? url('/inspection-schedule') : route('scan.apar', $apar->kode) }}" class="px-3 py-2 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center gap-2 text-slate-600 hover:text-[#009B77] hover:border-[#009B77] transition-all text-xs font-bold" title="{{ __('Back') }}">
+                    <i class="ph-bold ph-arrow-left text-base"></i>
+                    <span class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'inline' : 'hidden sm:inline' }}">{{ __('Kembali') }}</span>
                 </a>
                 <div>
-                    <h2 class="text-base font-extrabold text-slate-800 leading-tight">{{ __('Inspection Guidelines') }}</h2>
-                    <p class="text-[10px] font-semibold text-slate-500 mt-0.5">{{ __('Points to check during PFE inspection') }}</p>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h2 class="text-base sm:text-lg font-black text-slate-800 leading-tight">{{ __('Pedoman Inspeksi APAR') }}</h2>
+                        @if(request('source') === 'schedule' || request('source') === 'system')
+                        <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+                            <i class="bi bi-pc-display"></i> {{ __('Mode Sistem Desktop') }}
+                        </span>
+                        @endif
+                    </div>
+                    <p class="text-xs font-semibold text-slate-500 mt-0.5 hidden sm:block">{{ __('Poin-poin penting yang wajib dipedomani saat melakukan pemeriksaan APAR.') }}</p>
                 </div>
             </div>
             
             <!-- Language Switcher -->
-            <div class="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200/60 shadow-sm shrink-0">
-                <a href="{{ route('set-locale', 'id') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'id' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">ID</a>
-                <a href="{{ route('set-locale', 'en') }}" class="text-[10px] font-bold px-2 py-1 rounded {{ app()->getLocale() == 'en' ? 'bg-[#009B77] text-white' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">EN</a>
+            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200/80 shadow-sm shrink-0">
+                <a href="{{ route('set-locale', 'id') }}" class="text-[11px] font-bold px-2.5 py-1 rounded-lg {{ app()->getLocale() == 'id' ? 'bg-[#009B77] text-white shadow-sm' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">ID</a>
+                <a href="{{ route('set-locale', 'en') }}" class="text-[11px] font-bold px-2.5 py-1 rounded-lg {{ app()->getLocale() == 'en' ? 'bg-[#009B77] text-white shadow-sm' : 'bg-transparent text-slate-400 hover:text-slate-600' }} transition-colors">EN</a>
             </div>
         </div>
 
         <!-- Information Box -->
-        <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 sm:p-4 flex items-start gap-3">
-            <i class="ph-fill ph-info text-blue-500 text-lg shrink-0"></i>
-            <p class="text-[11px] font-medium text-blue-800 leading-relaxed mt-0.5">
-                {{ __('PERATURAN MENTRI TENAGA KERJA DAN TRANSMIGRASI No : PER.04/MEN/1980 TENTANG SYARAT-SYARAT PEMASANGAN DAN PEMELIHARAAN ALAT PEMADAM API RINGAN') }}
-            </p>
+        <div class="bg-blue-50 border border-blue-200/80 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 shrink-0">
+                <i class="ph-fill ph-info text-xl"></i>
+            </div>
+            <div>
+                <span class="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-0.5">{{ __('Dasar Hukum & Ketentuan K3') }}</span>
+                <p class="text-xs font-medium text-blue-800 leading-relaxed">
+                    {{ __('PERATURAN MENTRI TENAGA KERJA DAN TRANSMIGRASI No : PER.04/MEN/1980 TENTANG SYARAT-SYARAT PEMASANGAN DAN PEMELIHARAAN ALAT PEMADAM API RINGAN') }}
+                </p>
+            </div>
         </div>
 
         <!-- Guidelines List -->
-        <div class="bg-white rounded-[24px] shadow-[0_10px_30px_-15px_rgba(0,155,119,0.1)] border border-slate-100 p-5 sm:p-6">
-            <div class="space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+            <div class="{{ (request('source') === 'schedule' || request('source') === 'system') ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-4' }}">
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         1
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Ketersediaan') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Ketersediaan') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Pastikan APAR tersedia di tempat yang mudah diakses dan terlihat dengan jelas.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         2
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Tanggal inspeksi terakhir') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Tanggal inspeksi terakhir') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Periksa apakah APAR telah diperiksa dan dikalibrasi sesuai dengan jadwal yang ditetapkan.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         3
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Label dan tanda peringatan') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Label dan tanda peringatan') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Pastikan label dan tanda peringatan pada APAR masih terbaca dengan jelas dan tidak rusak.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         4
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Segel keselamatan') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Segel keselamatan') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Periksa segel keselamatan pada APAR. Pastikan segel tidak rusak atau telah terputus.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         5
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Kondisi fisik') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Kondisi fisik') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Periksa apakah APAR dalam kondisi fisik yang baik, tanpa kerusakan atau kebocoran yang signifikan.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         6
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Penunjuk tekanan') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Penunjuk tekanan') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Periksa penunjuk tekanan pada APAR. Pastikan tekanan berada dalam rentang yang diperbolehkan.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         7
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Instruksi penggunaan') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Instruksi penggunaan') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Periksa apakah instruksi penggunaan APAR masih terpasang dan mudah diakses.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         8
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Pemeriksaan visual') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Pemeriksaan visual') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Lakukan pemeriksaan visual terhadap selang, nozzle, dan katup pemadam. Pastikan tidak ada kerusakan, kebocoran, atau penyumbatan yang signifikan.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         9
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Pengoperasian') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Pengoperasian') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Pastikan tuas atau pengatur aliran APAR berfungsi dengan baik dan tidak mengalami kebocoran.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         10
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Ketersediaan pelatihan') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Ketersediaan pelatihan') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Periksa apakah pengguna APAR telah menjalani pelatihan yang diperlukan.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         11
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Dokumentasi') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Dokumentasi') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Pastikan catatan inspeksi APAR diisi dengan lengkap dan diperbarui secara teratur.') }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <div class="w-6 h-6 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div class="flex gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-slate-200 transition-all">
+                    <div class="w-7 h-7 rounded-full bg-[#009B77]/10 text-[#009B77] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         12
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-0.5">{{ __('Tindakan perbaikan') }}</h4>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-800 mb-0.5">{{ __('Tindakan perbaikan') }}</h4>
                         <p class="text-[11px] text-slate-500 leading-relaxed">{{ __('Jika ditemukan masalah atau kekurangan selama inspeksi, pastikan tindakan perbaikan yang tepat diambil dan dicatat.') }}</p>
                     </div>
                 </div>
@@ -199,9 +212,9 @@
 
     <!-- Floating Action Button -->
     <div class="fixed bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-[#F0F0F0] via-[#F0F0F0]/90 to-transparent z-40 pb-6">
-        <div class="w-full max-w-xl mx-auto">
-            <a href="{{ route('inspeksi.mulai', $apar->id) . (request('source') ? '?source=' . request('source') : '') }}" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-4 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-sm flex items-center justify-center gap-2 tracking-wide">
-                <span>{{ __('Start Inspection') }}</span>
+        <div class="w-full {{ (request('source') === 'schedule' || request('source') === 'system') ? 'max-w-6xl' : 'max-w-xl' }} mx-auto">
+            <a href="{{ route('inspeksi.mulai', $apar->id) . (request('source') ? '?source=' . request('source') : '') }}" class="w-full bg-[#009B77] hover:bg-[#008264] text-white font-bold py-3.5 sm:py-4 rounded-xl shadow-lg shadow-[#009B77]/30 transition-all text-sm flex items-center justify-center gap-2 tracking-wide">
+                <span>{{ __('Mulai Formulir Inspeksi') }}</span>
                 <i class="ph-bold ph-arrow-right"></i>
             </a>
         </div>
