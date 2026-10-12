@@ -8,7 +8,10 @@ use App\Models\Gedung;
 use App\Models\JenisApar;
 use App\Models\KapasitasApar;
 use App\Models\Lokasi;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -72,43 +75,44 @@ class MasterDataController extends Controller
         $aparCadangans = AparCadangan::with(['gedung', 'jenis', 'kapasitas'])->get();
 
         $allApars = Apar::with(['jenis', 'kapasitas', 'latestInspeksi'])->get();
-        
+
         $resumeColumns = [];
-        foreach($allApars as $apar) {
+        foreach ($allApars as $apar) {
             $jenis = $apar->jenis->nama ?? 'Unknown';
             $kapasitas = $apar->kapasitas->ukuran ?? 'Unknown';
-            
-            if(!isset($resumeColumns[$jenis])) {
+
+            if (! isset($resumeColumns[$jenis])) {
                 $resumeColumns[$jenis] = [];
             }
-            if(!in_array($kapasitas, $resumeColumns[$jenis])) {
+            if (! in_array($kapasitas, $resumeColumns[$jenis])) {
                 $resumeColumns[$jenis][] = $kapasitas;
             }
         }
-        
+
         // sort capacities logically if possible, or just leave as is
-        foreach($resumeColumns as $j => $caps) {
+        foreach ($resumeColumns as $j => $caps) {
             sort($resumeColumns[$j]);
         }
 
         $resumeRows = [
-            'APAR Keseluruhan' => fn($a) => true,
-            'APAR Expired' => fn($a) => $a->tgl_kedaluwarsa && \Carbon\Carbon::parse($a->tgl_kedaluwarsa)->isPast(),
-            'Sesuai' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'baik',
-            'Perlu Perbaikan' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'perbaikan',
-            'Perlu Isi Ulang' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'isi_ulang',
-            'Rusak / Servis' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'rusak',
+            'APAR Keseluruhan' => fn ($a) => true,
+            'APAR Expired' => fn ($a) => $a->tgl_kedaluwarsa && Carbon::parse($a->tgl_kedaluwarsa)->isPast(),
+            'Sesuai' => fn ($a) => $a->latestInspeksi && in_array($a->latestInspeksi->status, ['layak', 'baik']),
+            'Perlu Perbaikan' => fn ($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'perbaikan',
+            'Perlu Isi Ulang' => fn ($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'isi_ulang',
+            'Rusak / Servis' => fn ($a) => $a->latestInspeksi && in_array($a->latestInspeksi->status, ['rusak', 'service']),
         ];
 
         $resumeTable = [];
-        foreach($resumeRows as $rowName => $filterCallback) {
+        foreach ($resumeRows as $rowName => $filterCallback) {
             $rowData = [];
             $rowTotal = 0;
-            foreach($resumeColumns as $jenis => $kapasitasList) {
-                foreach($kapasitasList as $kapasitas) {
-                    $count = $allApars->filter(function($a) use ($jenis, $kapasitas, $filterCallback) {
+            foreach ($resumeColumns as $jenis => $kapasitasList) {
+                foreach ($kapasitasList as $kapasitas) {
+                    $count = $allApars->filter(function ($a) use ($jenis, $kapasitas, $filterCallback) {
                         $j = $a->jenis->nama ?? 'Unknown';
                         $k = $a->kapasitas->ukuran ?? 'Unknown';
+
                         return $j === $jenis && $k === $kapasitas && $filterCallback($a);
                     })->count();
                     $rowData[$jenis][$kapasitas] = $count;
@@ -118,7 +122,7 @@ class MasterDataController extends Controller
             $resumeTable[] = [
                 'name' => $rowName,
                 'data' => $rowData,
-                'total' => $rowTotal
+                'total' => $rowTotal,
             ];
         }
 
@@ -161,44 +165,45 @@ class MasterDataController extends Controller
         }
 
         $apars = $query->orderBy('id', 'asc')->get();
-        
+
         $aparCadangans = AparCadangan::with(['gedung', 'jenis', 'kapasitas'])->get();
-        
+
         $resumeColumns = [];
-        foreach($apars as $apar) {
+        foreach ($apars as $apar) {
             $jenis = $apar->jenis->nama ?? 'Unknown';
             $kapasitas = $apar->kapasitas->ukuran ?? 'Unknown';
-            
-            if(!isset($resumeColumns[$jenis])) {
+
+            if (! isset($resumeColumns[$jenis])) {
                 $resumeColumns[$jenis] = [];
             }
-            if(!in_array($kapasitas, $resumeColumns[$jenis])) {
+            if (! in_array($kapasitas, $resumeColumns[$jenis])) {
                 $resumeColumns[$jenis][] = $kapasitas;
             }
         }
-        
-        foreach($resumeColumns as $j => $caps) {
+
+        foreach ($resumeColumns as $j => $caps) {
             sort($resumeColumns[$j]);
         }
 
         $resumeRows = [
-            'APAR Keseluruhan' => fn($a) => true,
-            'APAR Expired' => fn($a) => $a->tgl_kedaluwarsa && \Carbon\Carbon::parse($a->tgl_kedaluwarsa)->isPast(),
-            'Sesuai' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'baik',
-            'Perlu Perbaikan' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'perbaikan',
-            'Perlu Isi Ulang' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'isi_ulang',
-            'Rusak / Servis' => fn($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'rusak',
+            'APAR Keseluruhan' => fn ($a) => true,
+            'APAR Expired' => fn ($a) => $a->tgl_kedaluwarsa && Carbon::parse($a->tgl_kedaluwarsa)->isPast(),
+            'Sesuai' => fn ($a) => $a->latestInspeksi && in_array($a->latestInspeksi->status, ['layak', 'baik']),
+            'Perlu Perbaikan' => fn ($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'perbaikan',
+            'Perlu Isi Ulang' => fn ($a) => $a->latestInspeksi && $a->latestInspeksi->status === 'isi_ulang',
+            'Rusak / Servis' => fn ($a) => $a->latestInspeksi && in_array($a->latestInspeksi->status, ['rusak', 'service']),
         ];
 
         $resumeTable = [];
-        foreach($resumeRows as $rowName => $filterCallback) {
+        foreach ($resumeRows as $rowName => $filterCallback) {
             $rowData = [];
             $rowTotal = 0;
-            foreach($resumeColumns as $jenis => $kapasitasList) {
-                foreach($kapasitasList as $kapasitas) {
-                    $count = $apars->filter(function($a) use ($jenis, $kapasitas, $filterCallback) {
+            foreach ($resumeColumns as $jenis => $kapasitasList) {
+                foreach ($kapasitasList as $kapasitas) {
+                    $count = $apars->filter(function ($a) use ($jenis, $kapasitas, $filterCallback) {
                         $j = $a->jenis->nama ?? 'Unknown';
                         $k = $a->kapasitas->ukuran ?? 'Unknown';
+
                         return $j === $jenis && $k === $kapasitas && $filterCallback($a);
                     })->count();
                     $rowData[$jenis][$kapasitas] = $count;
@@ -208,12 +213,13 @@ class MasterDataController extends Controller
             $resumeTable[] = [
                 'name' => $rowName,
                 'data' => $rowData,
-                'total' => $rowTotal
+                'total' => $rowTotal,
             ];
         }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('master-data.pdf', compact('apars', 'aparCadangans', 'resumeColumns', 'resumeTable'))->setPaper('a4', 'portrait');
-        return $pdf->stream('Data_APAR_' . date('Ymd_His') . '.pdf');
+        $pdf = Pdf::loadView('master-data.pdf', compact('apars', 'aparCadangans', 'resumeColumns', 'resumeTable'))->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Data_APAR_'.date('Ymd_His').'.pdf');
     }
 
     public function exportExcel(Request $request)
@@ -253,22 +259,22 @@ class MasterDataController extends Controller
 
         $apars = $query->orderBy('id', 'asc')->get();
 
-        $filename = "Data_APAR_" . date('Ymd_His') . ".csv";
+        $filename = 'Data_APAR_'.date('Ymd_His').'.csv';
 
         $headers = [
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
         ];
 
         $columns = [__('No'), __('PFE ID'), __('Location'), __('Building'), __('Type'), __('Capacity'), __('Fire Class'), __('Expiry Date'), __('Last Refill'), __('Qty'), __('PIC'), __('Last Inspection')];
 
-        $callback = function() use($apars, $columns) {
+        $callback = function () use ($apars, $columns) {
             $file = fopen('php://output', 'w');
             // add BOM to fix UTF-8 in Excel
-            fputs($file, $bom =(chr(0xEF) . chr(0xBB) . chr(0xBF)));
+            fwrite($file, $bom = (chr(0xEF).chr(0xBB).chr(0xBF)));
             fputcsv($file, $columns);
 
             foreach ($apars as $index => $apar) {
@@ -300,7 +306,7 @@ class MasterDataController extends Controller
                     $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('d M Y') : '-',
                     $apar->qty,
                     $picName,
-                    $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
+                    $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-',
                 ];
 
                 fputcsv($file, $row);
@@ -379,13 +385,13 @@ class MasterDataController extends Controller
                 $apar->tgl_isi_ulang ? $apar->tgl_isi_ulang->format('d M Y') : '-',
                 $apar->qty,
                 $picName,
-                $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-'
+                $lastInspeksi ? $lastInspeksi->created_at->format('d M Y') : '-',
             ];
         }
 
         return response()->json([
             'headers' => $columns,
-            'rows' => $rows
+            'rows' => $rows,
         ]);
     }
 
@@ -529,11 +535,11 @@ class MasterDataController extends Controller
         ]);
 
         if ($request->filled('gunakan_cadangan') && $request->filled('cadangan_id')) {
-            $cadangan = \App\Models\AparCadangan::find($request->cadangan_id);
+            $cadangan = AparCadangan::find($request->cadangan_id);
             if ($cadangan) {
                 $qty = $request->input('qty', 1);
                 if ($cadangan->total < $qty) {
-                    return redirect()->back()->withErrors(['cadangan_id' => 'Stok cadangan tidak mencukupi (Sisa: ' . $cadangan->total . ').'])->withInput()->with('form_type', 'tambah_apar');
+                    return redirect()->back()->withErrors(['cadangan_id' => 'Stok cadangan tidak mencukupi (Sisa: '.$cadangan->total.').'])->withInput()->with('form_type', 'tambah_apar');
                 }
                 $cadangan->decrement('total', $qty);
                 // Force the request to use the cadangan's specs
@@ -545,11 +551,11 @@ class MasterDataController extends Controller
         }
 
         $prefix = $this->generatePrefix($lokasi->id, $request->jenis_id);
-        $kode = $prefix . $request->nomor_apar;
+        $kode = $prefix.$request->nomor_apar;
 
         // Cek unik
         if (Apar::where('kode', $kode)->exists()) {
-            return redirect()->back()->withErrors(['nomor_apar' => 'Nomor APAR ini sudah digunakan untuk prefix ' . $prefix])->withInput()->with('form_type', 'tambah_apar');
+            return redirect()->back()->withErrors(['nomor_apar' => 'Nomor APAR ini sudah digunakan untuk prefix '.$prefix])->withInput()->with('form_type', 'tambah_apar');
         }
 
         $data = $request->except(['kode', 'nomor_apar', 'form_type', 'gedung_id', 'lokasi']);
@@ -634,12 +640,12 @@ class MasterDataController extends Controller
         ]);
 
         if ($request->filled('gunakan_cadangan') && $request->filled('cadangan_id')) {
-            $cadangan = \App\Models\AparCadangan::find($request->cadangan_id);
+            $cadangan = AparCadangan::find($request->cadangan_id);
             if ($cadangan) {
                 $qty = $request->input('qty', 1);
                 // Check if qty is more than available stock
                 if ($cadangan->total < $qty) {
-                    return redirect()->back()->withErrors(['cadangan_id' => 'Stok cadangan tidak mencukupi (Sisa: ' . $cadangan->total . ').'])->withInput()->with('form_type', 'edit_apar');
+                    return redirect()->back()->withErrors(['cadangan_id' => 'Stok cadangan tidak mencukupi (Sisa: '.$cadangan->total.').'])->withInput()->with('form_type', 'edit_apar');
                 }
                 $cadangan->decrement('total', $qty);
                 $request->merge([
@@ -658,11 +664,11 @@ class MasterDataController extends Controller
         }
 
         $prefix = $this->generatePrefix($lokasi->id, $request->jenis_id);
-        $newKode = $prefix . $request->nomor_apar;
+        $newKode = $prefix.$request->nomor_apar;
 
         // Cek unik untuk kode yang baru jika ada perubahan
         if ($newKode !== $apar->kode && Apar::where('kode', $newKode)->where('id', '!=', $apar->id)->exists()) {
-            return redirect()->back()->withErrors(['nomor_apar' => 'Nomor APAR ini sudah digunakan untuk prefix ' . $prefix])->withInput()->with('form_type', 'edit_apar')->with('id', $apar->id);
+            return redirect()->back()->withErrors(['nomor_apar' => 'Nomor APAR ini sudah digunakan untuk prefix '.$prefix])->withInput()->with('form_type', 'edit_apar')->with('id', $apar->id);
         }
 
         $data['kode'] = $newKode;
@@ -698,13 +704,15 @@ class MasterDataController extends Controller
         }
 
         $buildingPrefix = "PFE-{$gedungCode}-";
-        return $buildingPrefix . $jenisCode;
+
+        return $buildingPrefix.$jenisCode;
     }
 
     public function history(Apar $apar)
     {
         // Hanya ambil 1 data aktivitas terakhir (yang paling baru)
         $activities = $apar->activities()->with('causer')->latest()->take(1)->get();
+
         return view('master-data.history-partial', compact('apar', 'activities'));
     }
 
@@ -717,7 +725,9 @@ class MasterDataController extends Controller
             'total' => 'required|integer|min:0',
         ]);
 
-        \Illuminate\Support\Facades\Log::info("STORE: ", $request->all()); AparCadangan::create($request->all());
+        Log::info('STORE: ', $request->all());
+        AparCadangan::create($request->all());
+
         return redirect()->route('master-data.index')->with('success', __('Data APAR Cadangan berhasil ditambahkan.'));
     }
 
@@ -730,13 +740,16 @@ class MasterDataController extends Controller
             'total' => 'required|integer|min:0',
         ]);
 
-        \Illuminate\Support\Facades\Log::info("UPDATE: ", $request->all()); $aparCadangan->update($request->all());
+        Log::info('UPDATE: ', $request->all());
+        $aparCadangan->update($request->all());
+
         return redirect()->route('master-data.index')->with('success', __('Data APAR Cadangan berhasil diperbarui.'));
     }
 
     public function destroyAparCadangan(AparCadangan $aparCadangan)
     {
         $aparCadangan->delete();
+
         return redirect()->route('master-data.index')->with('success', __('Data APAR Cadangan berhasil dihapus.'));
     }
 }
