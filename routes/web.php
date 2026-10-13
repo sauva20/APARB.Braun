@@ -2,12 +2,24 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\InspeksiController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\PasswordSetupController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\UserController;
+use App\Mail\AparExpiryReminder;
+use App\Mail\InspectionAssigned;
+use App\Mail\InspectionReminder;
+use App\Mail\NewUserRegistered;
+use App\Mail\ResetPassword;
+use App\Models\Apar;
+use App\Models\JadwalInspeksi;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/locale/{lang}', [LocaleController::class, 'setLocale'])->name('set-locale');
@@ -25,19 +37,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/setup-password/{user}', [PasswordSetupController::class, 'show'])->name('setup-password')->middleware('signed');
 Route::post('/setup-password/{user}', [PasswordSetupController::class, 'store'])->middleware('signed');
 Route::get('/setup-password-success', [PasswordSetupController::class, 'success'])->name('setup-password.success');
-
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\LocaleController;
-use App\Http\Controllers\ReportController;
-use App\Mail\AparExpiryReminder;
-use App\Mail\InspectionAssigned;
-use App\Mail\InspectionReminder;
-use App\Mail\NewUserRegistered;
-use App\Mail\ResetPassword;
-use App\Models\Apar;
-use App\Models\JadwalInspeksi;
-use App\Models\User;
 
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');

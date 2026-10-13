@@ -750,7 +750,7 @@
                                             <i class="bi" :class="isSystemSource ? 'bi-shield-check text-[#009B77]' : 'bi-crosshair text-amber-600'" mt-0.5 text-sm></i>
                                             <div>
                                                 <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider" x-text="isSystemSource ? '{{ __('Validasi') }}' : '{{ __('Koordinat GPS') }}'"></span>
-                                                <span class="font-bold text-slate-700" :class="!isSystemSource ? 'font-mono' : ''" x-text="isSystemSource ? '{{ __('Verified by System Data') }}' : (gpsLat && gpsLng ? `${gpsLat.toFixed(6)}, ${gpsLng.toFixed(6)} (±${gpsAccuracy}m)` : 'GPS tidak aktif')"></span>
+                                                <span class="font-bold text-slate-700" x-text="isSystemSource ? '{{ __('Verified by System Data') }}' : (gpsLat && gpsLng ? `${gpsLat.toFixed(6)}, ${gpsLng.toFixed(6)} (±${gpsAccuracy}m)` : 'GPS tidak aktif')"></span>
                                             </div>
                                         </div>
 
@@ -1181,194 +1181,175 @@
                             // 2. Skala adaptif watermark agar proporsional di resolusi foto apapun
                             const scale = Math.max(width / 1000, 0.85);
                             const padding = 16 * scale;
-                            const lineHeight = 21 * scale;
-                            const headerFontSize = Math.round(15 * scale);
-                            const bodyFontSize = Math.round(12 * scale);
-                            const smallFontSize = Math.round(10.5 * scale);
+                            const lineHeight = 20 * scale;
+                            const headerFontSize = Math.round(14.5 * scale);
+                            const smallFontSize = Math.round(11 * scale);
+                            const fontFamily = "'Rotis Sans Serif', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
-                            // Format waktu real-time
+                            // Format waktu real-time seragam (tanggal dan jam dengan titik dua HH:mm:ss WIB)
                             const now = new Date();
-                            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
-                                            now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB';
+                            const pad = (n) => String(n).padStart(2, '0');
+                            const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} WIB`;
+                            const datePart = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                            const dateStr = `${datePart}, ${timeStr}`;
 
-                            // Batas lebar box watermark & posisi pojok kiri atas
-                            const boxWidth = Math.min(width * 0.64, 490 * scale);
-                            const boxMargin = 16 * scale;
-                            const boxX = boxMargin;
-                            const boxY = boxMargin;
-
+                            // Siapkan baris data metadata (Label dan Nilai)
+                            const rows = [];
                             if (this.isSystemSource) {
-                                // ==========================================
-                                // MODE SISTEM / DESKTOP RECORD
-                                // ==========================================
-                                const boxHeight = (padding * 2) + (lineHeight * 5.2);
-
-                                ctx.save();
-                                ctx.fillStyle = 'rgba(15, 23, 42, 0.88)'; // Slate-900 88%
-                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-                                ctx.lineWidth = 1.5 * scale;
-                                
-                                const radius = 10 * scale;
-                                ctx.beginPath();
-                                ctx.moveTo(boxX + radius, boxY);
-                                ctx.lineTo(boxX + boxWidth - radius, boxY);
-                                ctx.quadraticCurveTo(boxX + boxWidth, boxY, boxX + boxWidth, boxY + radius);
-                                ctx.lineTo(boxX + boxWidth, boxY + boxHeight - radius);
-                                ctx.quadraticCurveTo(boxX + boxWidth, boxY + boxHeight, boxX + boxWidth - radius, boxY + boxHeight);
-                                ctx.lineTo(boxX + radius, boxY + boxHeight);
-                                ctx.quadraticCurveTo(boxX, boxY + boxHeight, boxX, boxY + boxHeight - radius);
-                                ctx.lineTo(boxX, boxY + radius);
-                                ctx.quadraticCurveTo(boxX, boxY, boxX + radius, boxY);
-                                ctx.closePath();
-                                ctx.fill();
-                                ctx.stroke();
-
-                                // Aksen Hijau Brand B.Braun di sisi kiri badge
-                                ctx.fillStyle = '#009B77';
-                                ctx.fillRect(boxX, boxY + radius, 4.5 * scale, boxHeight - (radius * 2));
-
-                                let textY = boxY + padding + (lineHeight * 0.7);
-                                const textX = boxX + padding + (4 * scale);
-
-                                // Baris 1: Kode APAR & Header Mode Sistem
-                                ctx.font = `bold ${headerFontSize}px sans-serif`;
-                                ctx.fillStyle = '#FFFFFF';
-                                ctx.fillText(`${this.kodeApar} | SYSTEM VERIFIED`, textX, textY);
-                                textY += lineHeight;
-
-                                // Baris 2: Lokasi Master APAR Terdaftar
-                                ctx.font = `bold ${bodyFontSize}px sans-serif`;
-                                ctx.fillStyle = '#34D399'; // Emerald-400
-                                ctx.fillText(`LOKASI: ${this.lokasiTerdaftar}`, textX, textY);
-                                textY += lineHeight;
-
-                                // Baris 3: Metode Inspeksi
-                                ctx.font = `normal ${smallFontSize}px sans-serif`;
-                                ctx.fillStyle = '#93C5FD'; // Blue-300
-                                ctx.fillText(`METODE: SYSTEM RECORD / DESKTOP ENTRY`, textX, textY);
-                                textY += lineHeight;
-
-                                // Baris 4: Validasi Master Sistem
-                                ctx.font = `bold ${smallFontSize}px sans-serif`;
-                                ctx.fillStyle = '#FCD34D'; // Amber-300
-                                ctx.fillText(`VALIDASI: VERIFIED BY SYSTEM DATA`, textX, textY);
-                                textY += lineHeight;
-
-                                // Baris 5: PIC
-                                ctx.font = `bold ${smallFontSize}px sans-serif`;
-                                ctx.fillStyle = '#E2E8F0'; // Slate-200
-                                ctx.fillText(`PIC: ${this.picName}`, textX, textY);
-                                textY += lineHeight * 0.95;
-
-                                // Baris 6: Waktu Realtime
-                                ctx.font = `normal ${smallFontSize}px sans-serif`;
-                                ctx.fillStyle = '#94A3B8'; // Slate-400
-                                ctx.fillText(`WAKTU: ${dateStr}`, textX, textY);
-
-                                ctx.restore();
+                                rows.push({ label: 'LOKASI TERDAFTAR', value: this.lokasiTerdaftar || '-', highlight: true });
+                                rows.push({ label: 'METODE', value: 'SYSTEM RECORD / DESKTOP ENTRY' });
+                                rows.push({ label: 'VALIDASI', value: 'VERIFIED BY SYSTEM DATA', highlight: true });
+                                rows.push({ label: 'PIC', value: this.picName || '-' });
+                                rows.push({ label: 'WAKTU', value: dateStr });
                             } else {
-                                // ==========================================
-                                // MODE LANGSUNG LAPANGAN (GPS & MAPS)
-                                // ==========================================
                                 let coordStr = 'Menunggu sinyal GPS';
                                 if (this.gpsLat && this.gpsLng) {
                                     coordStr = `${this.gpsLat.toFixed(6)}, ${this.gpsLng.toFixed(6)} (±${this.gpsAccuracy || 0}m)`;
                                 }
-
                                 let realMapLocation = this.mapAddress ? this.mapAddress : (this.gpsStatus === 'success' ? 'Memproses nama lokasi...' : 'Lokasi tidak terjangkau');
 
-                                ctx.font = `normal ${smallFontSize}px sans-serif`;
-                                const wrapText = (text, maxWidth) => {
-                                    let words = text.split(' ');
-                                    let lines = [];
-                                    let currentLine = '';
-                                    for (let w of words) {
-                                        let testLine = currentLine ? currentLine + ' ' + w : w;
-                                        if (ctx.measureText(testLine).width > maxWidth && currentLine) {
-                                            lines.push(currentLine);
-                                            currentLine = w;
-                                        } else {
-                                            currentLine = testLine;
-                                        }
-                                    }
-                                    if (currentLine) lines.push(currentLine);
-                                    return lines;
-                                };
-
-                                let mapLines = wrapText(realMapLocation, boxWidth - (padding * 2) - (8 * scale));
-                                if (mapLines.length > 2) {
-                                    mapLines = mapLines.slice(0, 2);
-                                    mapLines[1] += '...';
-                                }
-
-                                const boxHeight = (padding * 2) + (lineHeight * 5.3) + ((mapLines.length - 1) * (lineHeight * 0.95));
-
-                                ctx.save();
-                                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)'; // Slate-900 85%
-                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-                                ctx.lineWidth = 1.5 * scale;
-                                
-                                const radius = 10 * scale;
-                                ctx.beginPath();
-                                ctx.moveTo(boxX + radius, boxY);
-                                ctx.lineTo(boxX + boxWidth - radius, boxY);
-                                ctx.quadraticCurveTo(boxX + boxWidth, boxY, boxX + boxWidth, boxY + radius);
-                                ctx.lineTo(boxX + boxWidth, boxY + boxHeight - radius);
-                                ctx.quadraticCurveTo(boxX + boxWidth, boxY + boxHeight, boxX + boxWidth - radius, boxY + boxHeight);
-                                ctx.lineTo(boxX + radius, boxY + boxHeight);
-                                ctx.quadraticCurveTo(boxX, boxY + boxHeight, boxX, boxY + boxHeight - radius);
-                                ctx.lineTo(boxX, boxY + radius);
-                                ctx.quadraticCurveTo(boxX, boxY, boxX + radius, boxY);
-                                ctx.closePath();
-                                ctx.fill();
-                                ctx.stroke();
-
-                                ctx.fillStyle = '#009B77';
-                                ctx.fillRect(boxX, boxY + radius, 4.5 * scale, boxHeight - (radius * 2));
-
-                                let textY = boxY + padding + (lineHeight * 0.7);
-                                const textX = boxX + padding + (4 * scale);
-
-                                // Baris 1: Kode APAR & Verified Inspection Header
-                                ctx.font = `bold ${headerFontSize}px sans-serif`;
-                                ctx.fillStyle = '#FFFFFF';
-                                ctx.fillText(`${this.kodeApar} | REALTIME GPS INSPECTION`, textX, textY);
-                                textY += lineHeight;
-
-                                // Baris 2: Lokasi Terdaftar Sistem
-                                ctx.font = `bold ${bodyFontSize}px sans-serif`;
-                                ctx.fillStyle = '#34D399'; // Emerald-400
-                                ctx.fillText(`LOKASI TERDAFTAR: ${this.lokasiTerdaftar}`, textX, textY);
-                                textY += lineHeight;
-
-                                // Baris 3: Lokasi Riil Maps
-                                ctx.font = `normal ${smallFontSize}px sans-serif`;
-                                ctx.fillStyle = '#E2E8F0'; // Slate-200
-                                for (let i = 0; i < mapLines.length; i++) {
-                                    let prefix = i === 0 ? 'LOKASI: ' : '        ';
-                                    ctx.fillText(prefix + mapLines[i], textX, textY);
-                                    textY += lineHeight * 0.95;
-                                }
-
-                                // Baris 4: Koordinat GPS
-                                ctx.font = `bold ${smallFontSize}px monospace`;
-                                ctx.fillStyle = '#FCD34D'; // Amber-300
-                                ctx.fillText(`KOORDINAT: ${coordStr}`, textX, textY);
-                                textY += lineHeight;
-
-                                // Baris 5: PIC
-                                ctx.font = `bold ${smallFontSize}px sans-serif`;
-                                ctx.fillStyle = '#93C5FD'; // Blue-300
-                                ctx.fillText(`PIC: ${this.picName}`, textX, textY);
-                                textY += lineHeight * 0.95;
-
-                                // Baris 6: WAKTU
-                                ctx.font = `normal ${smallFontSize}px sans-serif`;
-                                ctx.fillStyle = '#94A3B8'; // Slate-400
-                                ctx.fillText(`WAKTU: ${dateStr}`, textX, textY);
-
-                                ctx.restore();
+                                rows.push({ label: 'LOKASI TERDAFTAR', value: this.lokasiTerdaftar || '-', highlight: true });
+                                rows.push({ label: 'LOKASI GPS', value: realMapLocation, multiline: true });
+                                rows.push({ label: 'KOORDINAT', value: coordStr });
+                                rows.push({ label: 'PIC', value: this.picName || '-' });
+                                rows.push({ label: 'WAKTU', value: dateStr });
                             }
+
+                            // Batas lebar box watermark & posisi pojok kiri atas
+                            const boxWidth = Math.min(width * 0.72, 510 * scale);
+                            const boxMargin = 16 * scale;
+                            const boxX = boxMargin;
+                            const boxY = boxMargin;
+
+                            const textX = boxX + padding + (4 * scale);
+
+                            // Ukur lebar label terpanjang agar posisi titik dua (:) sejajar rapi
+                            ctx.font = `bold ${smallFontSize}px ${fontFamily}`;
+                            let maxLabelWidth = 0;
+                            rows.forEach(r => {
+                                const w = ctx.measureText(r.label).width;
+                                if (w > maxLabelWidth) maxLabelWidth = w;
+                            });
+
+                            const colonX = textX + maxLabelWidth + (6 * scale);
+                            const valueX = colonX + (12 * scale);
+                            const maxValueWidth = (boxX + boxWidth - padding) - valueX;
+
+                            // Helper pemecah teks jika nilai terlalu panjang (misal nama alamat riil GPS)
+                            const wrapText = (text, maxWidth, font) => {
+                                ctx.font = font;
+                                const words = String(text || '').split(' ');
+                                const lines = [];
+                                let currentLine = '';
+                                for (let w of words) {
+                                    let testLine = currentLine ? currentLine + ' ' + w : w;
+                                    if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+                                        lines.push(currentLine);
+                                        currentLine = w;
+                                    } else {
+                                        currentLine = testLine;
+                                    }
+                                }
+                                if (currentLine) lines.push(currentLine);
+                                return lines;
+                            };
+
+                            // Hitung pembagian baris teks untuk nilai
+                            let totalVisualLines = 0;
+                            rows.forEach(r => {
+                                if (r.multiline) {
+                                    let lines = wrapText(r.value, maxValueWidth, `500 ${smallFontSize}px ${fontFamily}`);
+                                    if (lines.length > 2) {
+                                        lines = lines.slice(0, 2);
+                                        lines[1] += '...';
+                                    }
+                                    r.lines = lines;
+                                    totalVisualLines += lines.length;
+                                } else {
+                                    r.lines = [r.value];
+                                    totalVisualLines += 1;
+                                }
+                            });
+
+                            // Hitung tinggi box secara presisi
+                            const headerSpace = (headerFontSize * 0.9) + (8 * scale) + (14 * scale);
+                            const rowsSpace = totalVisualLines * (lineHeight * 0.96) + (rows.length * (2 * scale));
+                            const boxHeight = (padding * 2) + headerSpace + rowsSpace;
+
+                            // 3. Render Card Background (Sleek Dark Slate 88%)
+                            ctx.save();
+                            ctx.fillStyle = 'rgba(15, 23, 42, 0.88)'; // Slate-900 88%
+                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.20)';
+                            ctx.lineWidth = 1.5 * scale;
+
+                            const radius = 10 * scale;
+                            ctx.beginPath();
+                            ctx.moveTo(boxX + radius, boxY);
+                            ctx.lineTo(boxX + boxWidth - radius, boxY);
+                            ctx.quadraticCurveTo(boxX + boxWidth, boxY, boxX + boxWidth, boxY + radius);
+                            ctx.lineTo(boxX + boxWidth, boxY + boxHeight - radius);
+                            ctx.quadraticCurveTo(boxX + boxWidth, boxY + boxHeight, boxX + boxWidth - radius, boxY + boxHeight);
+                            ctx.lineTo(boxX + radius, boxY + boxHeight);
+                            ctx.quadraticCurveTo(boxX, boxY + boxHeight, boxX, boxY + boxHeight - radius);
+                            ctx.lineTo(boxX, boxY + radius);
+                            ctx.quadraticCurveTo(boxX, boxY, boxX + radius, boxY);
+                            ctx.closePath();
+                            ctx.fill();
+                            ctx.stroke();
+
+                            // Aksen Hijau Brand B.Braun di sisi kiri badge
+                            ctx.fillStyle = '#009B77';
+                            ctx.fillRect(boxX, boxY + radius, 4.5 * scale, boxHeight - (radius * 2));
+
+                            // 4. Render Header Badge
+                            let currentY = boxY + padding + (headerFontSize * 0.85);
+
+                            ctx.font = `bold ${headerFontSize}px ${fontFamily}`;
+                            ctx.fillStyle = '#FFFFFF';
+                            const headerTitle = `${this.kodeApar} • ${this.isSystemSource ? 'VERIFIED BY SYSTEM' : 'VERIFIED INSPECTION'}`;
+                            ctx.fillText(headerTitle, textX, currentY);
+
+                            currentY += (headerFontSize * 0.45) + (4 * scale);
+
+                            // Garis Pembatas Header yang Elegan
+                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+                            ctx.lineWidth = 1 * scale;
+                            ctx.beginPath();
+                            ctx.moveTo(textX, currentY);
+                            ctx.lineTo(boxX + boxWidth - padding, currentY);
+                            ctx.stroke();
+
+                            currentY += (14 * scale);
+
+                            // 5. Render Baris Informasi Seragam (Label, Titik Dua Sejajar, dan Nilai)
+                            rows.forEach((r) => {
+                                // Label Seragam (Slate-400, Bold, Rata Kiri)
+                                ctx.font = `bold ${smallFontSize}px ${fontFamily}`;
+                                ctx.fillStyle = '#94A3B8';
+                                ctx.fillText(r.label, textX, currentY);
+
+                                // Titik Dua ( : ) Seragam & Sejajar di Semua Baris
+                                ctx.font = `bold ${smallFontSize}px ${fontFamily}`;
+                                ctx.fillStyle = '#94A3B8';
+                                ctx.fillText(':', colonX, currentY);
+
+                                // Nilai Seragam (Putih Bersih / Aksen Emerald untuk Lokasi Terdaftar)
+                                ctx.font = r.highlight 
+                                    ? `bold ${smallFontSize}px ${fontFamily}` 
+                                    : `500 ${smallFontSize}px ${fontFamily}`;
+                                ctx.fillStyle = r.highlight ? '#34D399' : '#F8FAFC';
+
+                                r.lines.forEach((line, lIdx) => {
+                                    ctx.fillText(line, valueX, currentY);
+                                    if (lIdx < r.lines.length - 1) {
+                                        currentY += lineHeight * 0.95;
+                                    }
+                                });
+
+                                currentY += lineHeight * 0.98;
+                            });
+
+                            ctx.restore();
 
                             // Simpan hasil render ke photoPreview (Base64 JPEG)
                             this.capturedTime = dateStr;
